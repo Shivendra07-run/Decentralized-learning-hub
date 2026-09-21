@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Core Web3 Concepts — Aether Education</title>
+  <meta name="description" content="Master the six core pillars of Web3: Blockchain, Decentralization, Cryptocurrency, Smart Contracts, NFTs, and DAOs with plain-language definitions, everyday analogies, and interactive simulations.">
+  <meta name="keywords" content="Web3, blockchain, decentralization, cryptocurrency, smart contracts, NFTs, DAOs, education, beginner guide">
+  <meta name="author" content="Aether Education">
+
+  <!-- Open Graph Meta -->
+  <meta property="og:title" content="Core Web3 Concepts — Aether Education">
+  <meta property="og:description" content="Learn Web3 without the hype. Clear definitions, relatable analogies, and verified cryptographic mechanics.">
+  <meta property="og:type" content="website">
+
+  <!-- Google Fonts: Montserrat (headings) & Inter (body) & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Shared Modular CSS System -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body class="learn-body">
+  <!-- Accessible Skip to Content Link -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Fixed Gradient Scroll Progress Bar -->
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <!-- Shared Single Full-Viewport Three.js 3D Background Canvas -->
+  <canvas id="scene3d" aria-hidden="true"></canvas>
+
+  <!-- Fallback CSS Animated Aurora Blobs (When WebGL is unavailable or reduced-motion) -->
+  <div class="css-aurora-fallback" aria-hidden="true">
+    <div class="css-aurora-blob css-aurora-blob--1"></div>
+    <div class="css-aurora-blob css-aurora-blob--2"></div>
+  </div>
+
+  <!-- Shared Injected Floating Navbar via js/layout.js -->
+  <header id="site-header"></header>
+
+  <!-- Mobile Sticky Horizontal Chip Bar -->
+  <nav class="learn-mobile-chips" aria-label="Quick section navigation">
+    <a href="#blockchain" class="learn-mobile-chip is-active">Blockchain</a>
+    <a href="#decentralization" class="learn-mobile-chip">Decentralization</a>
+    <a href="#cryptocurrency" class="learn-mobile-chip">Cryptocurrency</a>
+    <a href="#smart-contracts" class="learn-mobile-chip">Smart Contracts</a>
+    <a href="#nfts" class="learn-mobile-chip">NFTs &amp; Tokens</a>
+    <a href="#daos" class="learn-mobile-chip">DAOs</a>
+  </nav>
+
+  <!-- Main Content Area -->
+  <main id="main-content" class="learn-page">
+    <div class="container">
+
+      <!-- Page Header -->
+      <header class="learn-hero-header">
+        <div class="eyebrow-pill reveal-on-scroll">
+          <span>✦</span>
+          <span>Foundations of the Decentralized Web</span>
+        </div>
+        <h1 class="hero-headline">
+          <span class="hero-line"><span class="hero-line-inner">Six Core Ideas of</span></span>
+          <span class="hero-line"><span class="hero-line-inner"><span class="text-accent-gradient">Web3 Architecture</span></span></span>
+        </h1>
+        <p class="hero-subtitle reveal-on-scroll">
+          Clear, plain-language explanations with real everyday analogies. Mark sections as completed to track your reading progress and unlock roadmap milestones.
+        </p>
+      </header>
+
+      <!-- Layout Grid: Sticky TOC Sidebar + Main Article -->
+      <div class="learn-layout">
+
+        <!-- Left Desktop Sticky Table of Contents -->
+        <aside class="learn-toc" aria-label="Table of contents">
+          <h2 class="learn-toc__title">Course Contents</h2>
+
+          <!-- Reading Progress Tracker Widget -->
+          <div class="learn-progress-widget" aria-live="polite">
+            <div class="learn-progress-header">
+              <span>Progress</span>
+              <strong id="learn-progress-count">0 of 6 completed</strong>
+            </div>
+            <div class="learn-progress-bar-track">
+              <div class="learn-progress-bar-fill" id="learn-progress-bar-fill" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+          </div>
+
+          <!-- Section Links with Read Check Badges -->
+          <ul class="learn-toc-links">
+            <li>
+              <a href="#blockchain" class="learn-toc-link is-active" data-target="blockchain">
+                <span>1. Blockchain</span>
+                <span class="toc-read-badge" aria-label="Completed">&#10003;</span>
+              </a>
+            </li>
+            <li>
+              <a href="#decentralization" class="learn-toc-link" data-target="decentralization">
+                <span>2. Decentralization</span>
+                <span class="toc-read-badge" aria-label="Completed">&#10003;</span>
+              </a>
+            </li>
+            <li>
+              <a href="#cryptocurrency" class="learn-toc-link" data-target="cryptocurrency">
+                <span>3. Cryptocurrency</span>
+                <span class="toc-read-badge" aria-label="Completed">&#10003;</span>
+              </a>
+            </li>
+            <li>
+              <a href="#smart-contracts" class="learn-toc-link" data-target="smart-contracts">
+                <span>4. Smart Contracts</span>
+                <span class="toc-read-badge" aria-label="Completed">&#10003;</span>
+              </a>
+            </li>
+            <li>
+              <a href="#nfts" class="learn-toc-link" data-target="nfts">
+                <span>5. NFTs &amp; Tokens</span>
+                <span class="toc-read-badge" aria-label="Completed">&#10003;</span>
+              </a>
+            </li>
+            <li>
+              <a href="#daos" class="learn-toc-link" data-target="daos">
+                <span>6. DAOs</span>
+                <span class="toc-read-badge" aria-label="Completed">&#10003;</span>
+              </a>
+            </li>
+          </ul>
+
+          <div style="border-top:1px solid var(--border-line); padding-top:var(--space-md); margin-top:var(--space-xs);">
+            <a href="lab.html" class="btn btn--secondary btn--sm" style="width:100%; justify-content:center;">
+              <span>Interactive Labs &rarr;</span>
+            </a>
+          </div>
+        </aside>
+
+        <!-- Right Main Educational Content -->
+        <article class="learn-article">
+
+          <!-- ============================================================
+               1. BLOCKCHAIN
+               ============================================================ -->
+          <section class="learn-section" id="blockchain" aria-labelledby="heading-blockchain" data-learn-section="0">
+            <div class="learn-section__head">
+              <div class="learn-section__title-wrap">
+                <div class="learn-section__icon-tile">
+                  <!-- Chain Links Glyph -->
+                  <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                </div>
+                <div>
+                  <span class="learn-section__num">SECTION 01</span>
+                  <h2 class="learn-section__title" id="heading-blockchain">Blockchain</h2>
+                </div>
+              </div>
+            </div>
+
+            <!-- Definition -->
+            <p class="learn-definition">
+              A shared, append-only cryptographic ledger that records transactions across an independent network of computers simultaneously.
+            </p>
+
+            <!-- Everyday Analogy -->
+            <div class="learn-analogy-box">
+              <strong>Everyday Analogy</strong>
+              <p>
+                A blockchain is like a shared notebook in a glass case. Everyone in the room has an exact identical copy of every page. Anyone can propose a new line, everyone verifies the arithmetic together, and once a page is sealed with a cryptographic wax seal, nobody can erase or tear it out.
+              </p>
+            </div>
+
+            <!-- How It Works (3 Points) -->
+            <span class="learn-points-title">How It Works</span>
+            <div class="learn-points-grid">
+              <div class="learn-point-card">
+                <span class="learn-point-card__num">01</span>
+                <h3 class="learn-point-card__title">Batched Transactions</h3>
+                <p class="learn-point-card__desc">Transactions are grouped together into chronological batches called blocks rather than processed as lonely rows.</p>
+              </div>
+              <div class="learn-point-card">
+                <span class="learn-point-card__num">02</span>
+                <h3 class="learn-point-card__title">Cryptographic Fingerprints</h3>
+                <p class="learn-point-card__desc">Each new block includes the cryptographic hash of the prior block, creating a permanent mathematical chain.</p>
+              </div>
+              <div class="learn-point-card">
+                <span class="learn-point-card__num">03</span>
+                <h3 class="learn-point-card__title">Distributed Verification</h3>
+                <p class="learn-point-card__desc">Independent computers (nodes) validate rules simultaneously, rejecting any attempt to forge records.</p>
+              </div>
+            </div>
+
+            <!-- Interactive Moment: SHA-256 Live Hasher -->
+            <div class="learn-interactive-hasher">
+              <div class="widget-label">
+                <span>Live Cryptographic Hasher (SHA-256)</span>
+                <span class="widget-demo-tag">Simulation</span>
+              </div>
+              <p style="font-size:var(--text-xs); color:var(--text-secondary); margin-bottom:8px;">
+                Type any text below. Watch how changing even a single punctuation mark transforms the 64-character hash:
+              </p>
+              <input type="text" id="learn-hash-input" class="hash-input-field" value="Alice sends 1.5 ETH to Bob" aria-label="Text to hash">
+              <div class="hash-output-display" id="learn-hash-output" aria-live="polite">Calculating hash...</div>
+            </div>
+
+            <!-- Did You Know Fact -->
+            <div class="learn-fact-box">
+              <span class="learn-fact-box__label">DID YOU KNOW?</span>
+              <p class="learn-fact-box__text">
+                Bitcoin's first block (the "Genesis Block") was mined by Satoshi Nakamoto on January 3, 2009. Embedded directly inside its raw code was the historic headline: <em>"The Times 03/Jan/2009 Chancellor on brink of second bailout for banks."</em>
+              </p>
+            </div>
+
+            <!-- Footer: Mark as Read Button -->
+            <div class="learn-section__footer">
+              <span style="font-size:var(--text-xs); color:var(--text-tertiary); font-family:var(--font-mono);">Est. reading: 2 min</span>
+              <button class="btn btn--secondary btn--sm btn-mark-read" data-section-id="blockchain" aria-label="Mark Blockchain as read">
+                <span>Mark as read</span>
+              </button>
+            </div>
+          </section>
+
+          <!-- ============================================================
+               2. DECENTRALIZATION
+               ============================================================ -->
+          <section class="learn-section" id="decentralization" aria-labelledby="heading-decentralization" data-learn-section="1">
+            <div class="learn-section__head">
+              <div class="learn-section__title-wrap">
+                <div class="learn-section__icon-tile">
+                  <!-- Network / Nodes Glyph -->
+                  <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                </div>
+                <div>
+                  <span class="learn-section__num">SECTION 02</span>
+                  <h2 class="learn-section__title" id="heading-decentralization">Decentralization</h2>
+                </div>
+              </div>
+            </div>
+
+            <!-- Definition -->
+            <p class="learn-definition">
+              Distributing authority, computational control, and record-keeping across independent participants instead of trusting a single corporation or central server.
+            </p>
+
+            <!-- Everyday Analogy -->
+            <div class="learn-analogy-box">
+              <strong>Everyday Analogy</strong>
+              <p>
+                Traditional websites are like a single regional power company: if their transformer blows or they decide to cut your wire, your whole house goes dark. Decentralization is like a neighborhood solar microgrid where every house generates electricity and shares surplus power across the community.
+              </p>
+            </div>
+
+            <!-- How It Works (3 Points) -->
+            <span class="learn-points-title">How It Works</span>
+            <div class="learn-points-grid">
+              <div class="learn-point-card">
+                <span class="learn-point-card__num">01</span>
+                <h3 class="learn-point-card__title">No Single Point of Failure</h3>
+                <p class="learn-point-card__desc">If dozens of computers crash or disconnect, the network continues processing transactions smoothly.</p>
+              </div>
+              <div class="learn-point-card">
+                <span class="learn-point-card__num">02</span>
+                <h3 class="learn-point-card__title">Permissionless Access</h3>
+                <p class="learn-point-card__desc">No corporate gatekeeper can revoke your account, block your login, or prevent you from validating software.</p>
+              </div>
+              <div class="learn-point-card">
+                <span class="learn-point-card__num">03</span>
+                <h3 class="learn-point-card__title">Censorship Resistance</h3>
+                <p class="learn-point-card__desc">Ledger history is immutable. Valid transactions cannot be reversed or frozen by unilateral authority.</p>
+              </div>
+            </div>
+
+            <!-- Did You Know Fact -->
+            <div class="learn-fact-box">
+              <span class="learn-fact-box__label">DID YOU KNOW?</span>
+              <p class="learn-fact-box__text">
+                Ethereum currently has over 8,000 independent physical and virtual validator nodes operating across more than 80 sovereign countries, ensuring no single government or provider can switch off the network.
+              </p>
+            </div>
+
+            <!-- Footer: Mark as Read Button -->
+            <div class="learn-section__footer">
+              <span style="font-size:var(--text-xs); color:var(--text-tertiary); font-family:var(--font-mono);">Est. reading: 2 min</span>
+              <button class="btn btn--secondary btn--sm btn-mark-read" data-section-id="decentralization" aria-label="Mark Decentralization as read">
+                <span>Mark as read</span>
+              </button>
+            </div>
+          </section>
+
+          <!-- ============================================================
+               3. CRYPTOCURRENCY
+               ============================================================ -->
+          <section class="learn-section" id="cryptocurrency" aria-labelledby="heading-cryptocurrency" data-learn-section="2">
+            <div class="learn-section__head">
+              <div class="learn-section__title-wrap">
+                <div class="learn-section__icon-tile">
+                  <!-- Coin Glyph -->
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><line x1="12" y1="6" x2="12" y2="8"></line><line x1="12" y1="16" x2="12" y2="18"></line></svg>
+                </div>
+                <div>
+                  <span class="learn-section__num">SECTION 03</span>
+                  <h2 class="learn-section__title" id="heading-cryptocurrency">Cryptocurrency</h2>
+                </div>
+              </div>
+            </div>
+
+            <!-- Definition -->
+            <p class="learn-definition">
+              Digital, native network money protected by cryptographic algorithms rather than central government decree or commercial bank reserves.
+            </p>
+
+            <!-- Everyday Analogy -->
+            <div class="learn-analogy-box">
+              <strong>Everyday Analogy</strong>
+              <p>
+                Cryptocurrency is like digital cash you can hand directly to someone on the other side of the planet at 3 AM on a Sunday. It doesn't ask for permission from a credit card company, doesn't pass through a multi-day bank clearinghouse, and settles permanently in minutes.
+              </p>
+            </div>
+
+            <!-- How It Works (3 Points) -->
+            <span class="learn-points-title">How It Works</span>
+            <div class="learn-points-grid">
+              <div class="learn-point-card">
+                <span class="learn-point-card__num">01</span>
+                <h3 class="learn-point-card__title">Public-Private Keypairs</h3>
+                <p class="learn-point-card__desc">Your public address receives funds, while your private key mathematically signs outgoing transactions.</p>
+              </div>
+              <div class="learn-point-card">
+                <span class="learn-point-card__num">02</span>
+                <h3 class="learn-point-card__title">Hardcoded Supply Rules</h3>
+                <p class="learn-point-card__desc">Issuance rates (such as Bitcoin's 21M limit) are baked into open code rather than determined behind closed boardroom doors.</p>
+              </div>
+              <div class="learn-point-card">
+                <span class="learn-point-card__num">03</span>
+                <h3 class="learn-point-card__title">True Self-Custody</h3>
+                <p class="learn-point-card__desc">Holding your own cryptographic keys means no third party can freeze, limit, or loan out your deposits.</p>
+              </div>
+            </div>
+
+            <!-- Did You Know Fact -->
+            <div class="learn-fact-box">
+              <span class="learn-fact-box__label">DID YOU KNOW?</span>
+              <p class="learn-fact-box__text">
+                The first real-world commercial transaction with cryptocurrency occurred on May 22, 2010, when Florida programmer Laszlo Hanyecz paid 10,000 Bitcoins for two delivered Papa John's pizzas.
+              </p>
+            </div>
+
+            <!-- Footer: Mark as Read Button -->
+            <div class="learn-section__footer">
+              <span style="font-size:var(--text-xs); color:var(--text-tertiary); font-family:var(--font-mono);">Est. reading: 2 min</span>
+              <button class="btn btn--secondary btn--sm btn-mark-read" data-section-id="cryptocurrency" aria-label="Mark Cryptocurrency as read">
+                <span>Mark as read</span>
+              </button>
+            </div>
+          </section>
+
+          <!-- ============================================================
+               4. SMART CONTRACTS
+               ============================================================ -->
+          <section class="learn-section" id="smart-contracts" aria-labelledby="heading-contracts" data-learn-section="3">
+            <div class="learn-section__head">
+              <div class="learn-section__title-wrap">
+                <div class="learn-section__icon-tile">
+                  <!-- Contract Scroll Glyph -->
+                  <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                </div>
+                <div>
+                  <span class="learn-section__num">SECTION 04</span>
+                  <h2 class="learn-section__title" id="heading-contracts">Smart Contracts</h2>
+                </div>
+              </div>
+            </div>
+
+            <!-- Definition -->
+            <p class="learn-definition">
+              Deterministic computer programs stored on a blockchain that execute automatically when predefined conditions are cryptographically verified.
+            </p>
+
+            <!-- Everyday Analogy -->
+            <div class="learn-analogy-box">
+              <strong>Everyday Analogy</strong>
+              <p>
+                Think of a digital vending machine. You insert cryptographic payment, the internal mechanism confirms the amount, and the item drops automatically. You don't need a cashier, an escrow agent, or an enforcement attorney; the terms of the agreement are embedded in the code.
+              </p>
+            </div>
+
+            <!-- How It Works (3 Points) -->
+            <span class="learn-points-title">How It Works</span>
+            <div class="learn-points-grid">
+              <div class="learn-point-card">
+                <span class="learn-point-card__num">01</span>
+                <h3 class="learn-point-card__title">Deterministic Execution</h3>
+                <p class="learn-point-card__desc">Given the exact same transaction input and network state, every computer in the network computes the identical result.</p>
+              </div>
+              <div class="learn-point-card">
+                <span class="learn-point-card__num">02</span>
+                <h3 class="learn-point-card__title">Autonomous Escrow</h3>
+                <p class="learn-point-card__desc">Smart contracts can custody assets safely in code, releasing them instantly only after counterparties fulfill terms.</p>
+              </div>
+              <div class="learn-point-card">
+                <span class="learn-point-card__num">03</span>
+                <h3 class="learn-point-card__title">Composable Primitives</h3>
+                <p class="learn-point-card__desc">Smart contracts can call other contracts like software building blocks ("money legos") to build complex apps.</p>
+              </div>
+            </div>
+
+            <!-- Did You Know Fact -->
+            <div class="learn-fact-box">
+              <span class="learn-fact-box__label">DID YOU KNOW?</span>
+              <p class="learn-fact-box__text">
+                Computer scientist and cryptographer Nick Szabo coined the term "Smart Contract" all the way back in 1994, describing automatic digital protocols for business agreements over a decade before modern blockchains existed.
+              </p>
+            </div>
+
+            <!-- Footer: Mark as Read Button -->
+            <div class="learn-section__footer">
+              <span style="font-size:var(--text-xs); color:var(--text-tertiary); font-family:var(--font-mono);">Est. reading: 2 min</span>
+              <button class="btn btn--secondary btn--sm btn-mark-read" data-section-id="smart-contracts" aria-label="Mark Smart Contracts as read">
+                <span>Mark as read</span>
+              </button>
+            </div>
+          </section>
+
+          <!-- ============================================================
+               5. NFTS & TOKENS
+               ============================================================ -->
+          <section class="learn-section" id="nfts" aria-labelledby="heading-nfts" data-learn-section="4">
+            <div class="learn-section__head">
+              <div class="learn-section__title-wrap">
+                <div class="learn-section__icon-tile">
+                  <!-- Token / NFT Gem Glyph -->
+                  <svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                </div>
+                <div>
+                  <span class="learn-section__num">SECTION 05</span>
+                  <h2 class="learn-section__title" id="heading-nfts">NFTs (Non-Fungible Tokens)</h2>
+                </div>
+              </div>
+            </div>
+
+            <!-- Definition -->
+            <p class="learn-definition">
+              Unique cryptographic tokens on a blockchain that prove digital provenance, authenticity, and property rights for specific items or media.
+            </p>
+
+            <!-- Everyday Analogy -->
+            <div class="learn-analogy-box">
+              <strong>Everyday Analogy</strong>
+              <p>
+                An NFT is like a numbered backstage concert ticket with a permanent, publicly visible registry of who issued it, who currently holds it, and every historical trade. While anyone can screenshot or photocopy the artwork on the ticket, only the cryptographic keyholder possesses the valid, verifiable seat.
+              </p>
+            </div>
+
+            <!-- How It Works (3 Points) -->
+            <span class="learn-points-title">How It Works</span>
+            <div class="learn-points-grid">
+              <div class="learn-point-card">
+                <span class="learn-point-card__num">01</span>
+                <h3 class="learn-point-card__title">Fungible vs Non-Fungible</h3>
+                <p class="learn-point-card__desc">A $10 bill is fungible (interchangeable). A deed to a house, rare art piece, or game item is unique and non-fungible.</p>
+              </div>
+              <div class="learn-point-card">
+                <span class="learn-point-card__num">02</span>
+                <h3 class="learn-point-card__title">Provable Provenance</h3>
+                <p class="learn-point-card__desc">The complete ownership chronology from creator mint to current holder is stamped permanently on the ledger.</p>
+              </div>
+              <div class="learn-point-card">
+                <span class="learn-point-card__num">03</span>
+                <h3 class="learn-point-card__title">Programmable Royalties</h3>
+                <p class="learn-point-card__desc">Smart contracts can automatically route a percentage of future secondary sales directly to the original creator.</p>
+              </div>
+            </div>
+
+            <!-- Did You Know Fact -->
+            <div class="learn-fact-box">
+              <span class="learn-fact-box__label">DID YOU KNOW?</span>
+              <p class="learn-fact-box__text">
+                CryptoPunks were released in June 2017 by Larva Labs completely free to anyone with an Ethereum wallet (users only paid pennies for gas), before the official ERC-721 token standard was finalized.
+              </p>
+            </div>
+
+            <!-- Footer: Mark as Read Button -->
+            <div class="learn-section__footer">
+              <span style="font-size:var(--text-xs); color:var(--text-tertiary); font-family:var(--font-mono);">Est. reading: 2 min</span>
+              <button class="btn btn--secondary btn--sm btn-mark-read" data-section-id="nfts" aria-label="Mark NFTs as read">
+                <span>Mark as read</span>
+              </button>
+            </div>
+          </section>
+
+          <!-- ============================================================
+               6. DAOS (DECENTRALIZED AUTONOMOUS ORGANIZATIONS)
+               ============================================================ -->
+          <section class="learn-section" id="daos" aria-labelledby="heading-daos" data-learn-section="5">
+            <div class="learn-section__head">
+              <div class="learn-section__title-wrap">
+                <div class="learn-section__icon-tile">
+                  <!-- Community / Governance Glyph -->
+                  <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                </div>
+                <div>
+                  <span class="learn-section__num">SECTION 06</span>
+                  <h2 class="learn-section__title" id="heading-daos">DAOs (Decentralized Organizations)</h2>
+                </div>
+              </div>
+            </div>
+
+            <!-- Definition -->
+            <p class="learn-definition">
+              Community-led organizations governed by transparent rules encoded on smart contracts and voted on by members using governance tokens.
+            </p>
+
+            <!-- Everyday Analogy -->
+            <div class="learn-analogy-box">
+              <strong>Everyday Analogy</strong>
+              <p>
+                A DAO is like a community club with a shared bank account where no single person has a debit card or checkbook. Every proposed purchase, grant, or rule change must be submitted as an open proposal, and funds are automatically released by code only when members vote in favor.
+              </p>
+            </div>
+
+            <!-- How It Works (3 Points) -->
+            <span class="learn-points-title">How It Works</span>
+            <div class="learn-points-grid">
+              <div class="learn-point-card">
+                <span class="learn-point-card__num">01</span>
+                <h3 class="learn-point-card__title">On-Chain Treasuries</h3>
+                <p class="learn-point-card__desc">Organization funds reside in public multisig or smart contract vaults visible to all stakeholders.</p>
+              </div>
+              <div class="learn-point-card">
+                <span class="learn-point-card__num">02</span>
+                <h3 class="learn-point-card__title">Token-Weighted Ballots</h3>
+                <p class="learn-point-card__desc">Members vote on parameter changes, budget allocations, and developer grants using their cryptographic tokens.</p>
+              </div>
+              <div class="learn-point-card">
+                <span class="learn-point-card__num">03</span>
+                <h3 class="learn-point-card__title">Autonomous Execution</h3>
+                <p class="learn-point-card__desc">Once voting quorum and thresholds pass, the smart contract executes the decision without human intervention.</p>
+              </div>
+            </div>
+
+            <!-- Did You Know Fact -->
+            <div class="learn-fact-box">
+              <span class="learn-fact-box__label">DID YOU KNOW?</span>
+              <p class="learn-fact-box__text">
+                In November 2021, "ConstitutionDAO" pooled over $40 million worth of cryptocurrency from 17,000 contributors within 72 hours in a historic decentralized bid for an original print of the US Constitution at Sotheby's.
+              </p>
+            </div>
+
+            <!-- Footer: Mark as Read Button -->
+            <div class="learn-section__footer">
+              <span style="font-size:var(--text-xs); color:var(--text-tertiary); font-family:var(--font-mono);">Est. reading: 2 min</span>
+              <button class="btn btn--secondary btn--sm btn-mark-read" data-section-id="daos" aria-label="Mark DAOs as read">
+                <span>Mark as read</span>
+              </button>
+            </div>
+          </section>
+
+        </article>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Back to Top Button -->
+  <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+    <svg viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+  </button>
+
+  <!-- Shared Injected Clean Footer via js/layout.js -->
+  <footer id="site-footer"></footer>
+
+  <!-- Classic Deferred Scripts (Zero external build tools, 100% file:/// support) -->
+  <script src="js/vendor/three.min.js" defer></script>
+  <script src="js/scene3d.js" defer></script>
+  <script src="js/layout.js" defer></script>
+  <script src="js/wallet.js" defer></script>
+  <script src="js/motion.js" defer></script>
+  <script src="js/learn.js" defer></script>
+</body>
+</html>
