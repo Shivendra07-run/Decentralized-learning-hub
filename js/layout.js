@@ -1,0 +1,278 @@
+/**
+ * AETHER LAYOUT ENGINE (v4 Dark Monochrome)
+ * Injects floating dark navbar, left-edge blockchain progress sidebar,
+ * clean disclaimer-only footer, and debug anchor box support (?debug=1).
+ */
+
+(function () {
+  'use strict';
+
+  window.Aether = window.Aether || {};
+
+  function getCurrentPageName() {
+    var path = window.location.pathname;
+    var filename = path.substring(path.lastIndexOf('/') + 1);
+    if (!filename || filename === '') {
+      filename = 'index.html';
+    }
+    return filename.toLowerCase();
+  }
+
+  var ICONS = {
+    logo: '<svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="14" stroke="#FFFFFF" stroke-width="2.2"/><polygon points="16,6 25,21 7,21" stroke="#FFFFFF" stroke-width="1.8" fill="rgba(255,255,255,0.12)"/><circle cx="16" cy="16" r="3" fill="#FFFFFF"/></svg>',
+    menu: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>',
+    close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>',
+    wallet: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"></path><path d="M4 6v12a2 2 0 0 0 2 2h14v-4"></path><path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"></path></svg>'
+  };
+
+  var NAV_ITEMS = [
+    { name: 'Home', href: 'index.html' },
+    { name: 'Learn', href: 'learn.html' },
+    { name: 'Compare', href: 'web2-vs-web3.html' },
+    { name: 'Lab', href: 'lab.html' },
+    { name: 'Market', href: 'market.html' },
+    { name: 'Wallet', href: 'wallet.html' },
+    { name: 'Quiz', href: 'quiz.html' },
+    { name: 'Resources', href: 'resources.html' }
+  ];
+
+  function renderHeader() {
+    var currentPage = getCurrentPageName();
+    var headerContainer = document.getElementById('site-header');
+    if (!headerContainer) return;
+
+    var desktopNavLinksHtml = NAV_ITEMS.map(function (item) {
+      var isActive = (currentPage === item.href) || (currentPage === '' && item.href === 'index.html');
+      return '<li><a href="' + item.href + '" class="nav-link' + (isActive ? ' is-active' : '') + '">' + item.name + '</a></li>';
+    }).join('');
+
+    var mobileNavLinksHtml = NAV_ITEMS.map(function (item) {
+      var isActive = (currentPage === item.href) || (currentPage === '' && item.href === 'index.html');
+      return '<li><a href="' + item.href + '" class="mobile-nav-link' + (isActive ? ' is-active' : '') + '">' + item.name + '</a></li>';
+    }).join('');
+
+    headerContainer.className = 'site-header';
+    headerContainer.innerHTML = [
+      '<div class="container">',
+      '  <div class="nav-floating-bar">',
+      '    <a href="index.html" class="site-logo" aria-label="Aether Homepage">',
+      '      <span class="site-logo__icon">' + ICONS.logo + '</span>',
+      '      <span>AETHER</span>',
+      '      <span class="site-logo__badge">EDU</span>',
+      '    </a>',
+      '    <nav class="site-nav" aria-label="Main Navigation">',
+      '      <ul class="nav-links">',
+      desktopNavLinksHtml,
+      '      </ul>',
+      '    </nav>',
+      '    <div class="header-actions">',
+      '      <button class="wallet-pill" id="global-wallet-btn" aria-label="Connect Web3 wallet">',
+      '        <span class="wallet-pill__icon">' + ICONS.wallet + '</span>',
+      '        <span id="wallet-btn-label">Connect Wallet</span>',
+      '      </button>',
+      '      <button class="nav-toggle-btn" id="mobile-nav-toggle" aria-label="Open mobile navigation" aria-expanded="false" aria-controls="mobile-nav-drawer">',
+      ICONS.menu,
+      '      </button>',
+      '    </div>',
+      '  </div>',
+      '</div>',
+      '<!-- Mobile Slide-in Drawer -->',
+      '<div class="mobile-nav-backdrop" id="mobile-nav-backdrop"></div>',
+      '<aside class="mobile-nav-drawer" id="mobile-nav-drawer" aria-label="Mobile Navigation" aria-hidden="true">',
+      '  <div style="display:flex; justify-content:space-between; align-items:center;">',
+      '    <span style="font-family:var(--font-display); font-weight:700; font-size:1.1rem; color:#FFFFFF;">Navigation</span>',
+      '    <button id="mobile-drawer-close" aria-label="Close menu" style="background:none; border:none; color:var(--text-secondary); cursor:pointer;">' + ICONS.close + '</button>',
+      '  </div>',
+      '  <ul class="mobile-nav-links">',
+      mobileNavLinksHtml,
+      '  </ul>',
+      '</aside>'
+    ].join('\n');
+  }
+
+  function renderFooter() {
+    var footerContainer = document.getElementById('site-footer');
+    if (!footerContainer) return;
+
+    footerContainer.className = 'site-footer';
+    footerContainer.innerHTML = [
+      '<div class="container">',
+      '  <div class="footer-top">',
+      '    <div class="footer-brand">',
+      '      <a href="index.html" class="site-logo">',
+      '        <span class="site-logo__icon">' + ICONS.logo + '</span>',
+      '        <span>AETHER</span>',
+      '      </a>',
+      '      <p>Demystifying the decentralized web through intuitive visual analogies, hands-on cryptography labs, and zero-hype educational guides.</p>',
+      '    </div>',
+      '    <div class="footer-col">',
+      '      <h4>Explore</h4>',
+      '      <ul class="footer-links">',
+      '        <li><a href="learn.html">Core Concepts</a></li>',
+      '        <li><a href="web2-vs-web3.html">Compare Web2 vs Web3</a></li>',
+      '        <li><a href="lab.html">Interactive Labs</a></li>',
+      '        <li><a href="market.html">Live Market Rates</a></li>',
+      '      </ul>',
+      '    </div>',
+      '    <div class="footer-col">',
+      '      <h4>Practice</h4>',
+      '      <ul class="footer-links">',
+      '        <li><a href="wallet.html">Wallet Safety Guide</a></li>',
+      '        <li><a href="quiz.html">Web3 Quiz & Flashcards</a></li>',
+      '        <li><a href="resources.html">Glossary (20+ Terms)</a></li>',
+      '        <li><a href="#roadmap">Learning Roadmap</a></li>',
+      '      </ul>',
+      '    </div>',
+      '    <div class="footer-col">',
+      '      <h4>Information</h4>',
+      '      <p class="footer-disclaimer-text" style="margin-bottom:8px;">',
+      '        Educational content, not financial advice.',
+      '      </p>',
+      '      <p class="footer-disclaimer-text">',
+      '        Coin names and symbols belong to their owners and are shown for education only.',
+      '      </p>',
+      '    </div>',
+      '  </div>',
+      '  <div class="footer-bottom">',
+      '    <p class="footer-disclaimer-text">Educational content, not financial advice. Coin names and symbols belong to their owners and are shown for education only.</p>',
+      '  </div>',
+      '</div>'
+    ].join('\n');
+  }
+
+  function renderChainSidebar() {
+    if (document.querySelector('.chain-sidebar')) return;
+
+    var sidebar = document.createElement('aside');
+    sidebar.className = 'chain-sidebar';
+    sidebar.setAttribute('aria-label', 'Blockchain Page Progress');
+    sidebar.innerHTML = [
+      '<div class="chain-sidebar__line"></div>',
+      '<div class="chain-node is-active" data-section-target="hero" title="Block #0: Genesis"></div>',
+      '<div class="chain-node" data-section-target="foundations" title="Block #1: Foundations"></div>',
+      '<div class="chain-node" data-section-target="real-world" title="Block #2: Ecosystem"></div>',
+      '<div class="chain-node" data-section-target="tokens" title="Block #3: Tokens"></div>',
+      '<div class="chain-node" data-section-target="roadmap" title="Block #4: Roadmap"></div>'
+    ].join('\n');
+
+    document.body.appendChild(sidebar);
+  }
+
+  function initScrollTracking() {
+    var progressBar = document.querySelector('.scroll-progress');
+    var backToTopBtn = document.querySelector('.back-to-top');
+    var chainNodes = document.querySelectorAll('.chain-node');
+    var sections = [
+      { id: 'hero', el: document.querySelector('.hero-v4') },
+      { id: 'foundations', el: document.getElementById('foundations') },
+      { id: 'real-world', el: document.getElementById('real-world') },
+      { id: 'tokens', el: document.getElementById('tokens') },
+      { id: 'roadmap', el: document.getElementById('roadmap') }
+    ];
+
+    function onScroll() {
+      var scrollY = window.pageYOffset || document.documentElement.scrollTop;
+      var docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+
+      if (progressBar && docHeight > 0) {
+        var progress = Math.min(100, Math.max(0, (scrollY / docHeight) * 100));
+        progressBar.style.width = progress + '%';
+      }
+
+      if (backToTopBtn) {
+        if (scrollY > 350) {
+          backToTopBtn.classList.add('is-visible');
+        } else {
+          backToTopBtn.classList.remove('is-visible');
+        }
+      }
+
+      // Track active blockchain section nodes
+      var scrollMiddle = scrollY + window.innerHeight * 0.35;
+      sections.forEach(function (sec, idx) {
+        if (!sec.el || !chainNodes[idx]) return;
+        var top = sec.el.offsetTop;
+        var bottom = top + sec.el.offsetHeight;
+
+        if (scrollMiddle >= top && scrollMiddle < bottom) {
+          chainNodes.forEach(function (n, nIdx) {
+            if (nIdx < idx) {
+              n.className = 'chain-node is-passed';
+            } else if (nIdx === idx) {
+              n.className = 'chain-node is-active';
+            } else {
+              n.className = 'chain-node';
+            }
+          });
+        }
+      });
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    if (backToTopBtn) {
+      backToTopBtn.addEventListener('click', function () {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+  }
+
+  function initMobileMenu() {
+    var toggleBtn = document.getElementById('mobile-nav-toggle');
+    var drawer = document.getElementById('mobile-nav-drawer');
+    var backdrop = document.getElementById('mobile-nav-backdrop');
+    var closeBtn = document.getElementById('mobile-drawer-close');
+
+    if (!toggleBtn || !drawer || !backdrop) return;
+
+    function openDrawer() {
+      drawer.classList.add('is-open');
+      backdrop.classList.add('is-open');
+      toggleBtn.setAttribute('aria-expanded', 'true');
+      drawer.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDrawer() {
+      drawer.classList.remove('is-open');
+      backdrop.classList.remove('is-open');
+      toggleBtn.setAttribute('aria-expanded', 'false');
+      drawer.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    toggleBtn.addEventListener('click', openDrawer);
+    backdrop.addEventListener('click', closeDrawer);
+    if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && drawer.classList.contains('is-open')) {
+        closeDrawer();
+      }
+    });
+  }
+
+  function checkDebugMode() {
+    if (window.location.search.indexOf('debug=1') !== -1) {
+      document.body.classList.add('debug-mode');
+      console.info('[Aether Debug] 3D anchor slot debug boxes enabled.');
+    }
+  }
+
+  function init() {
+    renderHeader();
+    renderFooter();
+    renderChainSidebar();
+    initMobileMenu();
+    initScrollTracking();
+    checkDebugMode();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+})();

@@ -1,0 +1,32 @@
+# Operating System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Environment and Secrets (NEVER COMMIT SECRETS)
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# Editor and IDE Files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Node & Package Managers (if ever used)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary & Build Output
+dist/
+build/
+*.tmp
+*.log
