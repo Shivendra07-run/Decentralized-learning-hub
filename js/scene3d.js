@@ -854,13 +854,33 @@
     animate();
   }
 
+  function triggerSuccessEffect() {
+    if (!renderer || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (coinsList && coinsList.length > 0) {
+      var coin = coinsList[Math.floor(Math.random() * coinsList.length)];
+      if (coin) {
+        var startRot = coin.rotation.y;
+        var startTime = performance.now();
+        function spin(now) {
+          var progress = (now - startTime) / 600;
+          if (progress < 1) {
+            coin.rotation.y = startRot + Math.PI * 4 * Math.sin(progress * Math.PI * 0.5);
+            requestAnimationFrame(spin);
+          }
+        }
+        requestAnimationFrame(spin);
+      }
+    }
+  }
+
   window.Aether.scene3d = {
     init: init,
     getScene: function () { return scene; },
     getCamera: function () { return camera; },
     getRenderer: function () { return renderer; },
     getFPS: function () { return fpsTracker.currentFPS; },
-    highlightLearnBlock: highlightLearnBlock
+    highlightLearnBlock: highlightLearnBlock,
+    triggerSuccessEffect: triggerSuccessEffect
   };
 
   if (document.readyState === 'loading') {
