@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Web3 Educational Resources, Glossary &amp; FAQ — Aether Education</title>
+  <meta name="description" content="A beginner-friendly Web3 glossary with 22 essential terms, accessible FAQ accordions, and verified official getting-started documentation links.">
+  <meta name="keywords" content="Web3 glossary, crypto terms, blockchain definitions, Web3 FAQ, crypto beginner guide, official Web3 resources">
+  <meta name="author" content="Aether Education">
+
+  <!-- Open Graph Meta -->
+  <meta property="og:title" content="Web3 Educational Resources, Glossary &amp; FAQ — Aether Education">
+  <meta property="og:description" content="Browse 22+ plain-language Web3 definitions, essential FAQs, and curated official links.">
+  <meta property="og:type" content="website">
+
+  <!-- Google Fonts: Montserrat (headings) & Inter (body) & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Shared Modular CSS System -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body class="resources-body">
+  <!-- Accessible Skip to Content Link -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Fixed Gradient Scroll Progress Bar -->
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <!-- Shared Single Full-Viewport Three.js 3D Background Canvas -->
+  <canvas id="scene3d" aria-hidden="true"></canvas>
+
+  <!-- Fallback CSS Animated Aurora Blobs -->
+  <div class="css-aurora-fallback" aria-hidden="true">
+    <div class="css-aurora-blob css-aurora-blob--1"></div>
+    <div class="css-aurora-blob css-aurora-blob--2"></div>
+  </div>
+
+  <!-- Shared Injected Floating Navbar via js/layout.js -->
+  <header id="site-header"></header>
+
+  <!-- Main Content Area -->
+  <main id="main-content" class="resources-page">
+    <div class="container">
+
+      <!-- Hero Header -->
+      <header class="resources-hero-header">
+        <div class="eyebrow-pill reveal-on-scroll">
+          <span>✦</span>
+          <span>Knowledge Hub</span>
+        </div>
+        <h1 class="hero-headline">
+          <span class="hero-line"><span class="hero-line-inner">Web3 Glossary, FAQ</span></span>
+          <span class="hero-line"><span class="hero-line-inner"><span class="text-accent-gradient">&amp; Official Guides</span></span></span>
+        </h1>
+        <p class="hero-subtitle reveal-on-scroll">
+          Demystify decentralized jargon with 22+ plain-language definitions, read answers to common beginner safety questions, and access verified official documentation.
+        </p>
+      </header>
+
+      <!-- SECTION 1: SEARCHABLE & FILTERABLE GLOSSARY -->
+      <section class="glossary-section" aria-labelledby="heading-glossary">
+        <div class="glossary-header-bar">
+          <div>
+            <h2 id="heading-glossary" class="section-title" style="margin-bottom:4px;">Living Web3 Glossary</h2>
+            <span class="glossary-count-text" id="glossary-count">Showing 22 Terms</span>
+          </div>
+
+          <!-- Live Search Input -->
+          <div class="glossary-search-wrap">
+            <input type="search" id="glossary-search-input" class="glossary-search-field" placeholder="Search terms (e.g. gas, seed, node)..." aria-label="Search glossary terms">
+          </div>
+        </div>
+
+        <!-- A to Z Filter Pills -->
+        <nav class="az-filter-bar" id="az-filter-bar" aria-label="Filter glossary alphabetically">
+          <!-- Populated by js/resources.js -->
+        </nav>
+
+        <!-- Glossary Cards Grid -->
+        <div class="glossary-grid" id="glossary-grid" aria-live="polite">
+          <!-- Rendered by js/resources.js -->
+        </div>
+      </section>
+
+      <!-- SECTION 2: ACCESSIBLE FAQ ACCORDION -->
+      <section class="faq-section" aria-labelledby="heading-faq">
+        <div class="section-title-wrap text-center">
+          <span class="eyebrow-pill">Clear Answers</span>
+          <h2 id="heading-faq" class="section-title">Frequently Asked Questions</h2>
+          <p class="section-subtitle">Straightforward answers to the most common beginner dilemmas without marketing spin.</p>
+        </div>
+
+        <div class="faq-accordion-container">
+          
+          <details class="faq-drawer">
+            <summary class="faq-summary">
+              <span class="faq-question">Is cryptocurrency safe for beginners?</span>
+              <span class="faq-chevron" aria-hidden="true">+</span>
+            </summary>
+            <div class="faq-answer">
+              <p>Cryptocurrency is built on battle-tested mathematics, but because it relies on <strong>true self-custody</strong>, you are personally responsible for protecting your keys. There are no password resets or bank branches. If you start small, practice on free testnets (like Sepolia), and never share your seed phrase, you can explore safely without financial risk.</p>
+            </div>
+          </details>
+
+          <details class="faq-drawer">
+            <summary class="faq-summary">
+              <span class="faq-question">Do I need real money to learn Web3?</span>
+              <span class="faq-chevron" aria-hidden="true">+</span>
+            </summary>
+            <div class="faq-answer">
+              <p><strong>Absolutely not.</strong> All core concepts can be explored on free test networks (such as Sepolia or Polygon Amoy) using free testnet tokens from faucets, or in local simulated sandboxes like the Aether Interactive Lab. You should never risk real funds while learning.</p>
+            </div>
+          </details>
+
+          <details class="faq-drawer">
+            <summary class="faq-summary">
+              <span class="faq-question">What is a seed phrase and why is it so important?</span>
+              <span class="faq-chevron" aria-hidden="true">+</span>
+            </summary>
+            <div class="faq-answer">
+              <p>A seed phrase (usually 12 or 24 words) is a human-readable mathematical representation of your wallet's master private key. Anyone who learns these words can instantly steal all funds across every account derived from that wallet. Real applications and developers will <strong>never</strong> ask for your seed phrase.</p>
+            </div>
+          </details>
+
+          <details class="faq-drawer">
+            <summary class="faq-summary">
+              <span class="faq-question">Can someone reverse a blockchain transaction if I make a mistake?</span>
+              <span class="faq-chevron" aria-hidden="true">+</span>
+            </summary>
+            <div class="faq-answer">
+              <p><strong>No.</strong> Blockchains are append-only cryptographic ledgers. Once a transaction is validated and included in a block, it is permanent and irreversible. The only way to retrieve sent funds is if the recipient voluntarily chooses to send them back.</p>
+            </div>
+          </details>
+
+          <details class="faq-drawer">
+            <summary class="faq-summary">
+              <span class="faq-question">What is the fundamental difference between Web2 and Web3?</span>
+              <span class="faq-chevron" aria-hidden="true">+</span>
+            </summary>
+            <div class="faq-answer">
+              <p>In Web2, centralized platforms own your account, host your data on private cloud servers, and control financial rails. In Web3, you log in using your cryptographic keypair, digital assets reside on public verifiable ledgers, and transactions run through open-source smart contracts without corporate intermediaries.</p>
+            </div>
+          </details>
+
+          <details class="faq-drawer">
+            <summary class="faq-summary">
+              <span class="faq-question">What happens if a company running a dApp goes out of business?</span>
+              <span class="faq-chevron" aria-hidden="true">+</span>
+            </summary>
+            <div class="faq-answer">
+              <p>Because smart contracts and digital assets are anchored directly on a decentralized blockchain rather than the company's private server, the logic and your token balances remain fully intact. Even if the company's web frontend shuts down, anyone can build a new interface or interact directly with the smart contract.</p>
+            </div>
+          </details>
+
+          <details class="faq-drawer">
+            <summary class="faq-summary">
+              <span class="faq-question">Why do blockchain transactions cost gas fees?</span>
+              <span class="faq-chevron" aria-hidden="true">+</span>
+            </summary>
+            <div class="faq-answer">
+              <p>Gas compensates independent validator nodes across the world for the compute cycles, bandwidth, and storage required to process and store your transaction. It also prevents malicious actors from flooding the network with denial-of-service loops.</p>
+            </div>
+          </details>
+
+          <details class="faq-drawer">
+            <summary class="faq-summary">
+              <span class="faq-question">How do hardware wallets protect private keys?</span>
+              <span class="faq-chevron" aria-hidden="true">+</span>
+            </summary>
+            <div class="faq-answer">
+              <p>A hardware wallet stores your private keys inside a physical, air-gapped Secure Element chip that never exposes the keys to your computer or internet browser. When you authorize a transaction, the hardware signs the payload internally and sends only the finished cryptographic signature back to the computer.</p>
+            </div>
+          </details>
+
+        </div>
+      </section>
+
+      <!-- SECTION 3: OFFICIAL GETTING STARTED LINKS -->
+      <section class="links-section" aria-labelledby="heading-links">
+        <div class="section-title-wrap text-center">
+          <span class="eyebrow-pill">Verified Sources</span>
+          <h2 id="heading-links" class="section-title">Getting Started: Official Resources</h2>
+          <p class="section-subtitle">We only link to verified, primary open-source projects and developer portals. Never trust unverified third-party mirrors.</p>
+        </div>
+
+        <div class="official-links-grid">
+          
+          <a href="https://ethereum.org" target="_blank" rel="noopener noreferrer" class="official-link-card">
+            <div class="official-link-card__icon">
+              <svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            </div>
+            <div class="official-link-card__body">
+              <div class="link-title-row">
+                <h3 class="link-title">Ethereum.org</h3>
+                <span class="link-arrow">&rarr;</span>
+              </div>
+              <p class="link-desc">The official community portal for Ethereum. Comprehensive guides on smart contracts, staking, wallets, and layer 2 scaling.</p>
+              <span class="link-url-tag">ethereum.org</span>
+            </div>
+          </a>
+
+          <a href="https://metamask.io" target="_blank" rel="noopener noreferrer" class="official-link-card">
+            <div class="official-link-card__icon">
+              <svg viewBox="0 0 24 24"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"></path><path d="M4 6v12a2 2 0 0 0 2 2h14v-4"></path><path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"></path></svg>
+            </div>
+            <div class="official-link-card__body">
+              <div class="link-title-row">
+                <h3 class="link-title">MetaMask.io</h3>
+                <span class="link-arrow">&rarr;</span>
+              </div>
+              <p class="link-desc">Official portal and Security Help Center for the most widely adopted browser self-custody wallet extension.</p>
+              <span class="link-url-tag">metamask.io</span>
+            </div>
+          </a>
+
+          <a href="https://bitcoin.org" target="_blank" rel="noopener noreferrer" class="official-link-card">
+            <div class="official-link-card__icon">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><line x1="12" y1="6" x2="12" y2="8"></line><line x1="12" y1="16" x2="12" y2="18"></line></svg>
+            </div>
+            <div class="official-link-card__body">
+              <div class="link-title-row">
+                <h3 class="link-title">Bitcoin.org</h3>
+                <span class="link-arrow">&rarr;</span>
+              </div>
+              <p class="link-desc">The original educational resource created by Satoshi Nakamoto and Martti Malmi, hosting the 2008 Bitcoin Whitepaper.</p>
+              <span class="link-url-tag">bitcoin.org</span>
+            </div>
+          </a>
+
+          <a href="https://ipfs.tech" target="_blank" rel="noopener noreferrer" class="official-link-card">
+            <div class="official-link-card__icon">
+              <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+            </div>
+            <div class="official-link-card__body">
+              <div class="link-title-row">
+                <h3 class="link-title">IPFS Documentation</h3>
+                <span class="link-arrow">&rarr;</span>
+              </div>
+              <p class="link-desc">Learn how decentralized, content-addressed peer-to-peer storage functions with the InterPlanetary File System.</p>
+              <span class="link-url-tag">ipfs.tech</span>
+            </div>
+          </a>
+
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Back to Top Button -->
+  <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+    <svg viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+  </button>
+
+  <!-- Shared Injected Clean Footer via js/layout.js -->
+  <footer id="site-footer"></footer>
+
+  <!-- Classic Deferred Scripts (Zero external build tools, 100% file:/// support) -->
+  <script src="js/vendor/three.min.js" defer></script>
+  <script src="js/scene3d.js" defer></script>
+  <script src="js/layout.js" defer></script>
+  <script src="js/wallet.js" defer></script>
+  <script src="js/motion.js" defer></script>
+  <script src="js/resources.js" defer></script>
+</body>
+</html>

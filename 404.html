@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>404 — Block Not Found — Aether Education</title>
+  <meta name="description" content="The requested cryptographic state or page does not exist on this ledger. Return to Aether Education Home or explore the Core Concepts curriculum.">
+  <meta name="robots" content="noindex, follow">
+
+  <!-- Google Fonts: Montserrat (headings) & Inter (body) & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Shared Modular CSS System -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body class="notfound-body">
+  <!-- Accessible Skip to Content Link -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Fixed Gradient Scroll Progress Bar -->
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <!-- Shared Single Full-Viewport Three.js 3D Background Canvas -->
+  <canvas id="scene3d" aria-hidden="true"></canvas>
+
+  <!-- Fallback CSS Animated Aurora Blobs -->
+  <div class="css-aurora-fallback" aria-hidden="true">
+    <div class="css-aurora-blob css-aurora-blob--1"></div>
+    <div class="css-aurora-blob css-aurora-blob--2"></div>
+  </div>
+
+  <!-- Shared Injected Floating Navbar via js/layout.js -->
+  <header id="site-header"></header>
+
+  <!-- Main Content Area -->
+  <main id="main-content" class="notfound-page">
+    <div class="container">
+      <div class="notfound-card">
+        
+        <!-- Animated Broken Chain Graphic -->
+        <div class="broken-chain-graphic" aria-hidden="true">
+          <svg viewBox="0 0 160 120" width="160" height="120" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <!-- Left Link -->
+            <g class="chain-link chain-link--left">
+              <rect x="20" y="44" width="46" height="32" rx="16" stroke="#FFFFFF"/>
+              <line x1="66" y1="60" x2="74" y2="60" stroke="#FFFFFF" stroke-dasharray="2 4"/>
+            </g>
+            <!-- Severed Fracture Sparkles -->
+            <g class="chain-fracture">
+              <line x1="78" y1="52" x2="84" y2="44" stroke="#EF4444" stroke-width="2"/>
+              <line x1="77" y1="68" x2="83" y2="76" stroke="#EF4444" stroke-width="2"/>
+              <circle cx="80" cy="60" r="2.5" fill="#EF4444"/>
+            </g>
+            <!-- Right Link -->
+            <g class="chain-link chain-link--right">
+              <rect x="94" y="44" width="46" height="32" rx="16" stroke="#A0AEC0"/>
+              <line x1="86" y1="60" x2="94" y2="60" stroke="#A0AEC0" stroke-dasharray="2 4"/>
+            </g>
+          </svg>
+        </div>
+
+        <span class="notfound-error-code">ERROR 404 &bull; STATE NULL</span>
+        <h1 class="notfound-title">Block Not Found in Ledger</h1>
+        <p class="notfound-desc">
+          The URI or transaction hash you requested has not been validated on this network. It may have been reorganized, moved, or never existed in state history.
+        </p>
+
+        <div class="notfound-actions">
+          <a href="index.html" class="btn btn--primary btn--md">
+            <span>Return to Homepage</span>
+          </a>
+          <a href="learn.html" class="btn btn--secondary btn--md">
+            <span>Explore Core Concepts &rarr;</span>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Back to Top Button -->
+  <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+    <svg viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+  </button>
+
+  <!-- Shared Injected Clean Footer via js/layout.js -->
+  <footer id="site-footer"></footer>
+
+  <!-- Classic Deferred Scripts -->
+  <script src="js/vendor/three.min.js" defer></script>
+  <script src="js/scene3d.js" defer></script>
+  <script src="js/layout.js" defer></script>
+  <script src="js/wallet.js" defer></script>
+  <script src="js/motion.js" defer></script>
+</body>
+</html>
