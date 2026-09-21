@@ -329,6 +329,15 @@
         btn.classList.remove('is-active');
       }
     });
+
+    notifyStateChange();
+  }
+
+  function notifyStateChange(extra) {
+    try {
+      var detail = Object.assign({}, state, extra || {});
+      window.dispatchEvent(new CustomEvent('aether:walletState', { detail: detail }));
+    } catch (e) {}
   }
 
   function syncWalletPill() {
@@ -378,8 +387,9 @@
         })
         .catch(function (error) {
           state.isConnecting = false;
+          notifyStateChange({ error: error });
           if (error.code === 4001) {
-            Aether.showToast('Connection rejected by user.');
+            Aether.showToast('Connection rejected by user (4001).');
           } else if (error.code === -32002) {
             Aether.showToast('Request already pending in MetaMask.');
           } else {
@@ -597,6 +607,9 @@
     getState: function () { return Object.assign({}, state); },
     openModal: openWalletModal,
     closeModal: closeWalletModal,
+    hasEthereum: hasEthereum,
+    activateDemoMode: activateDemoMode,
+    truncateAddress: truncateAddress,
     NETWORKS: NETWORKS
   };
 

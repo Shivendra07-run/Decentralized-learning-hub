@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Web3 Wallet Portal &amp; Safety Guide — Aether Education</title>
+  <meta name="description" content="Connect your Web3 wallet (MetaMask), inspect multi-chain balances, test gasless cryptographic signatures, and review essential wallet security practices.">
+  <meta name="keywords" content="MetaMask connection, Web3 wallet, sign personal message, Sepolia, Polygon Amoy, seed phrase safety, hardware wallet">
+  <meta name="author" content="Aether Education">
+
+  <!-- Open Graph Meta -->
+  <meta property="og:title" content="Web3 Wallet Portal &amp; Safety Guide — Aether Education">
+  <meta property="og:description" content="Connect MetaMask, switch EVM networks, test cryptographic signatures, and review self-custody safety guidelines.">
+  <meta property="og:type" content="website">
+
+  <!-- Google Fonts: Montserrat (headings) & Inter (body) & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Shared Modular CSS System -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body class="wallet-body">
+  <!-- Accessible Skip to Content Link -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Fixed Gradient Scroll Progress Bar -->
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <!-- Shared Single Full-Viewport Three.js 3D Background Canvas -->
+  <canvas id="scene3d" aria-hidden="true"></canvas>
+
+  <!-- Fallback CSS Animated Aurora Blobs -->
+  <div class="css-aurora-fallback" aria-hidden="true">
+    <div class="css-aurora-blob css-aurora-blob--1"></div>
+    <div class="css-aurora-blob css-aurora-blob--2"></div>
+  </div>
+
+  <!-- Shared Injected Floating Navbar via js/layout.js -->
+  <header id="site-header"></header>
+
+  <!-- Main Content Area -->
+  <main id="main-content" class="wallet-page">
+    <div class="container">
+
+      <!-- Hero Header -->
+      <header class="wallet-hero-header">
+        <div class="eyebrow-pill reveal-on-scroll">
+          <span>✦</span>
+          <span>Self-Custody &amp; Identity</span>
+        </div>
+        <h1 class="hero-headline">
+          <span class="hero-line"><span class="hero-line-inner">Web3 Wallet Portal &amp;</span></span>
+          <span class="hero-line"><span class="hero-line-inner"><span class="text-accent-gradient">Security Guide</span></span></span>
+        </h1>
+        <p class="hero-subtitle reveal-on-scroll">
+          Connect your browser wallet, switch between test networks, test gasless message signing, and learn how to protect your cryptographic keys.
+        </p>
+
+        <!-- Testing Environment Notice Banner -->
+        <div class="wallet-env-notice" role="note">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          <span><strong>Developer Note:</strong> To test MetaMask integration, run this page on a local web server (e.g. VS Code Live Server) or GitHub Pages. Browser extensions cannot inject <code>window.ethereum</code> into raw <code>file://</code> URLs.</span>
+        </div>
+      </header>
+
+      <!-- Main Two-Column Layout: Wallet Card on Left, Security & Signing on Right -->
+      <div class="wallet-portal-grid">
+
+        <!-- Column 1: Active Wallet State Card -->
+        <section class="wallet-console-card" aria-labelledby="heading-wallet-console">
+          <div class="console-card-header">
+            <h2 id="heading-wallet-console" class="console-card-title">Wallet Console</h2>
+            <div class="console-status-pill" id="portal-status-pill">Disconnected</div>
+          </div>
+
+          <!-- Live Status Notification Banner -->
+          <div class="portal-status-banner" id="portal-status-banner" aria-live="polite">
+            <span class="status-icon-wrap" id="portal-status-icon"></span>
+            <span id="portal-status-text">MetaMask is not connected. Click below to initiate connection.</span>
+          </div>
+
+          <!-- View A: Disconnected View -->
+          <div class="portal-unconnected-stage" id="portal-unconnected-stage">
+            <div class="portal-unconnected-box">
+              <div class="portal-icon-ring">
+                <!-- Wallet Icon -->
+                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"></path><path d="M4 6v12a2 2 0 0 0 2 2h14v-4"></path><path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"></path></svg>
+              </div>
+              <h3 class="unconnected-prompt-title">Connect Your Wallet</h3>
+              <p class="unconnected-prompt-desc">
+                Authenticate with MetaMask to read your public address and query your balance on Ethereum, Sepolia, or Polygon Amoy.
+              </p>
+
+              <div class="portal-cta-buttons">
+                <button type="button" class="btn btn--primary btn--md" id="btn-portal-connect">
+                  <span>Connect with MetaMask</span>
+                </button>
+
+                <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer" class="btn btn--secondary btn--md" id="btn-portal-install" style="display:none;">
+                  <span>Install MetaMask &rarr;</span>
+                </a>
+
+                <button type="button" class="btn btn--secondary btn--md" id="btn-portal-demo">
+                  <span>Try demo wallet (Simulation)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- View B: Connected View -->
+          <div class="portal-connected-stage" id="portal-connected-stage" style="display:none;">
+            <!-- Simulation Badge if in Demo Mode -->
+            <div class="portal-demo-badge-bar" id="portal-demo-alert" style="display:none;">
+              <span class="widget-demo-tag">Simulation Mode</span>
+              <span>Running in simulated sandbox. No actual transactions or real keys.</span>
+            </div>
+
+            <!-- Address and Copy Row -->
+            <div class="portal-data-row">
+              <span class="portal-field-label">Connected Address</span>
+              <div class="address-copy-group">
+                <div class="identicon-slot" id="portal-identicon"></div>
+                <strong class="portal-full-address" id="portal-address-display">0x0000...0000</strong>
+                <button type="button" class="btn btn--secondary btn--xs" id="btn-copy-address" aria-label="Copy wallet address to clipboard">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  <span id="copy-btn-text">Copy</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Network & Balance Row -->
+            <div class="portal-stats-cards-grid">
+              <div class="portal-metric-card">
+                <span class="portal-field-label">Active Network</span>
+                <strong class="metric-val" id="portal-network-name">Ethereum Mainnet</strong>
+                <span class="metric-sub" id="portal-chain-id">Chain ID: 0x1</span>
+              </div>
+              <div class="portal-metric-card">
+                <span class="portal-field-label">Current Balance</span>
+                <strong class="metric-val" id="portal-balance-display">0.0000</strong>
+                <span class="metric-sub" id="portal-currency-symbol">ETH</span>
+              </div>
+            </div>
+
+            <!-- Network Switcher -->
+            <div class="portal-networks-section">
+              <span class="portal-field-label">Switch EVM Network</span>
+              <div class="portal-network-buttons" role="group" aria-label="Select EVM network">
+                <button type="button" class="network-portal-btn is-active" data-chain-id="0x1">
+                  <span>Ethereum Mainnet</span>
+                </button>
+                <button type="button" class="network-portal-btn" data-chain-id="0xaa36a7">
+                  <span>Sepolia Testnet</span>
+                </button>
+                <button type="button" class="network-portal-btn" data-chain-id="0x13882">
+                  <span>Polygon Amoy Testnet</span>
+                </button>
+              </div>
+              <small class="portal-network-hint">Uses <code>wallet_switchEthereumChain</code>, with automatic <code>wallet_addEthereumChain</code> for Amoy.</small>
+            </div>
+
+            <!-- Disconnect Button & Honest Explainer -->
+            <div class="portal-disconnect-row">
+              <button type="button" class="btn btn--secondary btn--sm" id="btn-portal-disconnect">
+                <span>Disconnect App</span>
+              </button>
+              <span class="disconnect-honest-note">
+                Disconnecting clears this website's session. In MetaMask, your wallet stays unlocked and you can revoke site permissions under Connected Sites.
+              </span>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- Column 2: Gasless Message Signer -->
+        <section class="wallet-action-card" aria-labelledby="heading-sign-card">
+          <div class="console-card-header">
+            <h2 id="heading-sign-card" class="console-card-title">Cryptographic Message Signer</h2>
+            <span class="widget-demo-tag">Gasless (Free)</span>
+          </div>
+
+          <p class="action-card-desc">
+            Test proof-of-identity. By signing a text message with your private key using <code>personal_sign</code>, you prove you control this address. <strong>Signing costs 0 gas and transfers no money.</strong>
+          </p>
+
+          <div class="sign-form-group">
+            <label for="sign-message-input" class="form-label">Message to Sign</label>
+            <textarea id="sign-message-input" class="sign-text-input" rows="3">Aether Education: I am verifying my cryptographic address.</textarea>
+          </div>
+
+          <button type="button" class="btn btn--primary btn--sm" id="btn-sign-message" style="width:100%;">
+            <span>Sign Message with Wallet</span>
+          </button>
+
+          <!-- Signature Output -->
+          <div class="signature-output-box" id="signature-output-box" style="display:none;" aria-live="polite">
+            <div class="sig-header">
+              <span>Cryptographic ECDSA Signature:</span>
+              <span class="sig-valid-badge">&#10003; Valid Signature</span>
+            </div>
+            <div class="sig-code-display" id="signature-hex-display">0x...</div>
+            <p class="sig-explainer">
+              Anyone with your public address can mathematically verify that this string was produced by your private key, without ever seeing your key.
+            </p>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Wallet Safety Guide Section -->
+      <section class="wallet-safety-section" aria-labelledby="heading-safety">
+        <div class="section-title-wrap text-center">
+          <span class="eyebrow-pill">Security First</span>
+          <h2 id="heading-safety" class="section-title">Wallet Safety &amp; Self-Custody Rules</h2>
+          <p class="section-subtitle">
+            With great sovereignty comes absolute personal responsibility. Follow these non-negotiable security principles to safeguard your digital property.
+          </p>
+        </div>
+
+        <div class="safety-cards-grid">
+          
+          <div class="safety-card">
+            <div class="safety-card__icon">
+              <!-- Key Glyph -->
+              <svg viewBox="0 0 24 24"><path d="M21 2l-2 2m-1.5 1.5L14 9l-2-2-4 4 2 2-2 2-2-2-4 4a5 5 0 0 0 7 7l4-4-2-2 2-2 2 2 4-4-2-2 3.5-3.5z"></path></svg>
+            </div>
+            <h3 class="safety-card__title">Never Share Your Seed Phrase</h3>
+            <p class="safety-card__desc">
+              Your 12 or 24-word recovery phrase is the master key to all your accounts. Anyone who knows it can take all your funds instantly. Write it down on paper and store it offline.
+            </p>
+          </div>
+
+          <div class="safety-card">
+            <div class="safety-card__icon">
+              <!-- Shield Check Glyph -->
+              <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            </div>
+            <h3 class="safety-card__title">MetaMask Never Asks for It</h3>
+            <p class="safety-card__desc">
+              No genuine customer support agent, developer, admin, or website will ever ask for your secret recovery phrase. Any pop-up or email asking for your seed phrase is an outright phishing scam.
+            </p>
+          </div>
+
+          <div class="safety-card">
+            <div class="safety-card__icon">
+              <!-- Alert Octagon Glyph -->
+              <svg viewBox="0 0 24 24"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            </div>
+            <h3 class="safety-card__title">Beware of Fake Sites &amp; DMs</h3>
+            <p class="safety-card__desc">
+              Scammers clone popular DEXs and NFT marketplaces with lookalike domain names (e.g. <code>app.unisvvap.com</code>). Always bookmark official URLs and never click links in direct messages.
+            </p>
+          </div>
+
+          <div class="safety-card">
+            <div class="safety-card__icon">
+              <!-- Check URL / Lock Glyph -->
+              <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </div>
+            <h3 class="safety-card__title">Check the URL &amp; Signatures</h3>
+            <p class="safety-card__desc">
+              Carefully inspect the signature prompt in MetaMask before clicking confirm. Beware of <code>setApprovalForAll</code> or permit signatures from unknown contracts, which grant permission to drain tokens.
+            </p>
+          </div>
+
+          <div class="safety-card">
+            <div class="safety-card__icon">
+              <!-- Testnet / Flask Glyph -->
+              <svg viewBox="0 0 24 24"><path d="M10 2v7.31L4.62 18.2A2 2 0 0 0 6.36 21h11.28a2 2 0 0 0 1.74-2.8L14 9.31V2"></path><line x1="8.5" y1="2" x2="15.5" y2="2"></line><line x1="7.5" y1="14" x2="16.5" y2="14"></line></svg>
+            </div>
+            <h3 class="safety-card__title">Use Test Networks to Learn</h3>
+            <p class="safety-card__desc">
+              Practice transactions on testnets like Sepolia or Polygon Amoy first. Testnet coins are free from public faucets and have no financial value, making them the safest training ground.
+            </p>
+          </div>
+
+          <div class="safety-card">
+            <div class="safety-card__icon">
+              <!-- Hardware Wallet / CPU Glyph -->
+              <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
+            </div>
+            <h3 class="safety-card__title">Hardware Wallets for Value</h3>
+            <p class="safety-card__desc">
+              For meaningful amounts of capital, use a physical hardware wallet (e.g. Ledger, Trezor). A hardware wallet isolates your private keys on a dedicated secure offline chip that never touches your browser.
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Back to Top Button -->
+  <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+    <svg viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+  </button>
+
+  <!-- Shared Injected Clean Footer via js/layout.js -->
+  <footer id="site-footer"></footer>
+
+  <!-- Classic Deferred Scripts (Zero external build tools, 100% file:/// support) -->
+  <script src="js/vendor/three.min.js" defer></script>
+  <script src="js/scene3d.js" defer></script>
+  <script src="js/layout.js" defer></script>
+  <script src="js/wallet.js" defer></script>
+  <script src="js/motion.js" defer></script>
+  <script src="js/wallet-page.js" defer></script>
+</body>
+</html>
