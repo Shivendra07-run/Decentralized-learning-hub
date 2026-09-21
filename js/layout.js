@@ -28,7 +28,7 @@
   var NAV_ITEMS = [
     { name: 'Home', href: 'index.html' },
     { name: 'Learn', href: 'learn.html' },
-    { name: 'Compare', href: 'web2-vs-web3.html' },
+    { name: 'Compare', href: 'compare.html' },
     { name: 'Lab', href: 'lab.html' },
     { name: 'Market', href: 'market.html' },
     { name: 'Wallet', href: 'wallet.html' },

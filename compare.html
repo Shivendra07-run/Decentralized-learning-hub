@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Web2 vs Web3 Architecture Comparison — Aether Education</title>
+  <meta name="description" content="An honest, architectural comparison of Web2 centralized infrastructure versus Web3 decentralized protocols. Explore network topologies, trade-offs, and practical selection criteria.">
+  <meta name="keywords" content="Web2 vs Web3, centralized vs decentralized, client server, peer to peer, crypto trade-offs, blockchain comparison">
+  <meta name="author" content="Aether Education">
+
+  <!-- Open Graph Meta -->
+  <meta property="og:title" content="Web2 vs Web3 Architecture Comparison — Aether Education">
+  <meta property="og:description" content="Interactive network topology diagram, side-by-side architectural comparison, and honest trade-offs between Web2 and Web3.">
+  <meta property="og:type" content="website">
+
+  <!-- Google Fonts: Montserrat (headings) & Inter (body) & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Shared Modular CSS System -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body class="compare-body">
+  <!-- Accessible Skip to Content Link -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Fixed Gradient Scroll Progress Bar -->
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <!-- Shared Single Full-Viewport Three.js 3D Background Canvas -->
+  <canvas id="scene3d" aria-hidden="true"></canvas>
+
+  <!-- Fallback CSS Animated Aurora Blobs -->
+  <div class="css-aurora-fallback" aria-hidden="true">
+    <div class="css-aurora-blob css-aurora-blob--1"></div>
+    <div class="css-aurora-blob css-aurora-blob--2"></div>
+  </div>
+
+  <!-- Shared Injected Floating Navbar via js/layout.js -->
+  <header id="site-header"></header>
+
+  <!-- Main Content Area -->
+  <main id="main-content" class="compare-page">
+    <div class="container">
+
+      <!-- Hero Header -->
+      <header class="compare-hero-header">
+        <div class="eyebrow-pill reveal-on-scroll">
+          <span>✦</span>
+          <span>Architectural Breakdown</span>
+        </div>
+        <h1 class="hero-headline">
+          <span class="hero-line"><span class="hero-line-inner">Comparing Web2 &amp;</span></span>
+          <span class="hero-line"><span class="hero-line-inner"><span class="text-accent-gradient">Web3 Paradigms</span></span></span>
+        </h1>
+        <p class="hero-subtitle reveal-on-scroll">
+          A neutral, clear comparison between centralized cloud platforms and decentralized cryptographic networks. No hype, no buzzwords—just honest architecture and engineering trade-offs.
+        </p>
+      </header>
+
+      <!-- Centerpiece Interactive Section -->
+      <section class="compare-interactive-stage" aria-labelledby="heading-topology">
+        
+        <!-- Header & Big Master Switch -->
+        <div class="compare-switch-wrapper">
+          <div class="compare-switch-label-col">
+            <span class="compare-switch-eyebrow">Interactive Paradigm Switch</span>
+            <h2 id="heading-topology" class="compare-switch-title">Select Active Model</h2>
+          </div>
+
+          <!-- Accessible Master Switch -->
+          <div class="compare-switch-control" role="group" aria-label="Web2 and Web3 paradigm toggle">
+            <button type="button" 
+                    id="btn-switch-web2" 
+                    class="compare-toggle-btn is-active" 
+                    aria-pressed="true"
+                    aria-controls="network-diagram-canvas comparison-grid-container">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+              <span>Web2 (Centralized)</span>
+            </button>
+
+            <button type="button" 
+                    id="btn-switch-web3" 
+                    class="compare-toggle-btn" 
+                    aria-pressed="false"
+                    aria-controls="network-diagram-canvas comparison-grid-container">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+              <span>Web3 (Decentralized)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 2D Canvas Animated Network Topology Diagram -->
+        <div class="compare-diagram-card">
+          <div class="compare-diagram-card__header">
+            <div class="compare-diagram-status">
+              <span class="compare-status-dot" id="diagram-status-dot" aria-hidden="true"></span>
+              <span id="diagram-mode-title" class="compare-status-text">Centralized Client-Server Architecture (Web2)</span>
+            </div>
+            <div class="widget-demo-tag" aria-label="Interactive simulation indicator">Simulation</div>
+          </div>
+
+          <div class="compare-canvas-container">
+            <canvas id="network-diagram-canvas" width="800" height="340" aria-label="Network topology visualization: Centralized server in Web2 mode morphs into decentralized peer mesh in Web3 mode" role="img"></canvas>
+          </div>
+
+          <div class="compare-diagram-legend" id="diagram-legend" aria-live="polite">
+            <div class="legend-item">
+              <span class="legend-color legend-color--server" id="legend-server-icon"></span>
+              <span id="legend-server-text">Central Cloud Server (Single Authority &amp; Point of Failure)</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color legend-color--client"></span>
+              <span id="legend-client-text">User Endpoints (Clients requesting data &amp; authentication)</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color legend-color--packet"></span>
+              <span>Data Traffic &amp; Consensus Packets</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Morphing Comparison Grid -->
+        <div class="compare-grid-header">
+          <h3 class="compare-grid-headline">Direct Pillar Comparison</h3>
+          <p class="compare-grid-sub">Watch how each fundamental architectural layer transforms when switching paradigms:</p>
+        </div>
+
+        <div class="comparison-grid" id="comparison-grid-container" aria-live="polite">
+          
+          <!-- Row 1: Login & Identity -->
+          <div class="compare-row-card" data-row="0">
+            <div class="compare-row-card__icon-col">
+              <div class="compare-icon-badge">
+                <!-- User ID Glyph -->
+                <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              </div>
+              <span class="compare-row-num">01</span>
+            </div>
+            <div class="compare-row-card__main">
+              <div class="compare-row-title-row">
+                <h4 class="compare-row-title">Login and Identity</h4>
+                <span class="compare-state-pill" id="badge-row-0">Centralized Account</span>
+              </div>
+              <div class="compare-morph-content" id="content-row-0">
+                <p class="compare-desc">
+                  You sign in using an email, password, or third-party OAuth (Sign in with Google/Apple). The platform issues session tokens and maintains full power to freeze, reset, or delete your credentials at will.
+                </p>
+                <div class="compare-detail-footer">
+                  <span class="detail-key">Mechanic:</span>
+                  <span class="detail-val">Relational DB, salted hashes, corporate OAuth providers</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 2: Who Owns Your Data -->
+          <div class="compare-row-card" data-row="1">
+            <div class="compare-row-card__icon-col">
+              <div class="compare-icon-badge">
+                <!-- Database / Storage Glyph -->
+                <svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+              </div>
+              <span class="compare-row-num">02</span>
+            </div>
+            <div class="compare-row-card__main">
+              <div class="compare-row-title-row">
+                <h4 class="compare-row-title">Who Owns Your Data</h4>
+                <span class="compare-state-pill" id="badge-row-1">Corporate Custody</span>
+              </div>
+              <div class="compare-morph-content" id="content-row-1">
+                <p class="compare-desc">
+                  Your photos, social graphs, post history, and documents live on company-owned cloud databases. Platforms monetize your behavioral telemetry and can revoke your access to your audience without warning.
+                </p>
+                <div class="compare-detail-footer">
+                  <span class="detail-key">Mechanic:</span>
+                  <span class="detail-val">Proprietary silos, Terms of Service agreements, data brokers</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 3: How Payments Work -->
+          <div class="compare-row-card" data-row="2">
+            <div class="compare-row-card__icon-col">
+              <div class="compare-icon-badge">
+                <!-- Payment / Card Glyph -->
+                <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+              </div>
+              <span class="compare-row-num">03</span>
+            </div>
+            <div class="compare-row-card__main">
+              <div class="compare-row-title-row">
+                <h4 class="compare-row-title">How Payments Work</h4>
+                <span class="compare-state-pill" id="badge-row-2">Intermediated Rails</span>
+              </div>
+              <div class="compare-morph-content" id="content-row-2">
+                <p class="compare-desc">
+                  Transactions route through card networks, clearinghouses, and banking rails (Visa, Stripe, SWIFT). Payments take 1–3 business days to clear, incur 2–4% processing fees, and can be chargebacked or blocked.
+                </p>
+                <div class="compare-detail-footer">
+                  <span class="detail-key">Mechanic:</span>
+                  <span class="detail-val">Correspondent banking, merchant processors, credit checks</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 4: Who You Have to Trust -->
+          <div class="compare-row-card" data-row="3">
+            <div class="compare-row-card__icon-col">
+              <div class="compare-icon-badge">
+                <!-- Shield / Trust Glyph -->
+                <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              </div>
+              <span class="compare-row-num">04</span>
+            </div>
+            <div class="compare-row-card__main">
+              <div class="compare-row-title-row">
+                <h4 class="compare-row-title">Who You Have to Trust</h4>
+                <span class="compare-state-pill" id="badge-row-3">Trusted Intermediaries</span>
+              </div>
+              <div class="compare-morph-content" id="content-row-3">
+                <p class="compare-desc">
+                  You trust corporate executives, internal database administrators, cloud providers, and legal contracts not to leak your data, alter account balances, or change API policies unexpectedly.
+                </p>
+                <div class="compare-detail-footer">
+                  <span class="detail-key">Mechanic:</span>
+                  <span class="detail-val">Legal jurisdiction, corporate compliance, closed-source audits</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 5: Censorship Resistance -->
+          <div class="compare-row-card" data-row="4">
+            <div class="compare-row-card__icon-col">
+              <div class="compare-icon-badge">
+                <!-- Lock / Unlock Glyph -->
+                <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              </div>
+              <span class="compare-row-num">05</span>
+            </div>
+            <div class="compare-row-card__main">
+              <div class="compare-row-title-row">
+                <h4 class="compare-row-title">Censorship Resistance</h4>
+                <span class="compare-state-pill" id="badge-row-4">Centralized Control</span>
+              </div>
+              <div class="compare-morph-content" id="content-row-4">
+                <p class="compare-desc">
+                  Content, accounts, and financial accounts can be deplatformed, frozen, or geo-restricted at the discretion of platform owners, court subpoenas, or payment processor bans.
+                </p>
+                <div class="compare-detail-footer">
+                  <span class="detail-key">Mechanic:</span>
+                  <span class="detail-val">DNS blacklisting, account deactivation, database deletion</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 6: What Happens When a Server Fails -->
+          <div class="compare-row-card" data-row="5">
+            <div class="compare-row-card__icon-col">
+              <div class="compare-icon-badge">
+                <!-- Server Crash / Network Alert Glyph -->
+                <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+              </div>
+              <span class="compare-row-num">06</span>
+            </div>
+            <div class="compare-row-card__main">
+              <div class="compare-row-title-row">
+                <h4 class="compare-row-title">What Happens When a Server Fails</h4>
+                <span class="compare-state-pill" id="badge-row-5">Service Outage</span>
+              </div>
+              <div class="compare-morph-content" id="content-row-5">
+                <p class="compare-desc">
+                  If the hosting provider (e.g. AWS, Cloudflare) experiences an outage, or if the application's central database crashes, the entire application becomes unreachable for all global users simultaneously.
+                </p>
+                <div class="compare-detail-footer">
+                  <span class="detail-key">Mechanic:</span>
+                  <span class="detail-val">Single point of failure (SPOF), regional data center outages</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Honest Trade-Offs Section -->
+      <section class="compare-tradeoffs-section" aria-labelledby="heading-tradeoffs">
+        <div class="section-title-wrap text-center">
+          <span class="eyebrow-pill">Unbiased Analysis</span>
+          <h2 id="heading-tradeoffs" class="section-title">Honest Engineering Trade-Offs</h2>
+          <p class="section-subtitle">
+            Every architectural decision involves compromises. Web3 solves censorship and custody, but incurs real friction. Web2 sacrifices sovereignty for unmatched speed and seamless recovery.
+          </p>
+        </div>
+
+        <div class="tradeoffs-grid">
+          
+          <!-- Web3 Downsides Card -->
+          <div class="tradeoff-card tradeoff-card--warning">
+            <div class="tradeoff-card__head">
+              <div class="tradeoff-card__icon">
+                <!-- Alert Triangle Glyph -->
+                <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+              </div>
+              <h3 class="tradeoff-card__title">Real Downsides of Web3</h3>
+            </div>
+            <ul class="tradeoff-list">
+              <li>
+                <strong>Transaction Fees (Gas):</strong> Every write to a public blockchain requires computing fees paid to network validators, which can spike during high congestion.
+              </li>
+              <li>
+                <strong>Slower Execution Speeds:</strong> Global consensus requires thousands of nodes to independently compute and verify blocks, inherently slower than a centralized PostgreSQL database.
+              </li>
+              <li>
+                <strong>Unforgiving Key Recovery:</strong> True self-custody means there is no "Forgot Password" link or corporate helpdesk. Losing your private seed phrase means permanently losing your assets.
+              </li>
+              <li>
+                <strong>Phishing &amp; Smart Contract Vulnerabilities:</strong> Malicious signatures and un-audited contract bugs can drain funds irrecoverably with no central fraud department to reverse charges.
+              </li>
+              <li>
+                <strong>Steep UX Learning Curve:</strong> Dealing with public keys, gas optimization, RPC networks, and hardware wallets remains confusing for non-technical users.
+              </li>
+            </ul>
+          </div>
+
+          <!-- Web2 Strengths Card -->
+          <div class="tradeoff-card tradeoff-card--success">
+            <div class="tradeoff-card__head">
+              <div class="tradeoff-card__icon">
+                <!-- Zap / Check Glyph -->
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+              </div>
+              <h3 class="tradeoff-card__title">Real Strengths of Web2</h3>
+            </div>
+            <ul class="tradeoff-list">
+              <li>
+                <strong>Instant Throughput:</strong> Centralized databases can handle hundreds of thousands of transactions per second (e.g., Visa, Twitter) with sub-millisecond roundtrips.
+              </li>
+              <li>
+                <strong>Seamless Customer Support:</strong> If you forget your password, get scammed, or suspect unauthorized activity, human customer service can freeze accounts and reset access.
+              </li>
+              <li>
+                <strong>Familiar, Frictionless UX:</strong> Free signups via Google, frictionless 1-click Apple Pay, and polished interfaces that require zero cryptographic knowledge.
+              </li>
+              <li>
+                <strong>Easy Upgrades &amp; Bug Fixes:</strong> Central engineering teams can roll out software patches and schema updates instantly without coordinating global node voter consensus.
+              </li>
+              <li>
+                <strong>Free Basic Usage:</strong> Most consumer Web2 apps are free to browse and post to, subsidized by ads or subscription models rather than per-click compute fees.
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Practical Guide: When Would You Pick Which? -->
+      <section class="compare-decision-section" aria-labelledby="heading-decision">
+        <div class="decision-card">
+          <div class="decision-card__header">
+            <span class="decision-eyebrow">Practical Architecture Guide</span>
+            <h2 id="heading-decision" class="decision-title">When Would You Pick Which?</h2>
+            <p class="decision-intro">A pragmatic rule of thumb for software architects, developers, and product teams:</p>
+          </div>
+
+          <div class="decision-columns">
+            <div class="decision-col">
+              <h3 class="decision-col__title">
+                <span class="decision-badge decision-badge--web2">Choose Web2 When</span>
+              </h3>
+              <ul class="decision-points">
+                <li>High throughput and low latency are critical (e.g. 4K video streaming, high-frequency chat, competitive online gaming).</li>
+                <li>Users expect seamless password resets, two-factor SMS recovery, and human phone support.</li>
+                <li>Data privacy regulations (e.g. GDPR "Right to Be Forgotten") require permanent record deletion upon user request.</li>
+                <li>The business is legally obligated to maintain regulatory compliance and centralized operational custody.</li>
+              </ul>
+            </div>
+
+            <div class="decision-divider" aria-hidden="true"></div>
+
+            <div class="decision-col">
+              <h3 class="decision-col__title">
+                <span class="decision-badge decision-badge--web3">Choose Web3 When</span>
+              </h3>
+              <ul class="decision-points">
+                <li>Censorship resistance is essential (e.g. cross-border remittances, decentralized publishing, protest coordination).</li>
+                <li>Users require provable self-custody of value without risk of bank runs or unilateral asset freezes.</li>
+                <li>Building open, composable software protocols where other independent developers can build on your logic without platform risk.</li>
+                <li>Provable scarcity and digital provenance (e.g. NFT media rights, decentralized governance token voting) are paramount.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Verified "Did You Know?" Fact Box -->
+      <section class="compare-fact-section">
+        <div class="learn-fact-box" style="margin-bottom:0;">
+          <span class="learn-fact-box__label">DID YOU KNOW?</span>
+          <p class="learn-fact-box__text">
+            On December 7, 2021, an internal automated scaling issue in Amazon Web Services' <code>us-east-1</code> (Northern Virginia) data center caused a major outage lasting over 7 hours. Because thousands of distinct internet companies simultaneously rely on this single cloud region, the crash took down Netflix, Disney+, Slack, Robinhood, Ring smart doorbells, and even Amazon's own warehouse fulfillment scanners worldwide, dramatically demonstrating the systemic risk of Web2 centralized server infrastructure.
+          </p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Back to Top Button -->
+  <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+    <svg viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+  </button>
+
+  <!-- Shared Injected Clean Footer via js/layout.js -->
+  <footer id="site-footer"></footer>
+
+  <!-- Classic Deferred Scripts (Zero external build tools, 100% file:/// support) -->
+  <script src="js/vendor/three.min.js" defer></script>
+  <script src="js/scene3d.js" defer></script>
+  <script src="js/layout.js" defer></script>
+  <script src="js/wallet.js" defer></script>
+  <script src="js/motion.js" defer></script>
+  <script src="js/compare.js" defer></script>
+</body>
+</html>
