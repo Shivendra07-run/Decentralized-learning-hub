@@ -10,7 +10,7 @@
 
 ---
 
-## 📸 Interface Preview
+##  Interface Preview
 
 ```
 +-------------------------------------------------------------------------------+
@@ -29,7 +29,7 @@
 
 ---
 
-## 🧠 Web3 Concepts Covered & How They Are Taught
+## Web3 Concepts Covered & How They Are Taught
 
 1. **Blockchain Architecture & Immutability**
    - *How it's taught:* Visualized as an unbroken cryptographic chain of ledger blocks. Students use the interactive **Build-a-Block Lab** (`lab.html`) to compute real SHA-256 hashes using the browser's native Web Crypto API and experience how altering a single character in past transaction data breaks downstream validity.
@@ -50,7 +50,7 @@
 
 ---
 
-## 🧭 Page Features & Architecture
+##  Page Features & Architecture
 
 - **`index.html` (Home Portal)**: Hero section with a single Three.js background canvas featuring procedural brand coins and domain-warped liquid aurora shader, live CoinGecko rate marquee, bento curriculum grid, "How Web3 Works" chain timeline, and interactive roadmap synced with quiz accomplishments.
 - **`learn.html` (Core Concepts)**: Comprehensive, textbook-grade walkthrough across the 6 core pillars, 3D glowing background chain tracker that highlights the current reading section, Solidity code breakdown, and real-world case studies.
@@ -69,7 +69,7 @@
 
 ---
 
-## 🛠 Tech Stack
+##  Tech Stack
 
 - **Markup:** Semantic HTML5 (Single `<h1>` per page, ARIA live regions, skip navigation links, labeled form controls).
 - **Styling:** Vanilla CSS with modular design tokens (`variables.css`, `base.css`, `layout.css`, `components.css`, `pages.css`). Strict dark monochrome aesthetic (#050506 graphite, silver accents, white typography, subtle glassmorphism). Zero Tailwind or external CSS frameworks.
@@ -79,7 +79,7 @@
 
 ---
 
-## 📂 Folder Structure
+##  Folder Structure
 
 ```
 Web3 Project/
@@ -116,7 +116,7 @@ Web3 Project/
 
 ---
 
-## 🚀 How to Run Locally
+##  How to Run Locally
 
 Because Aether is built with pure web standards and zero build tools, you can run it immediately in any environment:
 
@@ -139,7 +139,7 @@ npx serve .
 
 ---
 
-## 🦊 Web3 Wallet Notes (MetaMask Integration)
+##  Web3 Wallet Notes (MetaMask Integration)
 
 - **Local Server or HTTPS Required:** Browser wallet extensions like MetaMask disable window injection on `file:///` protocols due to browser security sandboxing. To connect your real MetaMask wallet, access the site via a local web server (e.g. `http://localhost:8000`) or on the live [GitHub Pages deployment](https://shivendra07-run.github.io/WEB3-/).
 - **Simulated Demo Mode:** If no Web3 extension is detected (or when running directly from `file:///`), Aether automatically offers an educational **Simulated Wallet Mode**. This allows learners to explore wallet states, test signatures, and review balance flows without needing an extension installed.
@@ -147,7 +147,7 @@ npx serve .
 
 ---
 
-## ⚖️ Educational Integrity & Honesty
+##  Educational Integrity & Honesty
 
 - **Educational Simulation:** All interactive labs, DEX pools, staking calculators, and block miners are safe client-side educational models.
 - **No Fabricated Stats:** No fake audit seals, invented protocol backers, artificial Total Value Locked (TVL), or exaggerated TPS claims are used.
