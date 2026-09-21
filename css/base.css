@@ -56,7 +56,14 @@ body {
   background: #050506;
 }
 
-.no-webgl .css-aurora-fallback,
+.no-webgl .css-aurora-fallback {
+  display: block;
+}
+
+.no-webgl #scene3d {
+  display: none !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .css-aurora-fallback {
     display: block;
@@ -65,6 +72,13 @@ body {
     display: none !important;
   }
 }
+
+/* Global High-Contrast Focus Ring for Keyboard Accessibility */
+:focus-visible {
+  outline: 2px solid #FFFFFF !important;
+  outline-offset: 3px !important;
+}
+
 
 .css-aurora-blob {
   position: absolute;

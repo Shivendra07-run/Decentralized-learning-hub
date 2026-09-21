@@ -109,7 +109,7 @@
       '      <h4>Explore</h4>',
       '      <ul class="footer-links">',
       '        <li><a href="learn.html">Core Concepts</a></li>',
-      '        <li><a href="web2-vs-web3.html">Compare Web2 vs Web3</a></li>',
+      '        <li><a href="compare.html">Compare Web2 vs Web3</a></li>',
       '        <li><a href="lab.html">Interactive Labs</a></li>',
       '        <li><a href="market.html">Live Market Rates</a></li>',
       '      </ul>',
@@ -118,9 +118,9 @@
       '      <h4>Practice</h4>',
       '      <ul class="footer-links">',
       '        <li><a href="wallet.html">Wallet Safety Guide</a></li>',
-      '        <li><a href="quiz.html">Web3 Quiz & Flashcards</a></li>',
-      '        <li><a href="resources.html">Glossary (20+ Terms)</a></li>',
-      '        <li><a href="#roadmap">Learning Roadmap</a></li>',
+      '        <li><a href="quiz.html">Web3 Quiz &amp; Flashcards</a></li>',
+      '        <li><a href="resources.html">Glossary &amp; FAQ</a></li>',
+      '        <li><a href="index.html#roadmap">Learning Roadmap</a></li>',
       '      </ul>',
       '    </div>',
       '    <div class="footer-col">',
@@ -141,6 +141,7 @@
   }
 
   function renderChainSidebar() {
+    if (getCurrentPageName() !== 'index.html') return;
     if (document.querySelector('.chain-sidebar')) return;
 
     var sidebar = document.createElement('aside');

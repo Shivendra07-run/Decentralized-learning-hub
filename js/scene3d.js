@@ -383,8 +383,9 @@
     if (isLearnPage) return; // On learn page, the 6-block chain takes the 3D focus
 
     var coinGeo = new THREE.CylinderGeometry(1.65, 1.65, 0.28, 64);
+    var activeCoins = (isMobile || window.innerWidth < 768) ? COIN_DATA.slice(0, 5) : COIN_DATA;
 
-    COIN_DATA.forEach(function (data) {
+    activeCoins.forEach(function (data) {
       var faceTex = createCoinTexture(data);
 
       var edgeMat = new THREE.MeshStandardMaterial({
@@ -465,6 +466,11 @@
     posAttr.needsUpdate = true;
   }
 
+  function getOptimalPixelRatio() {
+    var maxPr = window.innerWidth < 768 ? 1.5 : 2.0;
+    return Math.min(window.devicePixelRatio || 1, maxPr);
+  }
+
   /**
    * Initialize Three.js Scene, Camera, Lights, and Renderer
    */
@@ -486,7 +492,7 @@
         antialias: true,
         powerPreference: 'high-performance'
       });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.setPixelRatio(getOptimalPixelRatio());
       renderer.setSize(width, height, true);
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.1;
@@ -820,7 +826,7 @@
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
 
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setPixelRatio(getOptimalPixelRatio());
     renderer.setSize(w, h, true);
 
     if (auroraMaterial) {
@@ -839,9 +845,11 @@
     if (document.hidden) {
       isTabActive = false;
     } else {
-      isTabActive = true;
-      clock.getDelta();
-      animate();
+      if (!isTabActive) {
+        isTabActive = true;
+        clock.getDelta();
+        requestAnimationFrame(animate);
+      }
     }
   }
 
