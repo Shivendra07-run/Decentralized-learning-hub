@@ -383,7 +383,8 @@
     if (isLearnPage) return; // On learn page, the 6-block chain takes the 3D focus
 
     var coinGeo = new THREE.CylinderGeometry(1.65, 1.65, 0.28, 64);
-    var activeCoins = (isMobile || window.innerWidth < 768) ? COIN_DATA.slice(0, 5) : COIN_DATA;
+    var isSmall = (isMobile || window.innerWidth < 768);
+    var activeCoins = isSmall ? COIN_DATA.slice(0, 3) : COIN_DATA;
 
     activeCoins.forEach(function (data) {
       var faceTex = createCoinTexture(data);
@@ -404,11 +405,14 @@
       // Face materials: [edge, top, bottom]
       var materials = [edgeMat, faceMat, faceMat];
       var mesh = new THREE.Mesh(coinGeo, materials);
+      if (isSmall) {
+        mesh.scale.set(0.65, 0.65, 0.65);
+      }
 
       mesh.userData = {
         data: data,
         angle: data.initialAngle,
-        radius: data.radius,
+        radius: isSmall ? data.radius * 0.8 : data.radius,
         orbitSpeed: data.orbitSpeed,
         yOffset: data.yOffset,
         targetPos: new THREE.Vector3(),

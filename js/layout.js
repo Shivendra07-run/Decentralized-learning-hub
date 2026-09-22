@@ -247,6 +247,11 @@
     backdrop.addEventListener('click', closeDrawer);
     if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
 
+    var mobileLinks = drawer.querySelectorAll('.mobile-nav-link');
+    mobileLinks.forEach(function (link) {
+      link.addEventListener('click', closeDrawer);
+    });
+
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && drawer.classList.contains('is-open')) {
         closeDrawer();

@@ -214,7 +214,7 @@
       });
     }
 
-    // Drag-to-rotate support
+    // Drag-to-rotate & Touch-to-rotate support
     var isDragging = false;
     var startX = 0;
     if (stage) {
@@ -230,6 +230,29 @@
         ringCurrentAngle += dx * 0.006;
         updateCardPositions();
       });
+
+      stage.addEventListener('touchstart', function (e) {
+        if (e.touches && e.touches.length > 0) {
+          isDragging = true;
+          startX = e.touches[0].clientX;
+          isRingPaused = true;
+        }
+      }, { passive: true });
+      window.addEventListener('touchend', function () {
+        isDragging = false;
+        isRingPaused = false;
+      }, { passive: true });
+      window.addEventListener('touchcancel', function () {
+        isDragging = false;
+        isRingPaused = false;
+      }, { passive: true });
+      window.addEventListener('touchmove', function (e) {
+        if (!isDragging || !e.touches || !e.touches.length) return;
+        var dx = e.touches[0].clientX - startX;
+        startX = e.touches[0].clientX;
+        ringCurrentAngle += dx * 0.008;
+        updateCardPositions();
+      }, { passive: true });
     }
   }
 
@@ -445,10 +468,46 @@
         }
       }
 
-      card.addEventListener('click', function () {
+      card.addEventListener('click', function (e) {
+        if (e.target.closest('a')) return;
         card.classList.toggle('is-expanded');
       });
     });
+
+    // Touch swipe support for marquee rows on mobile
+    var viewport = document.querySelector('.marquee-viewport');
+    if (viewport) {
+      var touchStartX = 0;
+      var activeRow = null;
+      viewport.addEventListener('touchstart', function (e) {
+        if (e.touches && e.touches.length > 0) {
+          touchStartX = e.touches[0].clientX;
+          activeRow = e.target.closest('.marquee-row');
+          if (activeRow) activeRow.style.animationPlayState = 'paused';
+        }
+      }, { passive: true });
+
+      viewport.addEventListener('touchmove', function (e) {
+        if (!activeRow || !e.touches || !e.touches.length) return;
+        var diffX = e.touches[0].clientX - touchStartX;
+        touchStartX = e.touches[0].clientX;
+        activeRow.scrollLeft -= diffX;
+      }, { passive: true });
+
+      viewport.addEventListener('touchend', function () {
+        if (activeRow) {
+          activeRow.style.animationPlayState = '';
+          activeRow = null;
+        }
+      }, { passive: true });
+
+      viewport.addEventListener('touchcancel', function () {
+        if (activeRow) {
+          activeRow.style.animationPlayState = '';
+          activeRow = null;
+        }
+      }, { passive: true });
+    }
   }
 
   /**

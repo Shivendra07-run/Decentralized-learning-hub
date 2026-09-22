@@ -4500,6 +4500,205 @@
   }
 }
 
+/* ==========================================================================
+   RECOMMENDED ARTICLES & MOBILE-FRIENDLY PASS (375px & 414px)
+   ========================================================================== */
+
+/* Recommended Articles Section */
+.recommended-articles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-lg);
+  margin-top: var(--space-xl);
+}
+
+.article-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-line);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  text-decoration: none;
+  transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+  position: relative;
+  min-height: 44px;
+}
+
+.article-card:hover,
+.article-card:focus-visible {
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.article-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-sm);
+}
+
+.article-source-tag {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.article-card__header svg {
+  color: var(--text-secondary);
+  transition: transform var(--transition-fast), color var(--transition-fast);
+}
+
+.article-card:hover .article-card__header svg {
+  color: #FFFFFF;
+  transform: translate(2px, -2px);
+}
+
+.article-card__title {
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-xs) 0;
+  line-height: 1.4;
+}
+
+.article-card__desc {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+  flex-grow: 1;
+}
+
+/* Base Global Mobile Fixes: Prevent horizontal overflow */
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+.site-nav .nav-link {
+  white-space: nowrap;
+}
+
+/* Tap targets minimum 44px on touch */
+button,
+.btn,
+.nav-toggle-btn,
+.modal-close-btn,
+.lab-tab-btn,
+.az-btn,
+.quiz-option-card,
+.mobile-nav-link {
+  min-height: 44px;
+}
+
+.nav-toggle-btn,
+.modal-close-btn {
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Modals & Detail panels fit within mobile viewport and scroll internally */
+.block-modal-dialog,
+.wallet-modal-dialog,
+.modal-dialog {
+  max-height: 90vh !important;
+  max-width: calc(100vw - 24px) !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box !important;
+}
+
+/* Wide Content & Charts Horizontal Scroll Containers */
+.svg-chart-wrapper,
+.compare-canvas-container,
+.dex-chart-panel,
+.staking-chart-panel,
+.vending-code-panel pre,
+.blockchain-cards-grid,
+table {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Between 480px and 768px: Exactly 2 Columns */
+@media (min-width: 480px) and (max-width: 768px) {
+  .recommended-articles-grid,
+  .official-links-grid,
+  .glossary-grid,
+  .market-grid,
+  .market-cards-grid,
+  .tokens-bento-chips,
+  .blockchain-cards-grid,
+  .study-cards-grid,
+  .comparison-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: var(--space-md) !important;
+  }
+
+  .lab-tabs {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+  .lab-tab-btn {
+    flex: 1 1 calc(50% - 8px) !important;
+  }
+}
+
+/* Below 480px (including 375px and 414px): Exactly 1 Column */
+@media (max-width: 479px) {
+  .recommended-articles-grid,
+  .official-links-grid,
+  .glossary-grid,
+  .market-grid,
+  .market-cards-grid,
+  .tokens-bento-chips,
+  .blockchain-cards-grid,
+  .study-cards-grid,
+  .comparison-grid,
+  .vending-layout-grid,
+  .dex-layout-grid,
+  .staking-layout-grid,
+  .dao-layout-grid,
+  .tokens-layout-grid,
+  .quiz-options-grid,
+  .results-score-box {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: var(--space-md) !important;
+  }
+
+  .lab-tabs {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 8px !important;
+  }
+  .lab-tab-btn {
+    width: 100% !important;
+  }
+
+  .container {
+    padding-left: var(--space-md) !important;
+    padding-right: var(--space-md) !important;
+  }
+
+  .block-modal-dialog {
+    padding: var(--space-md) !important;
+    margin: 12px auto !important;
+  }
+}
+
 
 
 

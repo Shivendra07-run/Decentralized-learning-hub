@@ -70,12 +70,25 @@ The interactive Building Blocks detail modal on the Home Portal links out to off
 - **`market.html` (Market Telemetry)**: Live spot rates, 24h percentage movements, and 7-day interactive SVG sparkline modal charts powered by the public CoinGecko API with graceful offline fallback data.
 - **`wallet.html` (Web3 Self-Custody Portal)**: Full MetaMask integration (account detection, network switching for Ethereum, Sepolia, Polygon, and Amoy, balance fetching, and cryptographic message signing) alongside a complete educational self-custody guide and simulated wallet mode for environments without browser extensions.
 - **`quiz.html` (Knowledge Assessment & Study Cards)**: 10-question multiple-choice challenge covering all foundational pillars, live progress bar, instant feedback explanations, tier badges (*Curious Explorer*, *Knowledge Builder*, *Decentralized Master*), local storage score persistence, and a 3D flip-card flashcard study mode.
-- **`resources.html` (Glossary & FAQ)**: Searchable 23-term Web3 glossary with live query filtering and alphabetical A-to-Z pills, 8 accessible `<details>/<summary>` FAQ drawers addressing common beginner fears, and verified official project documentation links.
+- **`resources.html` (Glossary, Recommended Articles & FAQ)**: Searchable 23-term Web3 glossary with live query filtering and alphabetical A-to-Z pills, 8 curated Recommended Articles from verified educational hubs, 8 accessible `<details>/<summary>` FAQ drawers addressing common beginner fears, and verified official project documentation links.
 - **`404.html` (Not Found)**: On-brand 404 ledger page featuring an animated severed cryptographic chain graphic and direct return paths.
 
 ---
 
-##  Tech Stack
+## 📱 Mobile Responsiveness & Touch Architecture
+
+Every page is strictly audited and optimized down to 375px and 414px mobile viewports:
+- **No Page-Level Horizontal Overflow:** Viewport-constrained layouts with dedicated horizontal scroll wrappers for wide data tables and SVG charts (AMM curve, staking trajectory).
+- **Adaptive Grid Stacking:** Multi-column grids (recommended articles, glossary, lab tabs, market cards, bento tokens) dynamically collapse to 1 column below 480px and 2 columns between 480px and 768px.
+- **Touch-Native Navigation & Carousels:** 3D Orbiting Ring carousel and Infinite Real-World marquee support direct touch swipe/drag interactions on mobile screens.
+- **Accessible Touch Targets:** 44px+ minimum hit targets across mobile navigation drawers, interactive filters, modal close buttons, and form controls.
+- **Auto-Closing Mobile Drawer:** Mobile navigation drawer automatically closes on link clicks and backdrop taps.
+- **Responsive Modal Containment:** Modals and detail panels scale within 90vh of the mobile viewport with internal touch scrolling.
+- **3D Mobile Optimization:** Procedural coin density and mesh scaling automatically reduce on mobile viewports to prevent text overlap.
+
+---
+
+## 🛠 Tech Stack
 
 - **Markup:** Semantic HTML5 (Single `<h1>` per page, ARIA live regions, skip navigation links, labeled form controls).
 - **Styling:** Vanilla CSS with modular design tokens (`variables.css`, `base.css`, `layout.css`, `components.css`, `pages.css`). Strict dark monochrome aesthetic (#050506 graphite, silver accents, white typography, subtle glassmorphism). Zero Tailwind or external CSS frameworks.
