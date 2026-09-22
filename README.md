@@ -52,7 +52,13 @@
 
 ##  Page Features & Architecture
 
-- **`index.html` (Home Portal)**: Hero section with a single Three.js background canvas featuring procedural brand coins and domain-warped liquid aurora shader, live CoinGecko rate marquee, bento curriculum grid, "How Web3 Works" chain timeline, and interactive roadmap synced with quiz accomplishments.
+- **`index.html` (Home Portal)**: Hero section with a single Three.js background canvas featuring procedural brand coins and domain-warped liquid aurora shader, live CoinGecko rate marquee, bento curriculum grid, "How Web3 Works" chain timeline, interactive roadmap synced with quiz accomplishments, and detail modals with verified outbound links to official Ethereum developer documentation (Blockchain, Smart Contracts, and Tokens & NFTs).
+
+### 🔗 Verified Outbound Exploration Links
+The interactive Building Blocks detail modal on the Home Portal links out to official ecosystem documentation:
+- **Blockchain:** [Intro to Ethereum (Ethereum.org)](https://ethereum.org/en/developers/docs/intro-to-ethereum/)
+- **Smart Contracts:** [Smart Contracts Documentation (Ethereum.org)](https://ethereum.org/en/developers/docs/smart-contracts/)
+- **Tokens & NFTs:** [Non-Fungible Tokens Overview (Ethereum.org)](https://ethereum.org/en/nft/)
 - **`learn.html` (Core Concepts)**: Comprehensive, textbook-grade walkthrough across the 6 core pillars, 3D glowing background chain tracker that highlights the current reading section, Solidity code breakdown, and real-world case studies.
 - **`compare.html` (Web2 vs Web3)**: Interactive network topology comparison (switch between centralized servers and distributed peer nodes), side-by-side architecture breakdown, Web1/Web2/Web3 evolution table, and honest evaluation of decentralization trade-offs (scalability vs sovereignty).
 - **`lab.html` (Interactive Sandboxes)**: 5 zero-risk browser labs:

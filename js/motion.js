@@ -242,21 +242,24 @@
       analogy: 'Imagine a public notebook where every page (block) is sealed with a digital wax seal (hash) that references the previous page. If anyone erases a single letter on page 2, all subsequent wax seals shatter across thousands of identical notebooks worldwide.',
       terms: ['SHA-256 Hashing', 'Consensus Mechanisms', 'Distributed Nodes'],
       fact: 'The Bitcoin blockchain has recorded transactions without a single second of global network downtime since January 2009.',
-      widgetType: 'hasher'
+      widgetType: 'hasher',
+      url: 'https://ethereum.org/en/developers/docs/intro-to-ethereum/'
     },
     contracts: {
       title: 'Smart Contracts: Self-Executing Agreements',
       analogy: 'Think of a digital vending machine. You insert cryptographic payment, the code verifies the exact currency amount, and it automatically dispenses the item. No clerk, escrow agent, or court needed.',
       terms: ['Turing-Complete', 'Gas Limit', 'Immutable Logic'],
       fact: 'Nick Szabo coined the term "Smart Contract" in 1994, over a decade before Bitcoin was invented.',
-      widgetType: 'vending'
+      widgetType: 'vending',
+      url: 'https://ethereum.org/en/developers/docs/smart-contracts/'
     },
     tokens: {
       title: 'Tokens & NFTs: Programmable Ownership',
       analogy: 'A token is like a programmable concert ticket that can also double as voting stock in the music festival, grant backstage access, and automatically reward you with loyal attendee perks.',
       terms: ['ERC-20 (Fungible)', 'ERC-721 (Unique)', 'Digital Provenance'],
       fact: 'The earliest NFTs on Ethereum were CryptoPunks and MoonCats, minted in 2017 before the official ERC-721 token standard was finalized.',
-      widgetType: 'minter'
+      widgetType: 'minter',
+      url: 'https://ethereum.org/en/nft/'
     }
   };
 
@@ -271,6 +274,16 @@
     document.getElementById('modal-block-title').textContent = data.title;
     document.getElementById('modal-block-analogy').textContent = data.analogy;
     document.getElementById('modal-block-fact').textContent = data.fact;
+
+    var learnMoreBtn = document.getElementById('modal-block-learn-more');
+    if (learnMoreBtn) {
+      if (data.url) {
+        learnMoreBtn.href = data.url;
+        learnMoreBtn.style.display = 'inline-flex';
+      } else {
+        learnMoreBtn.style.display = 'none';
+      }
+    }
 
     // Render key terms
     var termsContainer = document.getElementById('modal-block-terms');
