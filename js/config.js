@@ -11,6 +11,6 @@
   window.Aether = window.Aether || {};
   window.Aether.config = {
     // >>> PASTE YOUR REAL VERCEL BACKEND URL HERE <<<
-    API_BASE: "https://YOUR-API.vercel.app"
+    API_BASE: "https://web-3-gilt.vercel.app"
   };
 })();
