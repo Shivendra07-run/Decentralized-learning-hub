@@ -135,9 +135,37 @@
       '  </div>',
       '  <div class="footer-bottom">',
       '    <p class="footer-disclaimer-text">Educational content, not financial advice. Coin names and symbols belong to their owners and are shown for education only.</p>',
+      '    <div id="footer-api-status" class="api-status-pill is-offline" aria-live="polite" title="Aether API Connectivity Status">',
+      '      <span class="api-status-dot" aria-hidden="true"></span>',
+      '      <span class="api-status-text">Offline mode</span>',
+      '    </div>',
       '  </div>',
       '</div>'
     ].join('\n');
+  }
+
+  function initApiStatusIndicator() {
+    var statusEl = document.getElementById('footer-api-status');
+    if (!statusEl) return;
+    var text = statusEl.querySelector('.api-status-text');
+
+    if (window.Aether && window.Aether.api && typeof window.Aether.api.checkHealth === 'function') {
+      window.Aether.api.checkHealth().then(function (isLive) {
+        if (isLive) {
+          statusEl.className = 'api-status-pill is-live';
+          if (text) text.textContent = 'Live API';
+        } else {
+          statusEl.className = 'api-status-pill is-offline';
+          if (text) text.textContent = 'Offline mode';
+        }
+      }).catch(function () {
+        statusEl.className = 'api-status-pill is-offline';
+        if (text) text.textContent = 'Offline mode';
+      });
+    } else {
+      statusEl.className = 'api-status-pill is-offline';
+      if (text) text.textContent = 'Offline mode';
+    }
   }
 
   function renderChainSidebar() {
@@ -146,7 +174,7 @@
 
     var sidebar = document.createElement('aside');
     sidebar.className = 'chain-sidebar';
-    sidebar.setAttribute('aria-label', 'Blockchain Page Progress');
+    sidebar.setAttribute('aria-label', 'Blockchain lesson section progress');
     sidebar.innerHTML = [
       '<div class="chain-sidebar__line"></div>',
       '<div class="chain-node is-active" data-section-target="hero" title="Block #0: Genesis"></div>',
@@ -273,6 +301,7 @@
     initMobileMenu();
     initScrollTracking();
     checkDebugMode();
+    initApiStatusIndicator();
   }
 
   if (document.readyState === 'loading') {

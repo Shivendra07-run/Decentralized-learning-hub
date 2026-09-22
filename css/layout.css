@@ -298,8 +298,10 @@
   padding-top: var(--space-lg);
   border-top: 1px solid var(--border-line);
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-md);
   font-size: var(--text-xs);
   color: var(--text-tertiary);
 }
@@ -307,6 +309,46 @@
 .footer-disclaimer-text {
   color: var(--text-tertiary);
   line-height: 1.5;
+  margin: 0;
+  max-width: 680px;
+}
+
+.api-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-line);
+  border-radius: var(--radius-full);
+  padding: 4px 10px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  user-select: none;
+  transition: border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.api-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #64748B; /* Grey dot for offline / default */
+  display: inline-block;
+  transition: background-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.api-status-pill.is-live {
+  color: #E2E8F0;
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.api-status-pill.is-live .api-status-dot {
+  background-color: #10B981; /* Green dot for live API */
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.7);
+}
+
+.api-status-pill.is-offline .api-status-dot {
+  background-color: #64748B;
 }
 
 @media (max-width: 880px) {

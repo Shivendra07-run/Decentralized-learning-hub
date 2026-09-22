@@ -98,7 +98,18 @@ Every page is strictly audited and optimized down to 375px and 414px mobile view
 
 ---
 
-##  Folder Structure
+## ⚡ Serverless Backend & API Architecture
+
+A decoupled, zero-framework Node.js serverless backend configured for Vercel deployment:
+- **Backend Directory (`/backend`):** Serverless function endpoints (`/backend/api/*`) and modular helpers (`/backend/lib/*`).
+- **Dependencies:** `@supabase/supabase-js`, `ethers` (v6), `jsonwebtoken`, `zod`.
+- **Security & CORS:** Strict `ALLOWED_ORIGIN` checks, preflight `OPTIONS` (204) handling, 12-hour JWT Bearer authentication, and in-memory rate limiting per warm instance.
+- **Frontend API Client (`js/api.js`):** Unified GET/POST helper consuming `API_BASE` from `js/config.js` with a 4-second timeout. Automatically injects Bearer JWT and fails gracefully to client-side mode so learning tools remain 100% functional offline.
+- **Live Status Indicator:** Real-time footer telemetry ("Live API" / "Offline mode") driven by `/api/health`.
+
+---
+
+## 📂 Folder Structure
 
 ```
 Web3 Project/
@@ -112,6 +123,17 @@ Web3 Project/
 ├── resources.html         # 23-term glossary, FAQ accordions & official links
 ├── wallet.html            # MetaMask wallet connection & security guide
 ├── web2-vs-web3.html      # Canonical redirect to compare.html
+├── backend/               # Vercel serverless backend
+│   ├── package.json       # Backend dependencies (@supabase/supabase-js, ethers, jsonwebtoken, zod)
+│   ├── vercel.json        # Vercel configuration
+│   ├── README.md          # Deployment guide & cURL test suite
+│   ├── api/
+│   │   └── health.js      # Health probe endpoint (GET /api/health)
+│   └── lib/
+│       ├── auth.js        # JWT sign & Bearer token verification
+│       ├── cors.js        # Strict origin CORS & error wrapper
+│       ├── ratelimit.js   # In-memory sliding window limiter
+│       └── supabase.js    # Service-role Supabase client
 ├── css/
 │   ├── base.css           # Reset, typography, canvas positioning, focus rings
 │   ├── components.css     # Buttons, badges, cards, forms, modal dialogs
@@ -119,6 +141,8 @@ Web3 Project/
 │   ├── pages.css          # Page-specific views, animations, and responsive styles
 │   └── variables.css      # CSS design tokens (colors, radii, spacing, z-indices)
 └── js/
+    ├── api.js             # Resilient frontend API client (4s timeout, auth headers)
+    ├── config.js          # API_BASE environment config
     ├── compare.js         # Interactive topology network diagram
     ├── lab.js             # Simulation controllers (Hashing, Contract, AMM, DAO)
     ├── layout.js          # Shared navbar, mobile drawer, footer, and progress bar
