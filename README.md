@@ -98,14 +98,83 @@ Every page is strictly audited and optimized down to 375px and 414px mobile view
 
 ---
 
-## ⚡ Serverless Backend & API Architecture
+## 🏛 Architecture
 
-A decoupled, zero-framework Node.js serverless backend configured for Vercel deployment:
-- **Backend Directory (`/backend`):** Serverless function endpoints (`/backend/api/*`) and modular helpers (`/backend/lib/*`).
-- **Dependencies:** `@supabase/supabase-js`, `ethers` (v6), `jsonwebtoken`, `zod`.
-- **Security & CORS:** Strict `ALLOWED_ORIGIN` checks, preflight `OPTIONS` (204) handling, 12-hour JWT Bearer authentication, and in-memory rate limiting per warm instance.
-- **Frontend API Client (`js/api.js`):** Unified GET/POST helper consuming `API_BASE` from `js/config.js` with a 4-second timeout. Automatically injects Bearer JWT and fails gracefully to client-side mode so learning tools remain 100% functional offline.
-- **Live Status Indicator:** Real-time footer telemetry ("Live API" / "Offline mode") driven by `/api/health`.
+### System Topology Diagram
+```
+ +-------------------------------------------------------------------------+
+ |                               FRONTEND                                  |
+ |                     Hosted on GitHub Pages (Static)                     |
+ |        Vanilla HTML5 / CSS3 / ES6 (IIFE via window.Aether namespace)      |
+ +------------------------------------+------------------------------------+
+                                      |
+                         HTTPS / REST | (Strict 4s timeout)
+                                      v
+ +-------------------------------------------------------------------------+
+ |                                BACKEND                                  |
+ |                  Serverless Functions on Vercel Node 18+                |
+ |               Grouped Catch-All Handlers (Hobby Plan Compliant)         |
+ +-------------------+--------------------+--------------------+-----------+
+                     |                    |                    |
+        Public Read  |                    | Auth & State       | Server-Side
+                     v                    v                    v Proxy Only
+          +--------------------+ +--------------------+ +--------------------+
+          | CoinGecko API v3   | | Supabase (Postgres)| | In-Memory Sliding  |
+          | (Prices & Charts   | | - Users & Auth     | | Window Throttler   |
+          |  Server Cached)    | | - Votes & Attempts | | (Per Warm Instance)|
+          +--------------------+ | - User Progress    | +--------------------+
+                                 +--------------------+
+```
+
+### Live API Health Endpoint
+- **Live URL:** [https://web-3-gilt.vercel.app/api/health](https://web-3-gilt.vercel.app/api/health)
+- *Note:* Because the backend runs on Vercel's free serverless tier, idle container instances may experience a brief cold start (3–5 seconds) on the initial request.
+
+### API Endpoints Overview
+- `GET /api/health` — Liveness & health probe returning operational status and server ISO timestamp.
+- `GET /api/prices` — Server-side CoinGecko spot price proxy with memory cache fallback.
+- `GET /api/chart?id=<coin>` — 7-day 60-point downsampled price trend chart proxy from CoinGecko.
+- `GET /api/auth/nonce` — Generates a cryptographically random, single-use hex nonce expiring in 5 minutes.
+- `POST /api/auth/verify` — Validates EIP-4361 personal signature against nonce, returning a 12-hour Bearer JWT.
+- `GET /api/auth/me` — Authenticated endpoint returning the authenticated wallet address.
+- `GET /api/compare/rows` — Returns educational Web2 vs Web3 comparative architectural rows.
+- `GET /api/compare/poll` — Fetches live community votes and percentage ratios for Web2 vs Web3.
+- `POST /api/compare/poll` — Records an authenticated or hashed-IP community ballot for Web2 vs Web3.
+- `GET /api/compare/demo-state` — Returns current status (frozen / active) for educational simulation account.
+- `POST /api/compare/demo-login` — Evaluates login attempt against simulation account frozen state.
+- `POST /api/compare/demo-freeze` — Toggles simulation account frozen state for demonstration.
+- `GET /api/quiz/questions` — Returns sanitized question bank without answers or explanations.
+- `POST /api/quiz/submit` — Server-side score evaluation, records attempt to database (with address if authenticated).
+- `GET /api/quiz/leaderboard` — Edge-cached (`s-maxage=30`) top 10 scores with caller's best rank.
+- `GET /api/progress` — Authenticated retrieval of learner's completed checklist milestones.
+- `PUT /api/progress` — Authenticated upsert of learner's progress (Zod-validated, max 50 keys, <4 KB).
+- `GET /api/dao/proposal` — Retrieves live community proposal AIP-09 with vote counts and caller's choice.
+- `POST /api/dao/vote` — Authenticated 1-wallet/1-vote ballot submission (`for`, `against`, or `abstain`).
+
+### Passwordless Cryptographic Sign-In Flow
+1. **Nonce Generation:** Client requests a fresh 16-byte random hex nonce from `GET /api/auth/nonce`. The backend stores the nonce in Supabase with a 5-minute expiry and `used: false`.
+2. **Signature Request:** The client prompts the connected wallet (via `personal_sign`) to sign a human-readable, domain-bound EIP-4361 styled message containing the exact URI, nonce, and timestamp. No passwords or private keys are ever shared.
+3. **Cryptographic Verification:** Client submits `{ address, message, signature }` to `POST /api/auth/verify`. The backend:
+   - Validates template lines, matching URI against `ALLOWED_ORIGIN`.
+   - Checks that the nonce is unused and within the 5-minute validity window.
+   - Atomically marks the nonce as used to eliminate replay attacks.
+   - Recovers the signer using `ethers.verifyMessage()` and asserts it matches the claim.
+4. **JWT Issuance:** The backend issues a signed HMAC-SHA256 JWT with a 12-hour expiry and claims `{ sub: address }`.
+
+### Security Architecture & Hardening Choices
+- **Zero Secret Exposure:** `SUPABASE_SERVICE_KEY` and `JWT_SECRET` are strictly read from `process.env`. Frontend scripts contain zero secrets or database credentials.
+- **Git-Ignored Environment:** All `.env` and `.env.*` files are explicitly excluded via root `.gitignore`.
+- **Row Level Security (RLS) & Server-Mediated Access:** The frontend never connects directly to Supabase. All database access flows through hardened Vercel serverless functions using parameterized queries and prepared inputs.
+- **Strict CORS Allow-List:** `backend/lib/cors.js` restricts origin to `process.env.ALLOWED_ORIGIN`, preflight `OPTIONS` requests are answered with `204 No Content`, and credentials/tokens are passed exclusively via HTTP `Authorization: Bearer` headers (no cookies).
+- **Zod Input Validation:** Every incoming JSON body is parsed and validated against strict Zod schemas with sanitization and length bounds (e.g. 4 KB size limit, max 50 keys on progress sync).
+- **Per-Container Sliding-Window Rate Limiting:** All endpoints apply in-memory throttling per warm container to prevent denial-of-service and brute-force traffic.
+- **Safe Error Responses:** Backend catches internal errors and returns safe `{ error: "message" }` envelopes with standard HTTP status codes, never leaking raw database error stacks.
+
+### Resilient Offline Fallback Behaviour
+All network calls go through `js/api.js` which enforces a strict 4-second timeout via `AbortController`. If the backend is cold-starting, unreachable, or offline:
+- The site **never blocks, crashes, or presents an error wall**.
+- UI widgets display unobtrusive status badges (`Offline mode` or `not saved (offline)`).
+- Learning modules fall back gracefully to client-side localStorage state, built-in question banks, procedural SVG charts, and local simulation sandboxes.
 
 ---
 
@@ -116,22 +185,37 @@ Web3 Project/
 ├── 404.html               # Custom 404 error page with broken chain graphic
 ├── compare.html           # Web2 vs Web3 architectural comparison
 ├── index.html             # Homepage, hero, bento curriculum, and roadmap
-├── lab.html               # 5 interactive browser simulation labs
+├── lab.html               # 5 interactive browser simulation labs + live DAO ballot
 ├── learn.html             # The 6 core Web3 foundational pillars
 ├── market.html            # Cryptocurrency market telemetry and sparklines
-├── quiz.html              # 10-question quiz & 3D flashcard study mode
+├── quiz.html              # 10-question quiz, server scoring, & 3D flashcards
 ├── resources.html         # 23-term glossary, FAQ accordions & official links
 ├── wallet.html            # MetaMask wallet connection & security guide
 ├── web2-vs-web3.html      # Canonical redirect to compare.html
 ├── backend/               # Vercel serverless backend
 │   ├── package.json       # Backend dependencies (@supabase/supabase-js, ethers, jsonwebtoken, zod)
 │   ├── vercel.json        # Vercel configuration
-│   ├── README.md          # Deployment guide & cURL test suite
+│   ├── README.md          # Deployment guide & serverless configuration
+│   ├── tests/
+│   │   └── smoke.md       # Complete cURL smoke test suite
 │   ├── api/
-│   │   └── health.js      # Health probe endpoint (GET /api/health)
+│   │   ├── auth/
+│   │   │   └── [...route].js   # Consolidated auth endpoints (nonce, verify, me)
+│   │   ├── compare/
+│   │   │   └── [...route].js   # Consolidated compare endpoints (rows, poll, demo)
+│   │   ├── dao/
+│   │   │   ├── proposal.js     # Live community DAO proposal tally (GET)
+│   │   │   └── vote.js         # Authenticated DAO vote casting (POST)
+│   │   ├── quiz/
+│   │   │   └── [...route].js   # Consolidated quiz endpoints (questions, submit, leaderboard)
+│   │   ├── chart.js            # 7-day coin trend proxy (GET)
+│   │   ├── health.js           # Server health probe (GET)
+│   │   ├── prices.js           # Spot price proxy (GET)
+│   │   └── progress.js         # Authenticated progress sync (GET, PUT)
 │   └── lib/
 │       ├── auth.js        # JWT sign & Bearer token verification
 │       ├── cors.js        # Strict origin CORS & error wrapper
+│       ├── quizData.js    # Centralized question bank & answer explanations
 │       ├── ratelimit.js   # In-memory sliding window limiter
 │       └── supabase.js    # Service-role Supabase client
 ├── css/
@@ -152,7 +236,7 @@ Web3 Project/
     ├── quiz.js            # Quiz state machine, flashcard flip & localStorage sync
     ├── resources.js       # Glossary search, A-to-Z filter & FAQ accordion logic
     ├── scene3d.js         # Three.js liquid aurora shader & 3D procedural coins
-    ├── wallet.js          # MetaMask Web3 connector & signature verification
+    ├── wallet.js          # MetaMask Web3 connector, auth state, & progress sync
     └── vendor/
         └── three.min.js   # Three.js (r128) library
 ```
