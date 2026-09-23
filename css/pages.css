@@ -5181,7 +5181,7 @@ table {
   }
 }
 
-/* Below 480px (including 375px and 414px): Exactly 1 Column */
+/* Below 480px (including 360px, 375px and 414px): Exactly 1 Column & Fluid Reflow */
 @media (max-width: 479px) {
   .recommended-articles-grid,
   .official-links-grid,
@@ -5212,16 +5212,70 @@ table {
   }
   .lab-tab-btn {
     width: 100% !important;
+    min-height: 44px !important;
   }
 
   .container {
-    padding-left: var(--space-md) !important;
-    padding-right: var(--space-md) !important;
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+
+  .nav-floating-bar {
+    padding: 0 10px !important;
+    gap: 6px !important;
+  }
+
+  .site-logo {
+    font-size: 0.95rem !important;
+  }
+
+  .site-logo__badge {
+    display: none !important;
+  }
+
+  .ring-carousel-stage {
+    height: 420px !important;
+    overflow: hidden !important;
+    max-width: 100% !important;
+  }
+
+  .ring-card {
+    width: 270px !important;
+    margin-left: -135px !important;
+    padding: var(--space-lg) var(--space-md) !important;
+  }
+
+  .marquee-card {
+    width: 270px !important;
+    min-width: 270px !important;
   }
 
   .block-modal-dialog {
     padding: var(--space-md) !important;
     margin: 12px auto !important;
+    max-width: calc(100vw - 20px) !important;
+  }
+}
+
+/* 44px minimum touch target enforcement on mobile */
+@media (max-width: 768px), (pointer: coarse) {
+  button,
+  .btn,
+  .nav-toggle-btn,
+  .wallet-pill,
+  .modal-close-btn,
+  .lab-tab-btn,
+  .az-btn,
+  .quiz-option-card,
+  .mobile-nav-link,
+  .network-select-btn,
+  .footer-links a {
+    min-height: 44px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+  .mobile-nav-link {
+    padding: 12px 16px !important;
   }
 }
 

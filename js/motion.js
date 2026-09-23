@@ -119,6 +119,9 @@
    */
   function initMagneticButtons() {
     if (prefersReducedMotion) return;
+    if (typeof window !== 'undefined' && (window.innerWidth < 768 || (window.matchMedia && !window.matchMedia('(hover: hover) and (pointer: fine)').matches))) {
+      return;
+    }
 
     var buttons = document.querySelectorAll('.btn-magnetic, .btn--primary');
     buttons.forEach(function (btn) {
@@ -142,7 +145,9 @@
     var targets = document.querySelectorAll('.reveal-on-scroll');
     if (!targets.length) return;
 
-    if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+    var isMobileOrTouch = typeof window !== 'undefined' && (window.innerWidth < 768 || (window.matchMedia && !window.matchMedia('(hover: hover) and (pointer: fine)').matches));
+
+    if (prefersReducedMotion || !('IntersectionObserver' in window) || isMobileOrTouch) {
       targets.forEach(function (el) { el.classList.add('is-revealed'); });
       return;
     }
@@ -176,7 +181,8 @@
 
     if (!track || cards.length < 3) return;
 
-    var radius = 340; // 3D orbit radius in pixels
+    var isMobile = typeof window !== 'undefined' && (window.innerWidth < 768 || (window.matchMedia && !window.matchMedia('(hover: hover) and (pointer: fine)').matches));
+    var radius = isMobile ? 180 : 340; // 3D orbit radius in pixels
     var stepAngle = (2 * Math.PI) / cards.length;
 
     function updateCardPositions() {
@@ -197,6 +203,11 @@
     }
 
     updateCardPositions();
+
+    // On mobile, pause auto-rotation by default to eliminate idle rAF overhead
+    if (isMobile) {
+      isRingPaused = true;
+    }
 
     // Auto-rotation loop
     function autoRotate() {

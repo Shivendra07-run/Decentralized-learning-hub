@@ -150,6 +150,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  min-height: 44px;
   padding: 0.45rem 1rem;
   border-radius: var(--radius-pill);
   background: var(--bg-panel);

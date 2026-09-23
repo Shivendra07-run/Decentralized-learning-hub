@@ -858,6 +858,11 @@
   }
 
   function init() {
+    if (typeof window !== 'undefined') {
+      if (window.innerWidth < 768 || (window.matchMedia && !window.matchMedia('(hover: hover) and (pointer: fine)').matches)) {
+        return;
+      }
+    }
     initScene();
     window.addEventListener('resize', onWindowResize, { passive: true });
     window.addEventListener('mousemove', onPointerMove, { passive: true });
