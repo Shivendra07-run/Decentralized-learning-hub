@@ -379,8 +379,12 @@
    * Sized ~2x larger with soft rim lighting and crisp brand marks
    */
   function buildCryptoCoins() {
-    var isLearnPage = document.querySelector('.learn-page') !== null;
-    if (isLearnPage) return; // On learn page, the 6-block chain takes the 3D focus
+    var isHomePage = Boolean(document.querySelector('.hero-v4')) || (function () {
+      var p = window.location.pathname;
+      var name = p.substring(p.lastIndexOf('/') + 1).toLowerCase();
+      return !name || name === '' || name === 'index.html';
+    })();
+    if (!isHomePage) return;
 
     var coinGeo = new THREE.CylinderGeometry(1.65, 1.65, 0.28, 64);
     var isSmall = (isMobile || window.innerWidth < 768);
