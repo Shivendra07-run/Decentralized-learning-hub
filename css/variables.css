@@ -38,16 +38,16 @@
   --border-line-hover: rgba(255, 255, 255, 0.22);
   --border-glow: rgba(255, 255, 255, 0.15);
 
-  /* Typography Colors */
+  /* Typography Colors (WCAG AA Compliant: >= 4.5:1 for body, >= 3:1 for large text) */
   --text-primary: #F2F3F5;
-  --text-secondary: #9AA0AA;
-  --text-tertiary: #686E7B;
+  --text-secondary: #B0B7C4;
+  --text-tertiary: #949BA8;
   --text-inverse: #050506;
 
   /* Headline White-to-Silver Gradient */
-  --gradient-headline: linear-gradient(135deg, #FFFFFF 0%, #E4E6EA 45%, #A9AFBA 100%);
-  --gradient-silver: linear-gradient(135deg, #FFFFFF 0%, #9AA0AA 100%);
-  --gradient-scroll: linear-gradient(90deg, #FFFFFF 0%, #8E94A0 50%, #FFFFFF 100%);
+  --gradient-headline: linear-gradient(135deg, #FFFFFF 0%, #E4E6EA 45%, #B0B7C4 100%);
+  --gradient-silver: linear-gradient(135deg, #FFFFFF 0%, #B0B7C4 100%);
+  --gradient-scroll: linear-gradient(90deg, #FFFFFF 0%, #949BA8 50%, #FFFFFF 100%);
 
   /* Accent Button Tokens (Silver & White / Graphite) */
   --btn-primary-bg: #FFFFFF;
