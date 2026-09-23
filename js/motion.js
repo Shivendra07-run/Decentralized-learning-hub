@@ -616,6 +616,9 @@
           var nowChecked = !savedState[item.id];
           savedState[item.id] = nowChecked;
           localStorage.setItem('aether_chain_roadmap', JSON.stringify(savedState));
+          if (window.Aether && window.Aether.Progress && typeof window.Aether.Progress.scheduleProgressPut === 'function') {
+            window.Aether.Progress.scheduleProgressPut();
+          }
           initChainRoadmap(); // re-evaluate chain
         }
 
@@ -659,11 +662,16 @@
     if (resetBtn) {
       resetBtn.addEventListener('click', function () {
         localStorage.removeItem('aether_chain_roadmap');
+        if (window.Aether && window.Aether.Progress && typeof window.Aether.Progress.scheduleProgressPut === 'function') {
+          window.Aether.Progress.scheduleProgressPut();
+        }
         Aether.showToast('Blockchain roadmap progress reset.');
         initChainRoadmap();
       });
     }
   }
+
+  window.Aether.initChainRoadmap = initChainRoadmap;
 
   function init() {
     initCustomCursor();

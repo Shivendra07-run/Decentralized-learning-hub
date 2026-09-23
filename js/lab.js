@@ -847,6 +847,175 @@
         Aether.showToast('DAO voting slate restored to default distribution.');
       });
     }
+
+    initDaoLiveVote();
+  }
+
+  /* ==========================================================================
+     DEMO 5B: LIVE COMMUNITY VOTE (1-Wallet, 1-Vote via /api/dao)
+     ========================================================================== */
+  var daoLivePollTimer = null;
+  var isDaoSubmittingVote = false;
+
+  async function fetchLiveDaoVote() {
+    if (!window.Aether.api) return;
+
+    try {
+      var res = await window.Aether.api.get('/api/dao/proposal');
+      if (res && res.ok && res.data) {
+        var counts = res.data.counts || { for: 0, against: 0, abstain: 0, total: 0 };
+        var total = counts.total || 0;
+        var userChoice = res.data.userChoice || null;
+
+        var pctFor = total > 0 ? ((counts.for / total) * 100).toFixed(1) : '0.0';
+        var pctAgainst = total > 0 ? ((counts.against / total) * 100).toFixed(1) : '0.0';
+        var pctAbstain = total > 0 ? ((counts.abstain / total) * 100).toFixed(1) : '0.0';
+
+        var totalEl = document.getElementById('dao-live-total-cast');
+        var segFor = document.getElementById('dao-seg-for');
+        var segAgainst = document.getElementById('dao-seg-against');
+        var segAbstain = document.getElementById('dao-seg-abstain');
+
+        var pctForEl = document.getElementById('dao-pct-for');
+        var countForEl = document.getElementById('dao-count-for');
+        var pctAgainstEl = document.getElementById('dao-pct-against');
+        var countAgainstEl = document.getElementById('dao-count-against');
+        var pctAbstainEl = document.getElementById('dao-pct-abstain');
+        var countAbstainEl = document.getElementById('dao-count-abstain');
+
+        if (totalEl) totalEl.textContent = total + (total === 1 ? ' Vote Cast' : ' Votes Cast');
+        if (segFor) segFor.style.width = pctFor + '%';
+        if (segAgainst) segAgainst.style.width = pctAgainst + '%';
+        if (segAbstain) segAbstain.style.width = pctAbstain + '%';
+
+        if (pctForEl) pctForEl.textContent = pctFor + '%';
+        if (countForEl) countForEl.textContent = counts.for + (counts.for === 1 ? ' vote' : ' votes');
+
+        if (pctAgainstEl) pctAgainstEl.textContent = pctAgainst + '%';
+        if (countAgainstEl) countAgainstEl.textContent = counts.against + (counts.against === 1 ? ' vote' : ' votes');
+
+        if (pctAbstainEl) pctAbstainEl.textContent = pctAbstain + '%';
+        if (countAbstainEl) countAbstainEl.textContent = counts.abstain + (counts.abstain === 1 ? ' vote' : ' votes');
+
+        // Update vote buttons active state
+        var btnFor = document.getElementById('btn-dao-vote-for');
+        var btnAgainst = document.getElementById('btn-dao-vote-against');
+        var btnAbstain = document.getElementById('btn-dao-vote-abstain');
+        if (btnFor) btnFor.classList.toggle('is-active', userChoice === 'for');
+        if (btnAgainst) btnAgainst.classList.toggle('is-active', userChoice === 'against');
+        if (btnAbstain) btnAbstain.classList.toggle('is-active', userChoice === 'abstain');
+
+        var banner = document.getElementById('dao-user-vote-banner');
+        if (banner) {
+          if (userChoice) {
+            banner.style.display = 'block';
+            banner.textContent = '✓ Your wallet voted: ' + userChoice.toUpperCase() + '. You can update your choice anytime.';
+          } else {
+            banner.style.display = 'none';
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('[Live DAO] Fetch warning:', err);
+    }
+  }
+
+  function updateDaoAuthUI() {
+    var authPrompt = document.getElementById('dao-live-auth-prompt');
+    var btnBar = document.getElementById('dao-live-btn-bar');
+    var isSignedIn = Boolean(window.Aether.Wallet && window.Aether.Wallet.getAuthState().isSignedIn);
+
+    if (isSignedIn) {
+      if (authPrompt) authPrompt.style.display = 'none';
+      if (btnBar) btnBar.style.display = 'flex';
+    } else {
+      if (authPrompt) authPrompt.style.display = 'flex';
+      if (btnBar) btnBar.style.display = 'none';
+      var banner = document.getElementById('dao-user-vote-banner');
+      if (banner) banner.style.display = 'none';
+    }
+  }
+
+  async function castLiveDaoVote(choice) {
+    if (isDaoSubmittingVote) return;
+    if (!window.Aether.Wallet || !window.Aether.Wallet.getAuthState().isSignedIn) {
+      if (window.Aether.Wallet) window.Aether.Wallet.openModal();
+      return;
+    }
+
+    isDaoSubmittingVote = true;
+    var btns = document.querySelectorAll('.dao-vote-btn');
+    btns.forEach(function (b) { b.disabled = true; });
+
+    try {
+      var res = await window.Aether.api.post('/api/dao/vote', {
+        proposalId: 'p1',
+        choice: choice
+      });
+
+      if (res && res.ok) {
+        Aether.showToast('Your vote for AIP-09 was recorded on-chain!');
+        await fetchLiveDaoVote();
+      } else {
+        Aether.showToast('Vote error: ' + (res && res.error ? res.error : 'Could not submit'));
+      }
+    } catch (err) {
+      Aether.showToast('Network error while submitting vote');
+    } finally {
+      isDaoSubmittingVote = false;
+      btns.forEach(function (b) { b.disabled = false; });
+    }
+  }
+
+  function initDaoLiveVote() {
+    updateDaoAuthUI();
+    fetchLiveDaoVote();
+
+    // Attach vote button listeners
+    ['for', 'against', 'abstain'].forEach(function (choice) {
+      var btn = document.getElementById('btn-dao-vote-' + choice);
+      if (btn) {
+        btn.addEventListener('click', function () {
+          castLiveDaoVote(choice);
+        });
+      }
+    });
+
+    // Sign in button
+    var signInBtn = document.getElementById('btn-dao-signin');
+    if (signInBtn) {
+      signInBtn.addEventListener('click', function () {
+        if (window.Aether.Wallet) {
+          var state = window.Aether.Wallet.getState();
+          if (!state.isConnected) {
+            window.Aether.Wallet.openModal();
+          } else {
+            window.Aether.Wallet.signIn();
+          }
+        }
+      });
+    }
+
+    // Polling interval: every 15s while tab is visible and panel-dao is active
+    if (daoLivePollTimer) clearInterval(daoLivePollTimer);
+    daoLivePollTimer = setInterval(function () {
+      var panel = document.getElementById('panel-dao');
+      if (panel && !panel.hidden && document.visibilityState === 'visible') {
+        fetchLiveDaoVote();
+      }
+    }, 15000);
+
+    document.addEventListener('visibilitychange', function () {
+      var panel = document.getElementById('panel-dao');
+      if (document.visibilityState === 'visible' && panel && !panel.hidden) {
+        fetchLiveDaoVote();
+      }
+    });
+
+    window.addEventListener('aether:authState', function () {
+      updateDaoAuthUI();
+      fetchLiveDaoVote();
+    });
   }
 
   /* ==========================================================================

@@ -169,6 +169,10 @@
         }
       });
       localStorage.setItem('aether_chain_roadmap', JSON.stringify(roadmapState));
+
+      if (window.Aether && window.Aether.Progress && typeof window.Aether.Progress.scheduleProgressPut === 'function') {
+        window.Aether.Progress.scheduleProgressPut();
+      }
     } catch (e) {
       console.warn('[Aether Learn] Storage unavailable:', e);
     }
@@ -301,9 +305,12 @@
     initScrollSpy();
   }
 
+  window.Aether.updateReadingProgressUI = updateReadingProgressUI;
+
   window.Aether.Learn = {
     init: init,
-    computeSha256: computeSha256
+    computeSha256: computeSha256,
+    updateProgress: updateReadingProgressUI
   };
 
   if (document.readyState === 'loading') {

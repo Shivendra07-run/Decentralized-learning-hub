@@ -174,6 +174,10 @@
         roadmap['q1'] = true;
         localStorage.setItem('aether_chain_roadmap', JSON.stringify(roadmap));
       }
+
+      if (window.Aether && window.Aether.Progress && typeof window.Aether.Progress.scheduleProgressPut === 'function') {
+        window.Aether.Progress.scheduleProgressPut();
+      }
     } catch (e) {}
   }
 
@@ -680,6 +684,8 @@
       }
     });
   }
+
+  window.Aether.updateBestScoreUI = updateBestScoreUI;
 
   window.Aether.Quiz = {
     init: init,

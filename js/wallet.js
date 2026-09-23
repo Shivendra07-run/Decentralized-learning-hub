@@ -422,6 +422,9 @@
 
   function notifyAuthStateChange() {
     updateModalContent();
+    if (authState.isSignedIn && typeof syncProgressFromServer === 'function') {
+      syncProgressFromServer();
+    }
     try {
       window.dispatchEvent(new CustomEvent('aether:authState', { detail: Object.assign({}, authState) }));
     } catch (e) {}
@@ -856,6 +859,147 @@
 
     restoreSession();
   }
+
+  /* ==========================================================================
+     AUTHENTICATED PROGRESS SYNCHRONIZATION (1s Debounce & Remote Merge)
+     ========================================================================== */
+  var syncDebounceTimer = null;
+
+  function collectLocalProgress() {
+    var data = {};
+
+    try {
+      var roadmap = JSON.parse(localStorage.getItem('aether_chain_roadmap') || '{}');
+      for (var k in roadmap) {
+        if (Object.prototype.hasOwnProperty.call(roadmap, k)) {
+          if (typeof roadmap[k] === 'boolean' || typeof roadmap[k] === 'number') {
+            data['roadmap_' + k] = roadmap[k];
+          }
+        }
+      }
+    } catch (e) {}
+
+    try {
+      var learn = JSON.parse(localStorage.getItem('aether_learn_progress') || '{}');
+      for (var j in learn) {
+        if (Object.prototype.hasOwnProperty.call(learn, j)) {
+          if (typeof learn[j] === 'boolean' || typeof learn[j] === 'number') {
+            data['learn_' + j] = learn[j];
+          }
+        }
+      }
+    } catch (e) {}
+
+    try {
+      var quizScore = parseInt(localStorage.getItem('aether_quiz_best_score') || '0', 10);
+      if (quizScore > 0) {
+        data['quiz_best_score'] = quizScore;
+      }
+    } catch (e) {}
+
+    return data;
+  }
+
+  async function syncProgressFromServer() {
+    if (!authState.isSignedIn) return;
+    if (!window.Aether.api) return;
+
+    try {
+      var res = await window.Aether.api.get('/api/progress');
+      if (res && res.ok && res.data && typeof res.data.data === 'object') {
+        var remote = res.data.data;
+
+        // 1. Merge roadmap (keep whichever marks complete)
+        var localRoadmap = {};
+        try { localRoadmap = JSON.parse(localStorage.getItem('aether_chain_roadmap') || '{}'); } catch (e) {}
+        var mergedRoadmap = Object.assign({}, localRoadmap);
+
+        for (var rk in remote) {
+          if (Object.prototype.hasOwnProperty.call(remote, rk)) {
+            var rawKey = rk.startsWith('roadmap_') ? rk.slice(8) : rk;
+            if (remote[rk] === true || remote[rk] === 1) {
+              mergedRoadmap[rawKey] = true;
+            }
+          }
+        }
+        localStorage.setItem('aether_chain_roadmap', JSON.stringify(mergedRoadmap));
+
+        // 2. Merge learn progress
+        var localLearn = {};
+        try { localLearn = JSON.parse(localStorage.getItem('aether_learn_progress') || '{}'); } catch (e) {}
+        var mergedLearn = Object.assign({}, localLearn);
+
+        for (var lk in remote) {
+          if (Object.prototype.hasOwnProperty.call(remote, lk)) {
+            if (lk.startsWith('learn_')) {
+              var learnKey = lk.slice(6);
+              if (remote[lk] === true || remote[lk] === 1) {
+                mergedLearn[learnKey] = true;
+              }
+            }
+          }
+        }
+        localStorage.setItem('aether_learn_progress', JSON.stringify(mergedLearn));
+
+        // 3. Merge quiz score (keep highest)
+        var localQuiz = 0;
+        try { localQuiz = parseInt(localStorage.getItem('aether_quiz_best_score') || '0', 10); } catch (e) {}
+        var remoteQuiz = parseInt(remote['quiz_best_score'] || '0', 10);
+        var mergedQuiz = Math.max(localQuiz, remoteQuiz);
+        if (mergedQuiz > localQuiz) {
+          localStorage.setItem('aether_quiz_best_score', mergedQuiz.toString());
+        }
+
+        // Notify active pages to re-render
+        if (typeof window.Aether.initChainRoadmap === 'function') {
+          window.Aether.initChainRoadmap();
+        }
+        if (typeof window.Aether.updateReadingProgressUI === 'function') {
+          window.Aether.updateReadingProgressUI();
+        }
+        if (typeof window.Aether.updateBestScoreUI === 'function') {
+          window.Aether.updateBestScoreUI();
+        }
+
+        window.dispatchEvent(new CustomEvent('aether:progressSynced'));
+
+        // Push merged state back to server so server reflects combined progress
+        scheduleProgressPut();
+      }
+    } catch (err) {
+      console.warn('[Progress Sync] Fetch warning:', err);
+    }
+  }
+
+  function scheduleProgressPut() {
+    if (!authState.isSignedIn) return;
+    if (!window.Aether.api) return;
+
+    if (syncDebounceTimer) {
+      clearTimeout(syncDebounceTimer);
+    }
+
+    syncDebounceTimer = setTimeout(async function () {
+      if (!authState.isSignedIn) return;
+      if (!window.Aether.api) return;
+
+      var payload = collectLocalProgress();
+      try {
+        await window.Aether.api.request('/api/progress', {
+          method: 'PUT',
+          body: { data: payload }
+        });
+      } catch (err) {
+        console.warn('[Progress Sync] Put warning:', err);
+      }
+    }, 1000);
+  }
+
+  window.Aether.Progress = {
+    syncFromServer: syncProgressFromServer,
+    scheduleProgressPut: scheduleProgressPut,
+    collectLocalProgress: collectLocalProgress
+  };
 
   window.Aether.Wallet = {
     connect: connectWallet,

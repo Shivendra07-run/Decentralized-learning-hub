@@ -548,6 +548,103 @@
               </div>
             </div>
           </div>
+
+          <!-- ============================================================
+               LIVE COMMUNITY VOTE CARD (1-Wallet, 1-Vote)
+               ============================================================ -->
+          <div class="dao-live-vote-card" id="dao-live-vote-card">
+            <div class="dao-live-vote-header">
+              <div class="dao-live-title-group">
+                <div class="dao-live-badge-row">
+                  <span class="widget-live-tag">
+                    <span class="status-dot"></span> Live (one vote per wallet)
+                  </span>
+                  <span class="dao-live-refresh-note" id="dao-live-refresh-note">Refreshes every 15s</span>
+                </div>
+                <h3 class="dao-live-title" id="dao-live-prop-title">AIP-09: Allocate 25,000 AETH to Decentralized Security Auditing &amp; Developer Guides</h3>
+                <p class="dao-live-desc" id="dao-live-prop-desc">
+                  Allocate treasury resources to fund independent smart contract audits, security bounties, and zero-knowledge developer documentation.
+                </p>
+              </div>
+            </div>
+
+            <!-- Honest Architecture Explanation -->
+            <div class="dao-honest-explainer">
+              <div class="honest-icon">⚖️</div>
+              <div class="honest-content">
+                <strong>Why Token-Weighted vs. One-Wallet-One-Vote?</strong>
+                <p>
+                  This live poll demonstrates a simple 1-wallet = 1-vote mechanism. In practice, permissionless networks cannot verify unique human identities without centralized KYC; a single actor could generate thousands of wallets for free (a Sybil attack) to manipulate the outcome. Real DAOs use token-weighted voting (governance proportional to skin in the game) or quadratic voting to resist manipulation.
+                </p>
+              </div>
+            </div>
+
+            <!-- Voting Action & Status Area -->
+            <div class="dao-live-vote-actions" id="dao-live-vote-actions">
+              <!-- If signed out: Auth Prompt Banner -->
+              <div class="dao-live-auth-prompt" id="dao-live-auth-prompt" style="display:none;">
+                <span>Sign in with your wallet to participate in the live community ballot.</span>
+                <button type="button" class="btn btn--sm btn--primary" id="btn-dao-signin">
+                  <span>Sign In to Vote</span>
+                </button>
+              </div>
+
+              <!-- If signed in: 3 Voting Buttons -->
+              <div class="dao-live-btn-bar" id="dao-live-btn-bar" style="display:none;">
+                <span class="btn-bar-label">Cast or Update Ballot:</span>
+                <div class="dao-vote-btn-group" role="group" aria-label="Vote options">
+                  <button type="button" class="dao-vote-btn" data-choice="for" id="btn-dao-vote-for">
+                    <span class="choice-icon">✓</span>
+                    <span>Vote For</span>
+                  </button>
+                  <button type="button" class="dao-vote-btn" data-choice="against" id="btn-dao-vote-against">
+                    <span class="choice-icon">✕</span>
+                    <span>Vote Against</span>
+                  </button>
+                  <button type="button" class="dao-vote-btn" data-choice="abstain" id="btn-dao-vote-abstain">
+                    <span class="choice-icon">—</span>
+                    <span>Abstain</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="dao-user-vote-banner" id="dao-user-vote-banner" style="display:none;"></div>
+            </div>
+
+            <!-- Live Tally & Percentage Bars -->
+            <div class="dao-live-results">
+              <div class="dao-live-results-header">
+                <span class="results-title">Live Ballot Tally</span>
+                <span class="results-total-cast" id="dao-live-total-cast">0 Votes Cast</span>
+              </div>
+
+              <!-- Stacked percentage bar -->
+              <div class="dao-live-stacked-bar">
+                <div class="stacked-seg seg-for" id="dao-seg-for" style="width: 0%;"></div>
+                <div class="stacked-seg seg-against" id="dao-seg-against" style="width: 0%;"></div>
+                <div class="stacked-seg seg-abstain" id="dao-seg-abstain" style="width: 0%;"></div>
+              </div>
+
+              <!-- Detailed breakdown cards -->
+              <div class="dao-live-metrics-grid">
+                <div class="dao-metric-card metric-for">
+                  <span class="metric-choice">FOR</span>
+                  <strong class="metric-pct" id="dao-pct-for">0%</strong>
+                  <span class="metric-count" id="dao-count-for">0 votes</span>
+                </div>
+                <div class="dao-metric-card metric-against">
+                  <span class="metric-choice">AGAINST</span>
+                  <strong class="metric-pct" id="dao-pct-against">0%</strong>
+                  <span class="metric-count" id="dao-count-against">0 votes</span>
+                </div>
+                <div class="dao-metric-card metric-abstain">
+                  <span class="metric-choice">ABSTAIN</span>
+                  <strong class="metric-pct" id="dao-pct-abstain">0%</strong>
+                  <span class="metric-count" id="dao-count-abstain">0 votes</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
       </div>
