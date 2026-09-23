@@ -19,17 +19,21 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://shivendra07-run.github.io/WEB3-/market.html">
 
-  <!-- Google Fonts: Montserrat (headings) & Inter (body) & JetBrains Mono -->
+  <!-- Google Fonts: Preconnect & Asynchronous Non-blocking Load -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Montserrat:wght@600;700;800&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Montserrat:wght@600;700;800&display=swap"></noscript>
 
-  <!-- Shared Modular CSS System -->
+  <!-- Modular Split CSS System: Critical Above-The-Fold Styles First -->
   <link rel="stylesheet" href="css/variables.css">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/layout.css">
-  <link rel="stylesheet" href="css/components.css">
-  <link rel="stylesheet" href="css/pages.css">
+  <!-- Asynchronous Non-blocking Deferred CSS for Below-the-fold Content -->
+  <link rel="stylesheet" href="css/components.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="css/components.css"></noscript>
+  <link rel="stylesheet" href="css/pages.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="css/pages.css"></noscript>
 </head>
 <body class="market-body">
   <!-- Accessible Skip to Content Link -->

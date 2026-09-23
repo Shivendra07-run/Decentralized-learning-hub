@@ -22,14 +22,18 @@
   <!-- Google Fonts: Montserrat (headings) & Inter (body) & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Montserrat:wght@600;700;800&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Montserrat:wght@600;700;800&display=swap"></noscript>
 
-  <!-- Shared Modular CSS System -->
+  <!-- Shared Modular CSS System: Critical Above-The-Fold Styles First -->
   <link rel="stylesheet" href="css/variables.css">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/layout.css">
-  <link rel="stylesheet" href="css/components.css">
-  <link rel="stylesheet" href="css/pages.css">
+  <!-- Asynchronous Non-blocking Deferred CSS for Below-the-fold Content -->
+  <link rel="stylesheet" href="css/components.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="css/components.css"></noscript>
+  <link rel="stylesheet" href="css/pages.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="css/pages.css"></noscript>
 </head>
 <body class="compare-body">
   <!-- Accessible Skip to Content Link -->
@@ -38,14 +42,6 @@
   <!-- Fixed Gradient Scroll Progress Bar -->
   <div class="scroll-progress" aria-hidden="true"></div>
 
-  <!-- Shared Single Full-Viewport Three.js 3D Background Canvas -->
-  <canvas id="scene3d" aria-hidden="true"></canvas>
-
-  <!-- Fallback CSS Animated Aurora Blobs -->
-  <div class="css-aurora-fallback" aria-hidden="true">
-    <div class="css-aurora-blob css-aurora-blob--1"></div>
-    <div class="css-aurora-blob css-aurora-blob--2"></div>
-  </div>
 
   <!-- Shared Injected Floating Navbar via js/layout.js -->
   <header id="site-header"></header>
