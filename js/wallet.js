@@ -111,7 +111,7 @@
     container.id = 'wallet-modal-container';
     container.innerHTML = [
       '<div class="wallet-modal-backdrop" id="wallet-modal-backdrop"></div>',
-      '<div class="wallet-modal" id="wallet-modal" role="dialog" aria-modal="true" aria-labelledby="wallet-modal-title">',
+      '<div class="wallet-modal" id="wallet-modal" role="dialog" aria-modal="true" aria-labelledby="wallet-modal-title" aria-hidden="true">',
       '  <div class="wallet-modal__header">',
       '    <h3 id="wallet-modal-title" style="font-size:1.15rem; margin:0; font-family:var(--font-display); color:#FFFFFF;">Web3 Wallet</h3>',
       '    <button class="wallet-modal__close" id="wallet-modal-close-btn" aria-label="Close modal">',
@@ -303,16 +303,21 @@
       updateModalContent();
       modal.classList.add('is-open');
       backdrop.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
     }
   }
 
   function closeWalletModal() {
     var modal = document.getElementById('wallet-modal');
     var backdrop = document.getElementById('wallet-modal-backdrop');
-    if (modal && backdrop) {
+    if (modal) {
       modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+    if (backdrop) {
       backdrop.classList.remove('is-open');
     }
+    document.body.style.overflow = '';
   }
 
   function updateModalContent() {
@@ -471,6 +476,7 @@
           if (accounts && accounts.length > 0) {
             handleAccountsChanged(accounts);
             fetchNetworkAndBalance();
+            closeWalletModal();
             Aether.showToast('Wallet connected successfully!');
           }
         })
@@ -504,6 +510,7 @@
 
     syncWalletPill();
     updateModalContent();
+    closeWalletModal();
     notifyAuthStateChange();
     Aether.showToast('Demo simulation mode activated');
   }
@@ -623,6 +630,7 @@
       localStorage.setItem('aether_real_wallet_connected', 'true');
       fetchNetworkAndBalance();
       syncWalletPill();
+      closeWalletModal();
       updateModalContent();
     }
   }

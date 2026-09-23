@@ -189,12 +189,14 @@
   z-index: var(--z-modal-backdrop);
   opacity: 0;
   visibility: hidden;
+  pointer-events: none;
   transition: opacity var(--transition-base), visibility var(--transition-base);
 }
 
 .wallet-modal-backdrop.is-open {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto;
 }
 
 .wallet-modal {
@@ -212,6 +214,7 @@
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
   opacity: 0;
   visibility: hidden;
+  pointer-events: none;
   transition: transform var(--transition-base), opacity var(--transition-base), visibility var(--transition-base);
 }
 
@@ -219,6 +222,7 @@
   transform: translate(-50%, -50%) scale(1);
   opacity: 1;
   visibility: visible;
+  pointer-events: auto;
 }
 
 .wallet-modal__header {
