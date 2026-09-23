@@ -28,10 +28,13 @@
   }
 
   /**
-   * Custom Cursor Follower & Drag Badge
+   * Custom Cursor Follower & Drag Badge (rAF Batched, Composited translate3d)
    */
   function initCustomCursor() {
     if (prefersReducedMotion) return;
+    if (typeof window !== 'undefined' && window.matchMedia && !window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      return;
+    }
 
     var dot = document.querySelector('.cursor-dot');
     var outline = document.querySelector('.cursor-outline');
@@ -50,24 +53,30 @@
     var mouseX = -100, mouseY = -100;
     var outlineX = -100, outlineY = -100;
     var isVisible = false;
+    var targetScale = 1;
+    var currentScale = 1;
 
+    // Passive listener: never mutate styles directly in mousemove
     window.addEventListener('mousemove', function (e) {
       mouseX = e.clientX;
       mouseY = e.clientY;
-
       if (!isVisible) {
+        isVisible = true;
         dot.style.opacity = '1';
         outline.style.opacity = '1';
-        isVisible = true;
       }
-      dot.style.transform = 'translate(' + (mouseX - 3) + 'px, ' + (mouseY - 3) + 'px)';
-    });
+    }, { passive: true });
 
     function renderCursor() {
       if (isVisible) {
-        outlineX += (mouseX - outlineX) * 0.18;
-        outlineY += (mouseY - outlineY) * 0.18;
-        outline.style.transform = 'translate(' + (outlineX - 17) + 'px, ' + (outlineY - 17) + 'px)';
+        // Move with transform: translate3d only to prevent layout reflows
+        dot.style.transform = 'translate3d(' + (mouseX - 3) + 'px, ' + (mouseY - 3) + 'px, 0)';
+
+        outlineX += (mouseX - outlineX) * 0.2;
+        outlineY += (mouseY - outlineY) * 0.2;
+        currentScale += (targetScale - currentScale) * 0.2;
+
+        outline.style.transform = 'translate3d(' + (outlineX - 17) + 'px, ' + (outlineY - 17) + 'px, 0) scale(' + currentScale.toFixed(3) + ')';
       }
       requestAnimationFrame(renderCursor);
     }
@@ -76,21 +85,27 @@
     var interactiveSelectors = 'a, button, input, select, textarea, .ring-card, .marquee-card, .token-bento-card, .block-tx-item, [role="button"]';
 
     document.addEventListener('mouseover', function (e) {
+      if (!e.target || !e.target.closest) return;
       if (e.target.closest('.marquee-viewport, .ring-carousel-stage')) {
         outline.classList.add('cursor--drag');
+        targetScale = 1.8;
       } else if (e.target.closest(interactiveSelectors)) {
         outline.classList.add('cursor--hover');
+        targetScale = 1.4;
       }
-    });
+    }, { passive: true });
 
     document.addEventListener('mouseout', function (e) {
+      if (!e.target || !e.target.closest) return;
       if (e.target.closest('.marquee-viewport, .ring-carousel-stage')) {
         outline.classList.remove('cursor--drag');
+        targetScale = 1;
       }
       if (e.target.closest(interactiveSelectors)) {
         outline.classList.remove('cursor--hover');
+        targetScale = 1;
       }
-    });
+    }, { passive: true });
 
     document.addEventListener('mouseleave', function () {
       dot.style.opacity = '0';

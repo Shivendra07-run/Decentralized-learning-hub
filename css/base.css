@@ -334,16 +334,15 @@ code, kbd, samp, pre {
   border-radius: var(--radius-pill);
   pointer-events: none;
   z-index: var(--z-cursor);
-  transform: translate(-50%, -50%);
   transition: opacity var(--transition-fast);
   opacity: 0;
+  will-change: transform;
 }
 
 .cursor-dot {
   width: 6px;
   height: 6px;
   background-color: #FFFFFF;
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
 }
 
 .cursor-outline {
@@ -360,21 +359,17 @@ code, kbd, samp, pre {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: transparent;
-  transition: width var(--transition-fast), height var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast), color var(--transition-fast);
+  transition: border-color var(--transition-fast), background-color var(--transition-fast), color var(--transition-fast);
 }
 
 .cursor-outline.cursor--hover {
-  width: 52px;
-  height: 52px;
   border-color: #FFFFFF;
-  background: rgba(255, 255, 255, 0.08);
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
 .cursor-outline.cursor--drag {
-  width: 68px;
-  height: 68px;
   border-color: #FFFFFF;
-  background: rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.15);
   color: #FFFFFF;
   backdrop-filter: blur(4px);
 }
