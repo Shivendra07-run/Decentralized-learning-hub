@@ -1,1 +1,738 @@
-!function(){"use strict";window.Aether=window.Aether||{};var e=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;async function t(e){if(!window.crypto||!window.crypto.subtle)return"0x7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1f";var t=(new TextEncoder).encode(e),n=await window.crypto.subtle.digest("SHA-256",t);return"0x"+Array.from(new Uint8Array(n)).map(function(e){return e.toString(16).padStart(2,"0")}).join("")}var n=0,o=!1;var a={blockchain:{title:"Blockchain: The Immutable Ledger",analogy:"Imagine a public notebook where every page (block) is sealed with a digital wax seal (hash) that references the previous page. If anyone erases a single letter on page 2, all subsequent wax seals shatter across thousands of identical notebooks worldwide.",terms:["SHA-256 Hashing","Consensus Mechanisms","Distributed Nodes"],fact:"The Bitcoin blockchain has recorded transactions without a single second of global network downtime since January 2009.",widgetType:"hasher",url:"https://ethereum.org/en/developers/docs/intro-to-ethereum/"},contracts:{title:"Smart Contracts: Self-Executing Agreements",analogy:"Think of a digital vending machine. You insert cryptographic payment, the code verifies the exact currency amount, and it automatically dispenses the item. No clerk, escrow agent, or court needed.",terms:["Turing-Complete","Gas Limit","Immutable Logic"],fact:'Nick Szabo coined the term "Smart Contract" in 1994, over a decade before Bitcoin was invented.',widgetType:"vending",url:"https://ethereum.org/en/developers/docs/smart-contracts/"},tokens:{title:"Tokens & NFTs: Programmable Ownership",analogy:"A token is like a programmable concert ticket that can also double as voting stock in the music festival, grant backstage access, and automatically reward you with loyal attendee perks.",terms:["ERC-20 (Fungible)","ERC-721 (Unique)","Digital Provenance"],fact:"The earliest NFTs on Ethereum were CryptoPunks and MoonCats, minted in 2017 before the official ERC-721 token standard was finalized.",widgetType:"minter",url:"https://ethereum.org/en/nft/"}};function i(e){var n=a[e];if(n){var o=document.getElementById("block-modal-backdrop"),i=document.getElementById("block-modal-dialog");if(o&&i){document.getElementById("modal-block-title").textContent=n.title,document.getElementById("modal-block-analogy").textContent=n.analogy,document.getElementById("modal-block-fact").textContent=n.fact;var r=document.getElementById("modal-block-learn-more");r&&(n.url?(r.href=n.url,r.style.display="inline-flex"):r.style.display="none"),document.getElementById("modal-block-terms").innerHTML=n.terms.map(function(e){return'<span class="key-term-chip">'+e+"</span>"}).join("");var s=document.getElementById("modal-block-widget");if("hasher"===n.widgetType){s.innerHTML=['<div class="widget-label"><span>Live SHA-256 Web Crypto Hasher</span> <span class="widget-demo-tag">Interactive Simulation</span></div>','<p style="font-size:var(--text-xs); color:var(--text-secondary); margin-bottom:8px;">Type any text to watch the cryptographic hash change instantly:</p>','<input type="text" id="live-hash-input" class="hash-input-field" value="Blockchain Transaction #1042">','<div class="hash-output-display" id="live-hash-output">Calculating...</div>'].join("");var d=document.getElementById("live-hash-input"),c=document.getElementById("live-hash-output");async function v(){c.textContent=await t(d.value)}d.addEventListener("input",v),v()}else if("vending"===n.widgetType){s.innerHTML=['<div class="widget-label"><span>Smart Contract Vending Machine</span> <span class="widget-demo-tag">Simulation</span></div>','<p style="font-size:var(--text-xs); color:var(--text-secondary); margin-bottom:12px;">Trigger state verification to execute the smart contract logic:</p>','<div style="display:flex; justify-content:space-between; align-items:center; background:#050506; padding:12px; border-radius:8px; border:1px solid var(--border-line);">','  <div><strong style="color:#FFF; font-size:var(--text-sm);">State:</strong> <span id="contract-state-text" style="color:#FBBF24; font-family:var(--font-mono); font-size:var(--text-xs);">Awaiting 0.05 ETH Deposit</span></div>','  <button class="btn btn--primary btn--sm" id="contract-trigger-btn">Deposit 0.05 ETH</button>',"</div>",'<div id="contract-log" style="font-family:var(--font-mono); font-size:11px; color:#A9AFBA; margin-top:8px;">Contract initialized at address 0x3b8f...21a</div>'].join("");var l=document.getElementById("contract-trigger-btn"),u=document.getElementById("contract-state-text"),m=document.getElementById("contract-log");l.addEventListener("click",function(){u.textContent="Verifying Deposit...",u.style.color="#FFFFFF",l.disabled=!0,setTimeout(function(){u.textContent="Condition Met: Asset Dispensed!",u.style.color="#10B981",m.textContent="Tx 0x892a...f71: 0.05 ETH received. Token transfer executed automatically.",Aether.showToast("Smart contract conditions met!")},700)})}else{var g=142;s.innerHTML=['<div class="widget-label"><span>Demo Token Minter</span> <span class="widget-demo-tag">Simulation</span></div>','<div style="display:flex; justify-content:space-between; align-items:center; background:#050506; padding:12px; border-radius:8px; border:1px solid var(--border-line);">','  <div><span style="color:var(--text-secondary); font-size:var(--text-xs);">Total Minted:</span> <strong id="mint-counter" style="color:#FFF; font-family:var(--font-mono); font-size:var(--text-lg); margin-left:6px;">'+g+" AETH</strong></div>",'  <button class="btn btn--primary btn--sm" id="mint-token-btn">Mint +1 Token</button>',"</div>",'<div id="mint-log" style="font-family:var(--font-mono); font-size:11px; color:#A9AFBA; margin-top:8px;">Standard: ERC-20 Fixed Decimals (18)</div>'].join("");var h=document.getElementById("mint-token-btn"),p=document.getElementById("mint-counter"),f=document.getElementById("mint-log");h.addEventListener("click",function(){g++,p.textContent=g+" AETH",f.textContent="Minted token #"+g+" to address 0x71C8...49b2",Aether.showToast("Minted 1 AETH Demo Token!")})}o.classList.add("is-open"),i.classList.add("is-open"),document.body.style.overflow="hidden"}}}function r(){var e=document.getElementById("block-modal-backdrop"),t=document.getElementById("block-modal-dialog");e&&t&&(e.classList.remove("is-open"),t.classList.remove("is-open"),document.body.style.overflow="")}var s={defi:{how:"Smart contracts act as automated liquidity pools without brokers or clearinghouses.",example:"Uniswap enables decentralized trades; Aave allows peer-to-peer asset borrowing.",risk:"Smart contract bugs or economic oracle exploits can lead to loss of funds."},gaming:{how:"Game items are stored as verifiable NFT tokens directly in the player's self-custody wallet.",example:"Gods Unchained and Parallel allow players to buy, sell, or trade game cards openly.",risk:"Poor gameplay incentives prioritizing speculative token earning over authentic player enjoyment."},identity:{how:"Cryptographic public-private key pairs allow users to prove credentials without revealing personal details.",example:"Sign-in with Ethereum (SIWE) and Zero-Knowledge age verification proofs.",risk:"Losing your private key or seed phrase means permanently losing access to your identity."},supply:{how:"Each handoff in the logistics chain is cryptographically timestamped on an immutable ledger.",example:"Tracking ethical coffee beans from certified farms directly to the retail grocery shelf.",risk:'"Garbage in, garbage out" — physical fraud can still occur at the initial data entry point.'},creators:{how:"Programmable smart contracts enforce automatic secondary sales royalties directly to artists.",example:"Independent musicians releasing limited album drops directly to their most loyal patrons.",risk:"Market saturation and differing platform implementations of royalty enforcement."},voting:{how:"Token-weighted or zero-knowledge ballots recorded publicly with mathematically verifiable counts.",example:"MakerDAO and Uniswap token holders voting on protocol fee changes and treasury grants.",risk:'Voter apathy or plutocratic governance where wealthy "whales" dominate proposal outcomes.'}};var d={payments:"Tokens settle internationally within seconds with transaction fees measured in pennies, bypassing multi-day SWIFT banking delays.",governance:"Holders create and vote on binding architectural proposals, protocol fee distributions, and foundation grant allocations.",staking:"Locking tokens in Proof-of-Stake consensus validators secures the network against attacks in exchange for protocol rewards.",access:"Holding a specific token functions as an unforgeable digital pass to dApp features, private developer APIs, or private Discord servers.",rewards:"Early users and liquidity providers earn protocol tokens, aligning long-term stakeholder incentives without central ad tracking.",collectibles:"Tokens with unique token IDs (NFTs) prove immutable historical provenance for digital artwork, virtual plots, and digital goods."};var c=[{id:1,title:"Beginner",hashPrefix:"0x1a8f",items:[{id:"b1",text:"Understand how a blockchain ledger records transactions irreversibly",tag:"Ledger"},{id:"b2",text:"Learn how distributed nodes reach Byzantine Fault Tolerant consensus",tag:"Nodes"},{id:"b3",text:"Set up your first self-custody wallet and securely store your seed phrase",tag:"Wallet"}]},{id:2,title:"Builder",hashPrefix:"0x4b7c",items:[{id:"m1",text:"Explore the anatomy of a Solidity smart contract vending machine",tag:"Contracts"},{id:"m2",text:"Understand gas fees, execution limits, and transaction state changes",tag:"EVM"},{id:"m3",text:"Simulate an Automated Market Maker (AMM) token swap with slippage calculation",tag:"DeFi"}]},{id:3,title:"Explorer",hashPrefix:"0x9d2e",items:[{id:"e1",text:"Participate in token-weighted mini DAO voting and observe quorum reach",tag:"DAO"},{id:"e2",text:"Calculate proof-of-stake staking yields and understand slashing risks",tag:"Staking"},{id:"e3",text:"Test your knowledge on the 10-question Aether certification quiz",tag:"Quiz"}]}];function l(){var e=JSON.parse(localStorage.getItem("aether_chain_roadmap")||"{}");c.forEach(async function(n,o){var a=document.getElementById("chain-block-"+n.id),i=document.getElementById("block-hash-"+n.id),r=document.getElementById("block-tx-list-"+n.id),s=document.getElementById("ring-circle-"+n.id),d=document.getElementById("ring-text-"+n.id),c=document.getElementById("chain-connector-"+n.id);if(a&&r){var u=await t(n.title+JSON.stringify(n.items));i&&(i.textContent=u.substring(0,10)+"..."),r.innerHTML="";var m=0;n.items.forEach(function(t){var n=Boolean(e[t.id]);n&&m++;var o=document.createElement("div");async function a(){var n=!e[t.id];e[t.id]=n,localStorage.setItem("aether_chain_roadmap",JSON.stringify(e)),window.Aether&&window.Aether.Progress&&"function"==typeof window.Aether.Progress.scheduleProgressPut&&window.Aether.Progress.scheduleProgressPut(),l()}o.className="block-tx-item"+(n?" is-checked":""),o.setAttribute("role","checkbox"),o.setAttribute("aria-checked",n?"true":"false"),o.setAttribute("tabindex","0"),o.innerHTML=['<span class="tx-check-circle">',n?'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><polyline points="20 6 9 17 4 12"></polyline></svg>':"","</span>",'<span class="tx-text">'+t.text+"</span>",'<span class="tx-tag">'+t.tag+"</span>"].join(""),o.addEventListener("click",a),o.addEventListener("keydown",function(e){"Enter"!==e.key&&" "!==e.key||(e.preventDefault(),a())}),r.appendChild(o)});var g=Math.round(m/n.items.length*100);if(d&&(d.textContent=g+"%"),s){var h=2*Math.PI*14;s.style.strokeDasharray=h,s.style.strokeDashoffset=h-g/100*h}if(m===n.items.length){a.classList.add("is-mined"),i&&(i.textContent="SEALED #"+n.id),c&&c.classList.add("is-active");var p=document.getElementById("chain-block-"+(n.id+1));p&&p.classList.add("is-unlocked")}else a.classList.remove("is-mined"),c&&c.classList.remove("is-active")}});var n=document.getElementById("reset-chain-btn");n&&n.addEventListener("click",function(){localStorage.removeItem("aether_chain_roadmap"),window.Aether&&window.Aether.Progress&&"function"==typeof window.Aether.Progress.scheduleProgressPut&&window.Aether.Progress.scheduleProgressPut(),Aether.showToast("Blockchain roadmap progress reset."),l()})}function u(){e||"undefined"!=typeof window&&(window.innerWidth<768||window.matchMedia&&!window.matchMedia("(hover: hover) and (pointer: fine)").matches)||document.querySelectorAll(".btn-magnetic, .btn--primary").forEach(function(e){e.addEventListener("mousemove",function(t){var n=e.getBoundingClientRect(),o=t.clientX-n.left-n.width/2,a=t.clientY-n.top-n.height/2;e.style.transform="translate("+(.22*o).toFixed(1)+"px, "+(.22*a).toFixed(1)+"px)"}),e.addEventListener("mouseleave",function(){e.style.transform="translate(0px, 0px)"})}),function(){var t=document.querySelectorAll(".reveal-on-scroll");if(t.length){var n="undefined"!=typeof window&&(window.innerWidth<768||window.matchMedia&&!window.matchMedia("(hover: hover) and (pointer: fine)").matches);if(e||!("IntersectionObserver"in window)||n)t.forEach(function(e){e.classList.add("is-revealed")});else{var o=new IntersectionObserver(function(e){e.forEach(function(e){e.isIntersecting&&(e.target.classList.add("is-revealed"),o.unobserve(e.target))})},{rootMargin:"0px 0px -60px 0px",threshold:.1});t.forEach(function(e,t){e.style.transitionDelay=t%3*80+"ms",o.observe(e)})}}}(),function(){var t=document.getElementById("ring-track"),a=document.querySelectorAll(".ring-card"),i=document.getElementById("ring-prev-btn"),r=document.getElementById("ring-next-btn");if(t&&!(a.length<3)){var s="undefined"!=typeof window&&(window.innerWidth<768||window.matchMedia&&!window.matchMedia("(hover: hover) and (pointer: fine)").matches),d=s?180:340,c=2*Math.PI/a.length;g(),s&&(o=!0),requestAnimationFrame(function t(){o||e||(n+=.003,g()),requestAnimationFrame(t)});var l=document.querySelector(".ring-carousel-stage");l&&(l.addEventListener("mouseenter",function(){o=!0}),l.addEventListener("mouseleave",function(){o=!1})),i&&i.addEventListener("click",function(){n-=c,g()}),r&&r.addEventListener("click",function(){n+=c,g()});var u=!1,m=0;l&&(l.addEventListener("mousedown",function(e){u=!0,m=e.clientX}),window.addEventListener("mouseup",function(){u=!1}),window.addEventListener("mousemove",function(e){if(u){var t=e.clientX-m;m=e.clientX,n+=.006*t,g()}}),l.addEventListener("touchstart",function(e){e.touches&&e.touches.length>0&&(u=!0,m=e.touches[0].clientX,o=!0)},{passive:!0}),window.addEventListener("touchend",function(){u=!1,o=!1},{passive:!0}),window.addEventListener("touchcancel",function(){u=!1,o=!1},{passive:!0}),window.addEventListener("touchmove",function(e){if(u&&e.touches&&e.touches.length){var t=e.touches[0].clientX-m;m=e.touches[0].clientX,n+=.008*t,g()}},{passive:!0}))}function g(){a.forEach(function(e,t){var o=n+t*c,a=Math.sin(o)*d,i=Math.cos(o)*d,r=(i+d)/(2*d),s=.8+.25*r,l=.45+.55*r;e.style.transform="translate3d("+a.toFixed(1)+"px, 0px, "+i.toFixed(1)+"px) scale("+s.toFixed(2)+")",e.style.opacity=l.toFixed(2),e.style.zIndex=Math.round(10*r)})}}(),function(){document.querySelectorAll(".ring-card").forEach(function(e){e.addEventListener("click",function(){i(e.getAttribute("data-block-type"))})});var e=document.getElementById("block-modal-backdrop"),t=document.getElementById("block-modal-close");e&&e.addEventListener("click",r),t&&t.addEventListener("click",r),document.addEventListener("keydown",function(e){"Escape"===e.key&&r()})}(),function(){document.querySelectorAll(".marquee-card").forEach(function(e){var t=e.getAttribute("data-category"),n=s[t];if(n){var o=e.querySelector(".marquee-card__expanded-content");o&&(o.innerHTML=['<div style="margin-bottom:4px;"><strong style="color:#FFF;">How it works:</strong> '+n.how+"</div>",'<div style="margin-bottom:4px;"><strong style="color:#FFF;">Example:</strong> '+n.example+"</div>",'<div><strong style="color:#FBBF24;">Risk to watch:</strong> '+n.risk+"</div>"].join(""))}e.addEventListener("click",function(t){t.target.closest("a")||e.classList.toggle("is-expanded")})});var e=document.querySelector(".marquee-viewport");if(e){var t=0,n=null;e.addEventListener("touchstart",function(e){e.touches&&e.touches.length>0&&(t=e.touches[0].clientX,(n=e.target.closest(".marquee-row"))&&(n.style.animationPlayState="paused"))},{passive:!0}),e.addEventListener("touchmove",function(e){if(n&&e.touches&&e.touches.length){var o=e.touches[0].clientX-t;t=e.touches[0].clientX,n.scrollLeft-=o}},{passive:!0}),e.addEventListener("touchend",function(){n&&(n.style.animationPlayState="",n=null)},{passive:!0}),e.addEventListener("touchcancel",function(){n&&(n.style.animationPlayState="",n=null)},{passive:!0})}}(),document.querySelectorAll(".token-bento-card").forEach(function(e){var t=e.getAttribute("data-token-key"),n=e.querySelector(".token-bento-card__example");n&&d[t]&&(n.innerHTML="<strong>Scenario:</strong> "+d[t]),e.addEventListener("click",function(){e.classList.toggle("is-expanded")})}),l()}window.Aether.initChainRoadmap=l,window.Aether.Motion={init:u,openBlockModal:i,closeBlockModal:r},"loading"===document.readyState?document.addEventListener("DOMContentLoaded",u):u()}();
+/**
+ * AETHER MOTION & INTERACTION SUITE (v4 Dark Monochrome)
+ * Includes:
+ * 1. Rotating 3D Ring Carousel with drag, hover pause & perspective depth
+ * 2. Interactive detail modal with live SHA-256 Web Crypto hashing, contract simulator & token minter
+ * 3. Two-row infinite marquee with expand/flip cards
+ * 4. Chain of Blocks roadmap with real SHA-256 hashing, progress rings, and block mining animations
+ */
+
+(function () {
+  'use strict';
+
+  window.Aether = window.Aether || {};
+
+  var prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /**
+   * Helper: Generate real SHA-256 hash using native browser Web Crypto API
+   */
+  async function computeSha256(str) {
+    if (!window.crypto || !window.crypto.subtle) {
+      return '0x7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1f';
+    }
+    var buffer = new TextEncoder().encode(str);
+    var hashBuffer = await window.crypto.subtle.digest('SHA-256', buffer);
+    var hashArray = Array.from(new Uint8Array(hashBuffer));
+    return '0x' + hashArray.map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+  }
+
+  /**
+   * Custom Cursor Follower & Drag Badge (rAF Batched, Composited translate3d)
+   */
+  function initCustomCursor() {
+    if (prefersReducedMotion) return;
+    if (typeof window !== 'undefined' && window.matchMedia && !window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      return;
+    }
+
+    var dot = document.querySelector('.cursor-dot');
+    var outline = document.querySelector('.cursor-outline');
+
+    if (!dot) {
+      dot = document.createElement('div');
+      dot.className = 'cursor-dot';
+      document.body.appendChild(dot);
+    }
+    if (!outline) {
+      outline = document.createElement('div');
+      outline.className = 'cursor-outline';
+      document.body.appendChild(outline);
+    }
+
+    var mouseX = -100, mouseY = -100;
+    var outlineX = -100, outlineY = -100;
+    var isVisible = false;
+    var targetScale = 1;
+    var currentScale = 1;
+
+    // Passive listener: never mutate styles directly in mousemove
+    window.addEventListener('mousemove', function (e) {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      if (!isVisible) {
+        isVisible = true;
+        dot.style.opacity = '1';
+        outline.style.opacity = '1';
+      }
+    }, { passive: true });
+
+    function renderCursor() {
+      if (isVisible) {
+        // Move with transform: translate3d only to prevent layout reflows
+        dot.style.transform = 'translate3d(' + (mouseX - 3) + 'px, ' + (mouseY - 3) + 'px, 0)';
+
+        outlineX += (mouseX - outlineX) * 0.2;
+        outlineY += (mouseY - outlineY) * 0.2;
+        currentScale += (targetScale - currentScale) * 0.2;
+
+        outline.style.transform = 'translate3d(' + (outlineX - 17) + 'px, ' + (outlineY - 17) + 'px, 0) scale(' + currentScale.toFixed(3) + ')';
+      }
+      requestAnimationFrame(renderCursor);
+    }
+    requestAnimationFrame(renderCursor);
+
+    var interactiveSelectors = 'a, button, input, select, textarea, .ring-card, .marquee-card, .token-bento-card, .block-tx-item, [role="button"]';
+
+    document.addEventListener('mouseover', function (e) {
+      if (!e.target || !e.target.closest) return;
+      if (e.target.closest('.marquee-viewport, .ring-carousel-stage')) {
+        outline.classList.add('cursor--drag');
+        targetScale = 1.8;
+      } else if (e.target.closest(interactiveSelectors)) {
+        outline.classList.add('cursor--hover');
+        targetScale = 1.4;
+      }
+    }, { passive: true });
+
+    document.addEventListener('mouseout', function (e) {
+      if (!e.target || !e.target.closest) return;
+      if (e.target.closest('.marquee-viewport, .ring-carousel-stage')) {
+        outline.classList.remove('cursor--drag');
+        targetScale = 1;
+      }
+      if (e.target.closest(interactiveSelectors)) {
+        outline.classList.remove('cursor--hover');
+        targetScale = 1;
+      }
+    }, { passive: true });
+
+    document.addEventListener('mouseleave', function () {
+      dot.style.opacity = '0';
+      outline.style.opacity = '0';
+      isVisible = false;
+    });
+  }
+
+  /**
+   * Magnetic Button Attraction
+   */
+  function initMagneticButtons() {
+    if (prefersReducedMotion) return;
+    if (typeof window !== 'undefined' && (window.innerWidth < 768 || (window.matchMedia && !window.matchMedia('(hover: hover) and (pointer: fine)').matches))) {
+      return;
+    }
+
+    var buttons = document.querySelectorAll('.btn-magnetic, .btn--primary');
+    buttons.forEach(function (btn) {
+      btn.addEventListener('mousemove', function (e) {
+        var rect = btn.getBoundingClientRect();
+        var x = e.clientX - rect.left - rect.width / 2;
+        var y = e.clientY - rect.top - rect.height / 2;
+        btn.style.transform = 'translate(' + (x * 0.22).toFixed(1) + 'px, ' + (y * 0.22).toFixed(1) + 'px)';
+      });
+
+      btn.addEventListener('mouseleave', function () {
+        btn.style.transform = 'translate(0px, 0px)';
+      });
+    });
+  }
+
+  /**
+   * Scroll Reveal Transitions
+   */
+  function initScrollReveal() {
+    var targets = document.querySelectorAll('.reveal-on-scroll');
+    if (!targets.length) return;
+
+    var isMobileOrTouch = typeof window !== 'undefined' && (window.innerWidth < 768 || (window.matchMedia && !window.matchMedia('(hover: hover) and (pointer: fine)').matches));
+
+    if (prefersReducedMotion || !('IntersectionObserver' in window) || isMobileOrTouch) {
+      targets.forEach(function (el) { el.classList.add('is-revealed'); });
+      return;
+    }
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-revealed');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { rootMargin: '0px 0px -60px 0px', threshold: 0.1 });
+
+    targets.forEach(function (target, idx) {
+      target.style.transitionDelay = (idx % 3 * 80) + 'ms';
+      observer.observe(target);
+    });
+  }
+
+  /**
+   * SECTION 5: ROTATING 3D RING CAROUSEL (Three Building Blocks)
+   */
+  var ringCurrentAngle = 0;
+  var isRingPaused = false;
+
+  function initRingCarousel() {
+    var track = document.getElementById('ring-track');
+    var cards = document.querySelectorAll('.ring-card');
+    var prevBtn = document.getElementById('ring-prev-btn');
+    var nextBtn = document.getElementById('ring-next-btn');
+
+    if (!track || cards.length < 3) return;
+
+    var isMobile = typeof window !== 'undefined' && (window.innerWidth < 768 || (window.matchMedia && !window.matchMedia('(hover: hover) and (pointer: fine)').matches));
+    var radius = isMobile ? 180 : 340; // 3D orbit radius in pixels
+    var stepAngle = (2 * Math.PI) / cards.length;
+
+    function updateCardPositions() {
+      cards.forEach(function (card, idx) {
+        var cardAngle = ringCurrentAngle + idx * stepAngle;
+        var x = Math.sin(cardAngle) * radius;
+        var z = Math.cos(cardAngle) * radius;
+
+        // Front card is largest & brightest; rear cards are smaller & dimmer
+        var depthNorm = (z + radius) / (2 * radius); // 0 (back) to 1 (front)
+        var scale = 0.8 + 0.25 * depthNorm;
+        var opacity = 0.45 + 0.55 * depthNorm;
+
+        card.style.transform = 'translate3d(' + x.toFixed(1) + 'px, 0px, ' + z.toFixed(1) + 'px) scale(' + scale.toFixed(2) + ')';
+        card.style.opacity = opacity.toFixed(2);
+        card.style.zIndex = Math.round(depthNorm * 10);
+      });
+    }
+
+    updateCardPositions();
+
+    // On mobile, pause auto-rotation by default to eliminate idle rAF overhead
+    if (isMobile) {
+      isRingPaused = true;
+    }
+
+    // Auto-rotation loop
+    function autoRotate() {
+      if (!isRingPaused && !prefersReducedMotion) {
+        ringCurrentAngle += 0.003;
+        updateCardPositions();
+      }
+      requestAnimationFrame(autoRotate);
+    }
+    requestAnimationFrame(autoRotate);
+
+    // Pause on hover
+    var stage = document.querySelector('.ring-carousel-stage');
+    if (stage) {
+      stage.addEventListener('mouseenter', function () { isRingPaused = true; });
+      stage.addEventListener('mouseleave', function () { isRingPaused = false; });
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', function () {
+        ringCurrentAngle -= stepAngle;
+        updateCardPositions();
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', function () {
+        ringCurrentAngle += stepAngle;
+        updateCardPositions();
+      });
+    }
+
+    // Drag-to-rotate & Touch-to-rotate support
+    var isDragging = false;
+    var startX = 0;
+    if (stage) {
+      stage.addEventListener('mousedown', function (e) {
+        isDragging = true;
+        startX = e.clientX;
+      });
+      window.addEventListener('mouseup', function () { isDragging = false; });
+      window.addEventListener('mousemove', function (e) {
+        if (!isDragging) return;
+        var dx = e.clientX - startX;
+        startX = e.clientX;
+        ringCurrentAngle += dx * 0.006;
+        updateCardPositions();
+      });
+
+      stage.addEventListener('touchstart', function (e) {
+        if (e.touches && e.touches.length > 0) {
+          isDragging = true;
+          startX = e.touches[0].clientX;
+          isRingPaused = true;
+        }
+      }, { passive: true });
+      window.addEventListener('touchend', function () {
+        isDragging = false;
+        isRingPaused = false;
+      }, { passive: true });
+      window.addEventListener('touchcancel', function () {
+        isDragging = false;
+        isRingPaused = false;
+      }, { passive: true });
+      window.addEventListener('touchmove', function (e) {
+        if (!isDragging || !e.touches || !e.touches.length) return;
+        var dx = e.touches[0].clientX - startX;
+        startX = e.touches[0].clientX;
+        ringCurrentAngle += dx * 0.008;
+        updateCardPositions();
+      }, { passive: true });
+    }
+  }
+
+  /**
+   * SECTION 5B: INTERACTIVE DETAIL MODAL WITH MINI-APPS
+   */
+  var BLOCK_MODAL_DATA = {
+    blockchain: {
+      title: 'Blockchain: The Immutable Ledger',
+      analogy: 'Imagine a public notebook where every page (block) is sealed with a digital wax seal (hash) that references the previous page. If anyone erases a single letter on page 2, all subsequent wax seals shatter across thousands of identical notebooks worldwide.',
+      terms: ['SHA-256 Hashing', 'Consensus Mechanisms', 'Distributed Nodes'],
+      fact: 'The Bitcoin blockchain has recorded transactions without a single second of global network downtime since January 2009.',
+      widgetType: 'hasher',
+      url: 'https://ethereum.org/en/developers/docs/intro-to-ethereum/'
+    },
+    contracts: {
+      title: 'Smart Contracts: Self-Executing Agreements',
+      analogy: 'Think of a digital vending machine. You insert cryptographic payment, the code verifies the exact currency amount, and it automatically dispenses the item. No clerk, escrow agent, or court needed.',
+      terms: ['Turing-Complete', 'Gas Limit', 'Immutable Logic'],
+      fact: 'Nick Szabo coined the term "Smart Contract" in 1994, over a decade before Bitcoin was invented.',
+      widgetType: 'vending',
+      url: 'https://ethereum.org/en/developers/docs/smart-contracts/'
+    },
+    tokens: {
+      title: 'Tokens & NFTs: Programmable Ownership',
+      analogy: 'A token is like a programmable concert ticket that can also double as voting stock in the music festival, grant backstage access, and automatically reward you with loyal attendee perks.',
+      terms: ['ERC-20 (Fungible)', 'ERC-721 (Unique)', 'Digital Provenance'],
+      fact: 'The earliest NFTs on Ethereum were CryptoPunks and MoonCats, minted in 2017 before the official ERC-721 token standard was finalized.',
+      widgetType: 'minter',
+      url: 'https://ethereum.org/en/nft/'
+    }
+  };
+
+  function openBlockModal(type) {
+    var data = BLOCK_MODAL_DATA[type];
+    if (!data) return;
+
+    var backdrop = document.getElementById('block-modal-backdrop');
+    var dialog = document.getElementById('block-modal-dialog');
+    if (!backdrop || !dialog) return;
+
+    document.getElementById('modal-block-title').textContent = data.title;
+    document.getElementById('modal-block-analogy').textContent = data.analogy;
+    document.getElementById('modal-block-fact').textContent = data.fact;
+
+    var learnMoreBtn = document.getElementById('modal-block-learn-more');
+    if (learnMoreBtn) {
+      if (data.url) {
+        learnMoreBtn.href = data.url;
+        learnMoreBtn.style.display = 'inline-flex';
+      } else {
+        learnMoreBtn.style.display = 'none';
+      }
+    }
+
+    // Render key terms
+    var termsContainer = document.getElementById('modal-block-terms');
+    termsContainer.innerHTML = data.terms.map(function (t) {
+      return '<span class="key-term-chip">' + t + '</span>';
+    }).join('');
+
+    // Render Interactive Widget
+    var widgetContainer = document.getElementById('modal-block-widget');
+    if (data.widgetType === 'hasher') {
+      widgetContainer.innerHTML = [
+        '<div class="widget-label"><span>Live SHA-256 Web Crypto Hasher</span> <span class="widget-demo-tag">Interactive Simulation</span></div>',
+        '<p style="font-size:var(--text-xs); color:var(--text-secondary); margin-bottom:8px;">Type any text to watch the cryptographic hash change instantly:</p>',
+        '<input type="text" id="live-hash-input" class="hash-input-field" value="Blockchain Transaction #1042">',
+        '<div class="hash-output-display" id="live-hash-output">Calculating...</div>'
+      ].join('');
+
+      var input = document.getElementById('live-hash-input');
+      var output = document.getElementById('live-hash-output');
+
+      async function updateHash() {
+        output.textContent = await computeSha256(input.value);
+      }
+      input.addEventListener('input', updateHash);
+      updateHash();
+    } else if (data.widgetType === 'vending') {
+      widgetContainer.innerHTML = [
+        '<div class="widget-label"><span>Smart Contract Vending Machine</span> <span class="widget-demo-tag">Simulation</span></div>',
+        '<p style="font-size:var(--text-xs); color:var(--text-secondary); margin-bottom:12px;">Trigger state verification to execute the smart contract logic:</p>',
+        '<div style="display:flex; justify-content:space-between; align-items:center; background:#050506; padding:12px; border-radius:8px; border:1px solid var(--border-line);">',
+        '  <div><strong style="color:#FFF; font-size:var(--text-sm);">State:</strong> <span id="contract-state-text" style="color:#FBBF24; font-family:var(--font-mono); font-size:var(--text-xs);">Awaiting 0.05 ETH Deposit</span></div>',
+        '  <button class="btn btn--primary btn--sm" id="contract-trigger-btn">Deposit 0.05 ETH</button>',
+        '</div>',
+        '<div id="contract-log" style="font-family:var(--font-mono); font-size:11px; color:#A9AFBA; margin-top:8px;">Contract initialized at address 0x3b8f...21a</div>'
+      ].join('');
+
+      var btn = document.getElementById('contract-trigger-btn');
+      var stateText = document.getElementById('contract-state-text');
+      var log = document.getElementById('contract-log');
+
+      btn.addEventListener('click', function () {
+        stateText.textContent = 'Verifying Deposit...';
+        stateText.style.color = '#FFFFFF';
+        btn.disabled = true;
+
+        setTimeout(function () {
+          stateText.textContent = 'Condition Met: Asset Dispensed!';
+          stateText.style.color = '#10B981';
+          log.textContent = 'Tx 0x892a...f71: 0.05 ETH received. Token transfer executed automatically.';
+          Aether.showToast('Smart contract conditions met!');
+        }, 700);
+      });
+    } else {
+      var mintCount = 142;
+      widgetContainer.innerHTML = [
+        '<div class="widget-label"><span>Demo Token Minter</span> <span class="widget-demo-tag">Simulation</span></div>',
+        '<div style="display:flex; justify-content:space-between; align-items:center; background:#050506; padding:12px; border-radius:8px; border:1px solid var(--border-line);">',
+        '  <div><span style="color:var(--text-secondary); font-size:var(--text-xs);">Total Minted:</span> <strong id="mint-counter" style="color:#FFF; font-family:var(--font-mono); font-size:var(--text-lg); margin-left:6px;">' + mintCount + ' AETH</strong></div>',
+        '  <button class="btn btn--primary btn--sm" id="mint-token-btn">Mint +1 Token</button>',
+        '</div>',
+        '<div id="mint-log" style="font-family:var(--font-mono); font-size:11px; color:#A9AFBA; margin-top:8px;">Standard: ERC-20 Fixed Decimals (18)</div>'
+      ].join('');
+
+      var mintBtn = document.getElementById('mint-token-btn');
+      var counterEl = document.getElementById('mint-counter');
+      var mintLog = document.getElementById('mint-log');
+
+      mintBtn.addEventListener('click', function () {
+        mintCount++;
+        counterEl.textContent = mintCount + ' AETH';
+        mintLog.textContent = 'Minted token #' + mintCount + ' to address 0x71C8...49b2';
+        Aether.showToast('Minted 1 AETH Demo Token!');
+      });
+    }
+
+    backdrop.classList.add('is-open');
+    dialog.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeBlockModal() {
+    var backdrop = document.getElementById('block-modal-backdrop');
+    var dialog = document.getElementById('block-modal-dialog');
+    if (backdrop && dialog) {
+      backdrop.classList.remove('is-open');
+      dialog.classList.remove('is-open');
+      document.body.style.overflow = '';
+    }
+  }
+
+  function initBuildingBlocksModal() {
+    var cards = document.querySelectorAll('.ring-card');
+    cards.forEach(function (card) {
+      card.addEventListener('click', function () {
+        var type = card.getAttribute('data-block-type');
+        openBlockModal(type);
+      });
+    });
+
+    var backdrop = document.getElementById('block-modal-backdrop');
+    var closeBtn = document.getElementById('block-modal-close');
+    if (backdrop) backdrop.addEventListener('click', closeBlockModal);
+    if (closeBtn) closeBtn.addEventListener('click', closeBlockModal);
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeBlockModal();
+    });
+  }
+
+  /**
+   * SECTION 6: REAL WORLD TWO-ROW MARQUEE EXPANDING CARDS
+   */
+  var REAL_WORLD_DETAILS = {
+    defi: {
+      how: 'Smart contracts act as automated liquidity pools without brokers or clearinghouses.',
+      example: 'Uniswap enables decentralized trades; Aave allows peer-to-peer asset borrowing.',
+      risk: 'Smart contract bugs or economic oracle exploits can lead to loss of funds.'
+    },
+    gaming: {
+      how: 'Game items are stored as verifiable NFT tokens directly in the player\'s self-custody wallet.',
+      example: 'Gods Unchained and Parallel allow players to buy, sell, or trade game cards openly.',
+      risk: 'Poor gameplay incentives prioritizing speculative token earning over authentic player enjoyment.'
+    },
+    identity: {
+      how: 'Cryptographic public-private key pairs allow users to prove credentials without revealing personal details.',
+      example: 'Sign-in with Ethereum (SIWE) and Zero-Knowledge age verification proofs.',
+      risk: 'Losing your private key or seed phrase means permanently losing access to your identity.'
+    },
+    supply: {
+      how: 'Each handoff in the logistics chain is cryptographically timestamped on an immutable ledger.',
+      example: 'Tracking ethical coffee beans from certified farms directly to the retail grocery shelf.',
+      risk: '"Garbage in, garbage out" — physical fraud can still occur at the initial data entry point.'
+    },
+    creators: {
+      how: 'Programmable smart contracts enforce automatic secondary sales royalties directly to artists.',
+      example: 'Independent musicians releasing limited album drops directly to their most loyal patrons.',
+      risk: 'Market saturation and differing platform implementations of royalty enforcement.'
+    },
+    voting: {
+      how: 'Token-weighted or zero-knowledge ballots recorded publicly with mathematically verifiable counts.',
+      example: 'MakerDAO and Uniswap token holders voting on protocol fee changes and treasury grants.',
+      risk: 'Voter apathy or plutocratic governance where wealthy "whales" dominate proposal outcomes.'
+    }
+  };
+
+  function initRealWorldMarquee() {
+    var cards = document.querySelectorAll('.marquee-card');
+    cards.forEach(function (card) {
+      var categoryKey = card.getAttribute('data-category');
+      var details = REAL_WORLD_DETAILS[categoryKey];
+      if (details) {
+        var expandContainer = card.querySelector('.marquee-card__expanded-content');
+        if (expandContainer) {
+          expandContainer.innerHTML = [
+            '<div style="margin-bottom:4px;"><strong style="color:#FFF;">How it works:</strong> ' + details.how + '</div>',
+            '<div style="margin-bottom:4px;"><strong style="color:#FFF;">Example:</strong> ' + details.example + '</div>',
+            '<div><strong style="color:#FBBF24;">Risk to watch:</strong> ' + details.risk + '</div>'
+          ].join('');
+        }
+      }
+
+      card.addEventListener('click', function (e) {
+        if (e.target.closest('a')) return;
+        card.classList.toggle('is-expanded');
+      });
+    });
+
+    // Touch swipe support for marquee rows on mobile
+    var viewport = document.querySelector('.marquee-viewport');
+    if (viewport) {
+      var touchStartX = 0;
+      var activeRow = null;
+      viewport.addEventListener('touchstart', function (e) {
+        if (e.touches && e.touches.length > 0) {
+          touchStartX = e.touches[0].clientX;
+          activeRow = e.target.closest('.marquee-row');
+          if (activeRow) activeRow.style.animationPlayState = 'paused';
+        }
+      }, { passive: true });
+
+      viewport.addEventListener('touchmove', function (e) {
+        if (!activeRow || !e.touches || !e.touches.length) return;
+        var diffX = e.touches[0].clientX - touchStartX;
+        touchStartX = e.touches[0].clientX;
+        activeRow.scrollLeft -= diffX;
+      }, { passive: true });
+
+      viewport.addEventListener('touchend', function () {
+        if (activeRow) {
+          activeRow.style.animationPlayState = '';
+          activeRow = null;
+        }
+      }, { passive: true });
+
+      viewport.addEventListener('touchcancel', function () {
+        if (activeRow) {
+          activeRow.style.animationPlayState = '';
+          activeRow = null;
+        }
+      }, { passive: true });
+    }
+  }
+
+  /**
+   * SECTION 6B: BENTO TOKENS EXPANSION
+   */
+  var TOKEN_DETAILS = {
+    payments: 'Tokens settle internationally within seconds with transaction fees measured in pennies, bypassing multi-day SWIFT banking delays.',
+    governance: 'Holders create and vote on binding architectural proposals, protocol fee distributions, and foundation grant allocations.',
+    staking: 'Locking tokens in Proof-of-Stake consensus validators secures the network against attacks in exchange for protocol rewards.',
+    access: 'Holding a specific token functions as an unforgeable digital pass to dApp features, private developer APIs, or private Discord servers.',
+    rewards: 'Early users and liquidity providers earn protocol tokens, aligning long-term stakeholder incentives without central ad tracking.',
+    collectibles: 'Tokens with unique token IDs (NFTs) prove immutable historical provenance for digital artwork, virtual plots, and digital goods.'
+  };
+
+  function initBentoTokens() {
+    var cards = document.querySelectorAll('.token-bento-card');
+    cards.forEach(function (card) {
+      var key = card.getAttribute('data-token-key');
+      var exampleEl = card.querySelector('.token-bento-card__example');
+      if (exampleEl && TOKEN_DETAILS[key]) {
+        exampleEl.innerHTML = '<strong>Scenario:</strong> ' + TOKEN_DETAILS[key];
+      }
+
+      card.addEventListener('click', function () {
+        card.classList.toggle('is-expanded');
+      });
+    });
+  }
+
+  /**
+   * SECTION 8: "CHAIN OF BLOCKS" ROADMAP (Real SHA-256 Hashing & Mining)
+   */
+  var ROADMAP_BLOCKS = [
+    {
+      id: 1,
+      title: 'Beginner',
+      hashPrefix: '0x1a8f',
+      items: [
+        { id: 'b1', text: 'Understand how a blockchain ledger records transactions irreversibly', tag: 'Ledger' },
+        { id: 'b2', text: 'Learn how distributed nodes reach Byzantine Fault Tolerant consensus', tag: 'Nodes' },
+        { id: 'b3', text: 'Set up your first self-custody wallet and securely store your seed phrase', tag: 'Wallet' }
+      ]
+    },
+    {
+      id: 2,
+      title: 'Builder',
+      hashPrefix: '0x4b7c',
+      items: [
+        { id: 'm1', text: 'Explore the anatomy of a Solidity smart contract vending machine', tag: 'Contracts' },
+        { id: 'm2', text: 'Understand gas fees, execution limits, and transaction state changes', tag: 'EVM' },
+        { id: 'm3', text: 'Simulate an Automated Market Maker (AMM) token swap with slippage calculation', tag: 'DeFi' }
+      ]
+    },
+    {
+      id: 3,
+      title: 'Explorer',
+      hashPrefix: '0x9d2e',
+      items: [
+        { id: 'e1', text: 'Participate in token-weighted mini DAO voting and observe quorum reach', tag: 'DAO' },
+        { id: 'e2', text: 'Calculate proof-of-stake staking yields and understand slashing risks', tag: 'Staking' },
+        { id: 'e3', text: 'Test your knowledge on the 10-question Aether certification quiz', tag: 'Quiz' }
+      ]
+    }
+  ];
+
+  function initChainRoadmap() {
+    var savedState = JSON.parse(localStorage.getItem('aether_chain_roadmap') || '{}');
+
+    ROADMAP_BLOCKS.forEach(async function (block, idx) {
+      var blockCard = document.getElementById('chain-block-' + block.id);
+      var hashPill = document.getElementById('block-hash-' + block.id);
+      var txList = document.getElementById('block-tx-list-' + block.id);
+      var ringCircle = document.getElementById('ring-circle-' + block.id);
+      var ringText = document.getElementById('ring-text-' + block.id);
+      var connector = document.getElementById('chain-connector-' + block.id);
+
+      if (!blockCard || !txList) return;
+
+      // Calculate real SHA-256 hash for block header
+      var fullHash = await computeSha256(block.title + JSON.stringify(block.items));
+      if (hashPill) hashPill.textContent = fullHash.substring(0, 10) + '...';
+
+      // Render transactions
+      txList.innerHTML = '';
+      var checkedCount = 0;
+
+      block.items.forEach(function (item) {
+        var isChecked = Boolean(savedState[item.id]);
+        if (isChecked) checkedCount++;
+
+        var itemEl = document.createElement('div');
+        itemEl.className = 'block-tx-item' + (isChecked ? ' is-checked' : '');
+        itemEl.setAttribute('role', 'checkbox');
+        itemEl.setAttribute('aria-checked', isChecked ? 'true' : 'false');
+        itemEl.setAttribute('tabindex', '0');
+
+        itemEl.innerHTML = [
+          '<span class="tx-check-circle">',
+          isChecked ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><polyline points="20 6 9 17 4 12"></polyline></svg>' : '',
+          '</span>',
+          '<span class="tx-text">' + item.text + '</span>',
+          '<span class="tx-tag">' + item.tag + '</span>'
+        ].join('');
+
+        async function toggleItem() {
+          var nowChecked = !savedState[item.id];
+          savedState[item.id] = nowChecked;
+          localStorage.setItem('aether_chain_roadmap', JSON.stringify(savedState));
+          if (window.Aether && window.Aether.Progress && typeof window.Aether.Progress.scheduleProgressPut === 'function') {
+            window.Aether.Progress.scheduleProgressPut();
+          }
+          initChainRoadmap(); // re-evaluate chain
+        }
+
+        itemEl.addEventListener('click', toggleItem);
+        itemEl.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggleItem();
+          }
+        });
+
+        txList.appendChild(itemEl);
+      });
+
+      // Update progress ring
+      var pct = Math.round((checkedCount / block.items.length) * 100);
+      if (ringText) ringText.textContent = pct + '%';
+      if (ringCircle) {
+        var circumference = 2 * Math.PI * 14;
+        ringCircle.style.strokeDasharray = circumference;
+        ringCircle.style.strokeDashoffset = circumference - (pct / 100) * circumference;
+      }
+
+      // Check if block is fully mined
+      if (checkedCount === block.items.length) {
+        blockCard.classList.add('is-mined');
+        if (hashPill) hashPill.textContent = 'SEALED #' + block.id;
+        if (connector) connector.classList.add('is-active');
+
+        // Unlock next block visually
+        var nextBlock = document.getElementById('chain-block-' + (block.id + 1));
+        if (nextBlock) nextBlock.classList.add('is-unlocked');
+      } else {
+        blockCard.classList.remove('is-mined');
+        if (connector) connector.classList.remove('is-active');
+      }
+    });
+
+    // Reset Chain Button
+    var resetBtn = document.getElementById('reset-chain-btn');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', function () {
+        localStorage.removeItem('aether_chain_roadmap');
+        if (window.Aether && window.Aether.Progress && typeof window.Aether.Progress.scheduleProgressPut === 'function') {
+          window.Aether.Progress.scheduleProgressPut();
+        }
+        Aether.showToast('Blockchain roadmap progress reset.');
+        initChainRoadmap();
+      });
+    }
+  }
+
+  window.Aether.initChainRoadmap = initChainRoadmap;
+
+  function init() {
+    var isMobile = (typeof window !== 'undefined') && (window.innerWidth < 768 || (window.matchMedia && !window.matchMedia('(hover: hover) and (pointer: fine)').matches));
+    var isHomeOrLearn = (function () {
+      var p = window.location.pathname;
+      var name = p.substring(p.lastIndexOf('/') + 1).toLowerCase();
+      return !name || name === '' || name === 'index.html' || name === 'learn.html' || Boolean(document.querySelector('.learn-page, .hero-v4'));
+    })();
+
+    if (isMobile && !isHomeOrLearn) {
+      document.querySelectorAll('.reveal-on-scroll').forEach(function (el) {
+        el.classList.add('is-revealed');
+      });
+      return;
+    }
+
+    initMagneticButtons();
+    initScrollReveal();
+    initRingCarousel();
+    initBuildingBlocksModal();
+    initRealWorldMarquee();
+    initBentoTokens();
+    initChainRoadmap();
+  }
+
+  window.Aether.Motion = {
+    init: init,
+    openBlockModal: openBlockModal,
+    closeBlockModal: closeBlockModal
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+})();

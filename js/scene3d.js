@@ -1,1 +1,917 @@
-!function(){"use strict";if(window.Aether=window.Aether||{},window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches||!function(){try{var e=document.createElement("canvas");return!(!window.WebGLRenderingContext||!e.getContext("webgl")&&!e.getContext("experimental-webgl"))}catch(e){return!1}}()||"undefined"==typeof THREE)return document.documentElement.classList.add("no-webgl"),void console.info("[Aether 3D] WebGL disabled or reduced motion preferred.");var e,t,i,n,o,a,r,l=/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)||window.innerWidth<768,s=new THREE.Clock,c={x:0,y:0,targetX:0,targetY:0,screenX:0,screenY:0},d={current:0,target:0,velocity:0,lastScrollY:0},u=!0,f=new THREE.Raycaster,h=new THREE.Vector2(-999,-999),m={angle1:.4,angle2:2.1,targetAngle1:.4,targetAngle2:2.1,lastDriftTime:0},p=[],g=null,v={frames:0,lastTime:performance.now(),currentFPS:60},w=[{id:"btc",name:"Bitcoin",symbol:"BTC",color:"#F7931A",fact:"First blockchain cryptocurrency, launched in 2009 by Satoshi Nakamoto with a 21M hard cap.",radius:4.6,orbitSpeed:.12,initialAngle:.3,yOffset:1.2},{id:"eth",name:"Ethereum",symbol:"ETH",color:"#627EEA",fact:"Introduced Turing-complete smart contracts in 2015, powering dApps, DeFi, and NFTs.",radius:4.8,orbitSpeed:-.14,initialAngle:2.2,yOffset:-1},{id:"sol",name:"Solana",symbol:"SOL",color:"#14F195",fact:"High-speed layer-1 blockchain utilizing Proof-of-History for sub-second confirmations.",radius:5.2,orbitSpeed:.11,initialAngle:4,yOffset:1.8},{id:"bnb",name:"BNB",symbol:"BNB",color:"#F3BA2F",fact:"Native utility asset powering the decentralized BNB Chain ecosystem and trading discounts.",radius:5,orbitSpeed:-.13,initialAngle:5.4,yOffset:-1.8},{id:"usdt",name:"Tether",symbol:"USDT",color:"#26A17B",fact:"Fiat-backed stablecoin pegged 1:1 to the US Dollar, facilitating 24/7 global liquidity.",radius:5.5,orbitSpeed:.09,initialAngle:1.2,yOffset:-2.4},{id:"pol",name:"Polygon",symbol:"POL",color:"#8247E5",fact:"Proof-of-Stake network providing fast, low-cost execution and ZK-rollup scaling.",radius:4.2,orbitSpeed:.15,initialAngle:3.1,yOffset:2.2},{id:"link",name:"Chainlink",symbol:"LINK",color:"#2A5ADA",fact:"Decentralized oracle network feeding real-world asset prices and tamper-proof data into smart contracts.",radius:5.4,orbitSpeed:-.1,initialAngle:4.8,yOffset:.4},{id:"dex",name:"DEX Protocol",symbol:"DEX",color:"#A9AFBA",fact:"Automated Market Maker: Trade peer-to-pool without centralized order books or custody risk.",radius:4,orbitSpeed:.16,initialAngle:1.8,yOffset:-.2},{id:"wallet",name:"Self-Custody",symbol:"KEY",color:"#A9AFBA",fact:'Cryptographic self-custody: "Not your keys, not your coins." You hold the private cryptographic proof.',radius:5.1,orbitSpeed:-.12,initialAngle:2.8,yOffset:1.1},{id:"nft",name:"NFT Standard",symbol:"NFT",color:"#A9AFBA",fact:"Non-Fungible Token: Verifiable cryptographic uniqueness enabling digital property rights.",radius:4.4,orbitSpeed:.14,initialAngle:.9,yOffset:-1.5}];var y=["varying vec2 vUv;","void main() {","  vUv = uv;","  gl_Position = vec4(position, 1.0);","}"].join("\n"),E=["precision highp float;","varying vec2 vUv;","uniform float uTime;","uniform float uScroll;","uniform float uScrollVelocity;","uniform vec2 uResolution;","uniform float uWarpAngle1;","uniform float uWarpAngle2;","// Smooth low-frequency value noise (no sharp ridge lines)","float hash(vec2 p) {","  p = fract(p * vec2(123.34, 456.21));","  p += dot(p, p + 45.32);","  return fract(p.x * p.y);","}","float noise(vec2 p) {","  vec2 i = floor(p);","  vec2 f = fract(p);","  f = f * f * (3.0 - 2.0 * f);","  float a = hash(i);","  float b = hash(i + vec2(1.0, 0.0));","  float c = hash(i + vec2(0.0, 1.0));","  float d = hash(i + vec2(1.0, 1.0));","  return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);","}","float fbm(vec2 p) {","  float v = 0.0;","  float a = 0.55;","  mat2 rot = mat2(0.8, 0.6, -0.6, 0.8);","  for (int i = 0; i < 3; ++i) {","    v += a * noise(p);","    p = rot * p * 1.85;","    a *= 0.45;","  }","  return v;","}","void main() {","  // Normalized aspect ratio from vUv (100% viewport span, ZERO seams regardless of DPI scaling)","  float aspect = uResolution.x / max(uResolution.y, 1.0);","  vec2 st = (vUv - 0.5) * vec2(aspect, 1.0) * 1.5;","","  // Scroll push and velocity reaction","  float scrollPush = uScrollVelocity * 0.035;","  st.y += uScroll * 0.45 + scrollPush;","","  // Slow, serene natural drift","  vec2 dir1 = vec2(cos(uWarpAngle1), sin(uWarpAngle1));","  vec2 dir2 = vec2(cos(uWarpAngle2), sin(uWarpAngle2));","  float t = uTime * 0.022;","","  // Smooth domain-warped liquid smoke flow","  vec2 q = vec2(","    fbm(st * 0.72 + dir1 * t),","    fbm(st * 0.72 + dir2 * t + vec2(3.1, 1.7))","  );","","  vec2 r = vec2(","    fbm(st * 0.82 + 1.25 * q + dir2 * (t * 0.65) + vec2(1.4, 4.3)),","    fbm(st * 0.82 + 1.25 * q + dir1 * (t * 0.65) + vec2(7.2, 2.8))","  );","","  // Low contrast, completely smooth flow with no sharp ridge lines","  float n = fbm(st * 0.9 + 1.35 * r);","  n = smoothstep(0.18, 0.78, n);","","  // Edge vignette computed strictly from vUv (spans full viewport)","  float vigX = smoothstep(0.0, 0.22, vUv.x) * smoothstep(1.0, 0.78, vUv.x);","  float vigY = smoothstep(0.0, 0.22, vUv.y) * smoothstep(1.0, 0.78, vUv.y);","  float vignette = clamp(pow(vigX * vigY, 0.35), 0.3, 1.0);","","  // Palette: black (#050506) to graphite (#16181D) to soft silver highlights (#2A2D35)","  vec3 blackBase = vec3(0.02, 0.02, 0.024);","  vec3 graphite = vec3(0.075, 0.082, 0.095);","  vec3 silverHighlight = vec3(0.165, 0.175, 0.195);","","  vec3 col = mix(blackBase, graphite, n);","  col = mix(col, silverHighlight, pow(n, 2.5) * 0.65);","  col *= vignette;","","  gl_FragColor = vec4(col, 1.0);","}"].join("\n");function b(){if(!(null!==document.querySelector(".learn-page"))){var e=new THREE.CylinderGeometry(1.65,1.65,.28,64),t=l||window.innerWidth<768;(t?w.slice(0,3):w).forEach(function(n){var o=function(e){var t=document.createElement("canvas");t.width=512,t.height=512;var i=t.getContext("2d"),n=i.createRadialGradient(256,256,120,256,256,256);if(n.addColorStop(0,"#1C1E26"),n.addColorStop(.85,"#12141A"),n.addColorStop(1,"#0C0D12"),i.fillStyle=n,i.beginPath(),i.arc(256,256,250,0,2*Math.PI),i.fill(),i.strokeStyle=e.color,i.lineWidth=14,i.beginPath(),i.arc(256,256,235,0,2*Math.PI),i.stroke(),i.strokeStyle="rgba(255, 255, 255, 0.25)",i.lineWidth=4,i.beginPath(),i.arc(256,256,215,0,2*Math.PI),i.stroke(),i.save(),i.translate(256,256),"btc"===e.id)i.fillStyle=e.color,i.font='bold 220px "Inter", "Segoe UI", sans-serif',i.textAlign="center",i.textBaseline="middle",i.fillText("₿",8,0);else if("eth"===e.id)i.fillStyle=e.color,i.beginPath(),i.moveTo(0,-110),i.lineTo(65,-5),i.lineTo(0,30),i.lineTo(-65,-5),i.closePath(),i.fill(),i.fillStyle="#92A8FC",i.beginPath(),i.moveTo(0,48),i.lineTo(65,12),i.lineTo(0,110),i.lineTo(-65,12),i.closePath(),i.fill();else if("sol"===e.id){var o=i.createLinearGradient(-80,-80,80,80);function m(e){i.beginPath(),i.moveTo(-75,e),i.lineTo(60,e),i.lineTo(75,e+26),i.lineTo(-60,e+26),i.closePath(),i.fill()}o.addColorStop(0,"#9945FF"),o.addColorStop(1,"#14F195"),i.fillStyle=o,m(-65),m(-13),m(39)}else if("bnb"===e.id){function p(e,t,n){i.beginPath(),i.moveTo(e,t-n),i.lineTo(e+n,t),i.lineTo(e,t+n),i.lineTo(e-n,t),i.closePath(),i.fill()}i.fillStyle=e.color,p(0,0,38),p(0,-68,24),p(0,68,24),p(-68,0,24),p(68,0,24)}else if("usdt"===e.id)i.fillStyle=e.color,i.fillRect(-70,-75,140,32),i.fillRect(-18,-75,36,150),i.strokeStyle=e.color,i.lineWidth=14,i.beginPath(),i.ellipse(0,10,80,42,0,0,2*Math.PI),i.stroke();else if("pol"===e.id){i.strokeStyle=e.color,i.lineWidth=26,i.beginPath();for(var a=0;a<6;a++){var r=a*Math.PI/3,l=80*Math.cos(r),s=80*Math.sin(r);0===a?i.moveTo(l,s):i.lineTo(l,s)}i.closePath(),i.stroke()}else if("link"===e.id){i.strokeStyle=e.color,i.lineWidth=28,i.beginPath();for(var c=0;c<6;c++){var d=c*Math.PI/3-Math.PI/6,u=85*Math.cos(d),f=85*Math.sin(d);0===c?i.moveTo(u,f):i.lineTo(u,f)}i.closePath(),i.stroke()}else"dex"===e.id?(i.strokeStyle="#FFFFFF",i.lineWidth=16,i.beginPath(),i.arc(0,0,65,.2*Math.PI,.9*Math.PI),i.stroke(),i.beginPath(),i.arc(0,0,65,1.2*Math.PI,1.9*Math.PI),i.stroke()):"wallet"===e.id?(i.strokeStyle="#FFFFFF",i.lineWidth=16,i.strokeRect(-65,-45,130,90),i.fillStyle="#FFFFFF",i.beginPath(),i.arc(28,0,12,0,2*Math.PI),i.fill()):(i.strokeStyle="#FFFFFF",i.lineWidth=16,i.strokeRect(-55,-55,110,110),i.fillStyle="#FFFFFF",i.beginPath(),i.arc(0,0,16,0,2*Math.PI),i.fill());i.restore();var h=new THREE.CanvasTexture(t);return h.generateMipmaps=!0,h}(n),a=new THREE.MeshStandardMaterial({color:2237741,roughness:.28,metalness:.72}),r=new THREE.MeshStandardMaterial({map:o,roughness:.3,metalness:.65,color:16777215}),l=[a,r,r],s=new THREE.Mesh(e,l);t&&s.scale.set(.65,.65,.65),s.userData={data:n,angle:n.initialAngle,radius:t?.8*n.radius:n.radius,orbitSpeed:n.orbitSpeed,yOffset:n.yOffset,targetPos:new THREE.Vector3,isHovered:!1},p.push(s),i.add(s)});var n=new THREE.LineBasicMaterial({color:16777215,transparent:!0,opacity:.12}),o=new Float32Array(96),a=new THREE.BufferGeometry;a.setAttribute("position",new THREE.BufferAttribute(o,3)),r=new THREE.LineSegments(a,n),i.add(r)}}function T(){var e=window.innerWidth<768?1.5:2;return Math.min(window.devicePixelRatio||1,e)}function S(){(e=document.getElementById("scene3d"))||((e=document.createElement("canvas")).id="scene3d",document.body.prepend(e));var r=window.innerWidth,l=window.innerHeight;try{(t=new THREE.WebGLRenderer({canvas:e,alpha:!0,antialias:!0,powerPreference:"high-performance"})).setPixelRatio(T()),t.setSize(r,l,!0),t.toneMapping=THREE.ACESFilmicToneMapping,t.toneMappingExposure=1.1}catch(t){return void(e&&(e.style.display="none"))}i=new THREE.Scene,(n=new THREE.PerspectiveCamera(45,r/l,.1,100)).position.set(0,0,11);var s=new THREE.AmbientLight(16777215,.9);i.add(s);var c=new THREE.DirectionalLight(16777215,1.5);c.position.set(6,8,7),i.add(c);var d=new THREE.DirectionalLight(10396590,.9);d.position.set(-6,-4,5),i.add(d);var u=new THREE.DirectionalLight(14870768,1.8);u.position.set(-8,7,-8),i.add(u);var f,h=new THREE.DirectionalLight(16777215,1.2);h.position.set(8,-6,-6),i.add(h),f=new THREE.PlaneGeometry(2,2),o=new THREE.ShaderMaterial({vertexShader:y,fragmentShader:E,uniforms:{uTime:{value:0},uScroll:{value:0},uScrollVelocity:{value:0},uMouse:{value:new THREE.Vector2(0,0)},uResolution:{value:new THREE.Vector2(window.innerWidth,window.innerHeight)},uWarpAngle1:{value:m.angle1},uWarpAngle2:{value:m.angle2}},depthWrite:!1,depthTest:!1}),(a=new THREE.Mesh(f,o)).renderOrder=-1,i.add(a),b(),function(){if(null===document.querySelector(".learn-page"))return;for(var e=new THREE.BoxGeometry(.72,.72,.72),t=6,n=3.6,o=1.4,a=6.2,r=[],l=0;l<t;l++){var s=new THREE.MeshStandardMaterial({color:1711140,roughness:.35,metalness:.65,emissive:1119e3}),c=new THREE.EdgesGeometry(e),d=new THREE.LineBasicMaterial({color:5593702,transparent:!0,opacity:.4}),u=new THREE.LineSegments(c,d),f=new THREE.Mesh(e,s);f.add(u),f.position.set(a,n-l*o,.5),f.userData={index:l,baseY:n-l*o,mat:s,lineMat:d},A.push(f),i.add(f),r.push(new THREE.Vector3(a,n-l*o,.5))}var h=(new THREE.BufferGeometry).setFromPoints(r),m=new THREE.LineBasicMaterial({color:16777215,transparent:!0,opacity:.16});H=new THREE.Line(h,m),i.add(H)}(),(M=document.createElement("div")).className="coin-tooltip-card",M.innerHTML=['<div class="coin-tooltip-title"><span id="tip-symbol" style="color:#FFF;"></span> <span id="tip-name"></span></div>','<p class="coin-tooltip-fact" id="tip-fact"></p>'].join(""),document.body.appendChild(M),window.addEventListener("click",function(e){!e.target.closest("#scene3d")&&g&&F()})}var M,A=[],H=null;function F(){M&&(M.classList.remove("is-visible"),g=null)}function P(e){if(!e.target||!e.target.closest('button, a, input, select, textarea, .ring-card, .marquee-card, .token-bento-card, .block-tx-item, [role="button"]')){h.x=e.clientX/window.innerWidth*2-1,h.y=-e.clientY/window.innerHeight*2+1,f.setFromCamera(h,n);var t,i,o,a=f.intersectObjects(p);if(a.length>0){var r=a[0].object;t=r.userData.data,i=e.clientX,o=e.clientY,M&&(document.getElementById("tip-symbol").textContent=t.symbol,document.getElementById("tip-symbol").style.color=t.color,document.getElementById("tip-name").textContent=t.name,document.getElementById("tip-fact").textContent=t.fact,M.style.left=i+"px",M.style.top=o+"px",M.classList.add("is-visible"),g=t),r.userData.orbitSpeed*=2.5,setTimeout(function(){r.userData.orbitSpeed=r.userData.data.orbitSpeed},1200)}else F()}}function R(){if(u){requestAnimationFrame(R);var e=s.getDelta(),a=s.getElapsedTime(),l=performance.now();v.frames++,l-v.lastTime>=1e3&&(v.currentFPS=Math.round(1e3*v.frames/(l-v.lastTime)),v.frames=0,v.lastTime=l);var f,h=window.pageYOffset||document.documentElement.scrollTop,g=document.documentElement.scrollHeight-window.innerHeight,w=g>0?h/g:0;d.velocity=.1*(h-d.lastScrollY),d.lastScrollY=h,d.current+=.08*(w-d.current),o&&(o.uniforms.uTime.value=a,o.uniforms.uScroll.value=d.current,o.uniforms.uScrollVelocity.value=d.velocity,(f=a)-m.lastDriftTime>11&&(m.targetAngle1=Math.random()*Math.PI*2,m.targetAngle2=Math.random()*Math.PI*2,m.lastDriftTime=f),m.angle1+=.02*(m.targetAngle1-m.angle1),m.angle2+=.02*(m.targetAngle2-m.angle2),o&&(o.uniforms.uWarpAngle1.value=m.angle1,o.uniforms.uWarpAngle2.value=m.angle2)),c.x+=.06*(c.targetX-c.x),c.y+=.06*(c.targetY-c.y),n.position.x=.5*c.x,n.position.y=.35*c.y,n.position.z=11+2.5*d.current,n.lookAt(0,0,0);var y=2*Math.tan(n.fov*Math.PI/180/2)*n.position.z,E=y*n.aspect,b=document.querySelector('[data-scene-slot="coin"]'),T=null;if(b){var S=b.getBoundingClientRect();if(S.top>=75&&S.bottom<=window.innerHeight+80){var M=S.left+S.width/2,H=S.top+S.height/2,F=M/window.innerWidth*2-1,P=-H/window.innerHeight*2+1,x=new THREE.Vector3(F,P,.5);x.unproject(n),x.sub(n.position).normalize();var k=(3.6-n.position.z)/x.z;T=n.position.clone().add(x.multiplyScalar(k))}}p.forEach(function(t,i){var n,o,r,l=t.userData;if(l.angle+=l.orbitSpeed*e*.8,T&&1===i)n=T.x,o=T.y,r=T.z,t.scale.lerp(new THREE.Vector3(1.2,1.2,1.2),.12);else{t.scale.lerp(new THREE.Vector3(1,1,1),.1);var s=.44*E+.35*Math.sin(.5*a+i),u=3.2+.4*Math.cos(.45*a+i);n=Math.cos(l.angle)*s,o=Math.sin(l.angle)*u+.4*l.yOffset,r=1.5*Math.sin(2*l.angle)-4.5*d.current;var f=n-c.x*(E/2),h=o-c.y*(y/2),m=Math.sqrt(f*f+h*h);if(m<3.5){var p=.28*(3.5-m);n+=f/m*p,o+=h/m*p}}t.position.x+=.1*(n-t.position.x),t.position.y+=.1*(o-t.position.y),t.position.z+=.1*(r-t.position.z),t.rotation.y+=e*(.8+.05*i),t.rotation.x=.3*Math.sin(.8*a+i)+.3*c.y,t.rotation.z=.2*Math.cos(.6*a+i)}),A.length>0&&A.forEach(function(t,i){t.rotation.y+=.45*e,t.rotation.x=.2*Math.sin(.6*a+i),t.position.y=t.userData.baseY+.08*Math.sin(.8*a+i)-1.5*d.current}),function(){if(r){for(var e=r.geometry.attributes.position,t=0,i=0;i<p.length;i++)for(var n=i+1;n<p.length&&!(t>=e.count);n++){var o=p[i].position,a=p[n].position;o.distanceTo(a)<4.8&&p[i].visible&&p[n].visible&&(e.setXYZ(t,o.x,o.y,o.z),e.setXYZ(t+1,a.x,a.y,a.z),t+=2)}for(var l=t;l<e.count;l++)e.setXYZ(l,0,0,0);e.needsUpdate=!0}}(),t.render(i,n)}}function x(){if(t&&n){var e=window.innerWidth,i=window.innerHeight;n.aspect=e/i,n.updateProjectionMatrix(),t.setPixelRatio(T()),t.setSize(e,i,!0),o&&o.uniforms.uResolution.value.set(e,i)}}function k(e){c.targetX=e.clientX/window.innerWidth*2-1,c.targetY=-e.clientY/window.innerHeight*2+1,c.screenX=e.clientX,c.screenY=e.clientY}function D(){document.hidden?u=!1:u||(u=!0,s.getDelta(),requestAnimationFrame(R))}function B(){"undefined"!=typeof window&&(window.innerWidth<768||window.matchMedia&&!window.matchMedia("(hover: hover) and (pointer: fine)").matches)||(S(),window.addEventListener("resize",x,{passive:!0}),window.addEventListener("mousemove",k,{passive:!0}),window.addEventListener("click",P),document.addEventListener("visibilitychange",D),R())}window.Aether.scene3d={init:B,getScene:function(){return i},getCamera:function(){return n},getRenderer:function(){return t},getFPS:function(){return v.currentFPS},highlightLearnBlock:function(e){A.length&&A.forEach(function(t,i){i===e?(t.userData.mat.emissive.setHex(10066329),t.userData.mat.color.setHex(16777215),t.userData.lineMat.color.setHex(16777215),t.userData.lineMat.opacity=.95,t.scale.lerp(new THREE.Vector3(1.25,1.25,1.25),.18)):(t.userData.mat.emissive.setHex(1119e3),t.userData.mat.color.setHex(1711140),t.userData.lineMat.color.setHex(5593702),t.userData.lineMat.opacity=.35,t.scale.lerp(new THREE.Vector3(.9,.9,.9),.12))})},triggerSuccessEffect:function(){if(t&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches&&p&&p.length>0){var e=p[Math.floor(Math.random()*p.length)];if(e){var i=e.rotation.y,n=performance.now();function o(t){var a=(t-n)/600;a<1&&(e.rotation.y=i+4*Math.PI*Math.sin(a*Math.PI*.5),requestAnimationFrame(o))}requestAnimationFrame(o)}}}},"loading"===document.readyState?document.addEventListener("DOMContentLoaded",B):B()}();
+/**
+ * AETHER 3D & LIQUID AURORA ENGINE (v4 Dark Monochrome)
+ * Features:
+ * 1. Full-screen domain-warped fractal noise liquid aurora background (GLSL ShaderMaterial)
+ * 2. 10 3D procedural crypto coins in brand colors (BTC, ETH, SOL, BNB, USDT, POL, LINK, DEX, Wallet, NFT)
+ * 3. Faint network connection lines with traveling light pulses
+ * 4. Interactive coin click with educational fact tooltips
+ * 5. Scroll-reactive parallax, camera dolly, and 55+ FPS optimization
+ */
+
+(function () {
+  'use strict';
+
+  window.Aether = window.Aether || {};
+
+  var prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function isWebGLAvailable() {
+    try {
+      var c = document.createElement('canvas');
+      return !!(window.WebGLRenderingContext && (c.getContext('webgl') || c.getContext('experimental-webgl')));
+    } catch (e) {
+      return false;
+    }
+  }
+
+  if (prefersReducedMotion || !isWebGLAvailable() || typeof THREE === 'undefined') {
+    document.documentElement.classList.add('no-webgl');
+    console.info('[Aether 3D] WebGL disabled or reduced motion preferred.');
+    return;
+  }
+
+  var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+
+  // Scene Globals
+  var canvas, renderer, scene, camera;
+  var clock = new THREE.Clock();
+  var mouse = { x: 0, y: 0, targetX: 0, targetY: 0, screenX: 0, screenY: 0 };
+  var scroll = { current: 0, target: 0, velocity: 0, lastScrollY: 0 };
+  var isTabActive = true;
+  var raycaster = new THREE.Raycaster();
+  var mouseNDC = new THREE.Vector2(-999, -999);
+
+  // Aurora Background Uniforms
+  var auroraMaterial, auroraMesh;
+  var flowDrift = {
+    angle1: 0.4,
+    angle2: 2.1,
+    targetAngle1: 0.4,
+    targetAngle2: 2.1,
+    lastDriftTime: 0
+  };
+
+  // Coins & Network Lines Collection
+  var coinsList = [];
+  var networkLinesMesh, networkLinePoints = [];
+  var activeTooltipCoin = null;
+
+  // FPS Tracker
+  var fpsTracker = {
+    frames: 0,
+    lastTime: performance.now(),
+    currentFPS: 60
+  };
+
+  /**
+   * Coin Educational Database
+   */
+  var COIN_DATA = [
+    { id: 'btc', name: 'Bitcoin', symbol: 'BTC', color: '#F7931A', fact: 'First blockchain cryptocurrency, launched in 2009 by Satoshi Nakamoto with a 21M hard cap.', radius: 4.6, orbitSpeed: 0.12, initialAngle: 0.3, yOffset: 1.2 },
+    { id: 'eth', name: 'Ethereum', symbol: 'ETH', color: '#627EEA', fact: 'Introduced Turing-complete smart contracts in 2015, powering dApps, DeFi, and NFTs.', radius: 4.8, orbitSpeed: -0.14, initialAngle: 2.2, yOffset: -1.0 },
+    { id: 'sol', name: 'Solana', symbol: 'SOL', color: '#14F195', fact: 'High-speed layer-1 blockchain utilizing Proof-of-History for sub-second confirmations.', radius: 5.2, orbitSpeed: 0.11, initialAngle: 4.0, yOffset: 1.8 },
+    { id: 'bnb', name: 'BNB', symbol: 'BNB', color: '#F3BA2F', fact: 'Native utility asset powering the decentralized BNB Chain ecosystem and trading discounts.', radius: 5.0, orbitSpeed: -0.13, initialAngle: 5.4, yOffset: -1.8 },
+    { id: 'usdt', name: 'Tether', symbol: 'USDT', color: '#26A17B', fact: 'Fiat-backed stablecoin pegged 1:1 to the US Dollar, facilitating 24/7 global liquidity.', radius: 5.5, orbitSpeed: 0.09, initialAngle: 1.2, yOffset: -2.4 },
+    { id: 'pol', name: 'Polygon', symbol: 'POL', color: '#8247E5', fact: 'Proof-of-Stake network providing fast, low-cost execution and ZK-rollup scaling.', radius: 4.2, orbitSpeed: 0.15, initialAngle: 3.1, yOffset: 2.2 },
+    { id: 'link', name: 'Chainlink', symbol: 'LINK', color: '#2A5ADA', fact: 'Decentralized oracle network feeding real-world asset prices and tamper-proof data into smart contracts.', radius: 5.4, orbitSpeed: -0.10, initialAngle: 4.8, yOffset: 0.4 },
+    { id: 'dex', name: 'DEX Protocol', symbol: 'DEX', color: '#A9AFBA', fact: 'Automated Market Maker: Trade peer-to-pool without centralized order books or custody risk.', radius: 4.0, orbitSpeed: 0.16, initialAngle: 1.8, yOffset: -0.2 },
+    { id: 'wallet', name: 'Self-Custody', symbol: 'KEY', color: '#A9AFBA', fact: 'Cryptographic self-custody: "Not your keys, not your coins." You hold the private cryptographic proof.', radius: 5.1, orbitSpeed: -0.12, initialAngle: 2.8, yOffset: 1.1 },
+    { id: 'nft', name: 'NFT Standard', symbol: 'NFT', color: '#A9AFBA', fact: 'Non-Fungible Token: Verifiable cryptographic uniqueness enabling digital property rights.', radius: 4.4, orbitSpeed: 0.14, initialAngle: 0.9, yOffset: -1.5 }
+  ];
+
+  /**
+   * Procedural High-Res Coin Canvas Texture Generator
+   */
+  function createCoinTexture(coin) {
+    var c = document.createElement('canvas');
+    c.width = 512;
+    c.height = 512;
+    var ctx = c.getContext('2d');
+
+    // Dark graphite metallic base disc
+    var grad = ctx.createRadialGradient(256, 256, 120, 256, 256, 256);
+    grad.addColorStop(0, '#1C1E26');
+    grad.addColorStop(0.85, '#12141A');
+    grad.addColorStop(1, '#0C0D12');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(256, 256, 250, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Metallic Outer Rim & Bevel Line
+    ctx.strokeStyle = coin.color;
+    ctx.lineWidth = 14;
+    ctx.beginPath();
+    ctx.arc(256, 256, 235, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.arc(256, 256, 215, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Central Brand Mark / Geometric Glyph
+    ctx.save();
+    ctx.translate(256, 256);
+
+    if (coin.id === 'btc') {
+      ctx.fillStyle = coin.color;
+      ctx.font = 'bold 220px "Inter", "Segoe UI", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('₿', 8, 0);
+    } else if (coin.id === 'eth') {
+      // Ethereum Diamond
+      ctx.fillStyle = coin.color;
+      ctx.beginPath();
+      ctx.moveTo(0, -110);
+      ctx.lineTo(65, -5);
+      ctx.lineTo(0, 30);
+      ctx.lineTo(-65, -5);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = '#92A8FC';
+      ctx.beginPath();
+      ctx.moveTo(0, 48);
+      ctx.lineTo(65, 12);
+      ctx.lineTo(0, 110);
+      ctx.lineTo(-65, 12);
+      ctx.closePath();
+      ctx.fill();
+    } else if (coin.id === 'sol') {
+      // Solana Slanted Bars
+      var solGrad = ctx.createLinearGradient(-80, -80, 80, 80);
+      solGrad.addColorStop(0, '#9945FF');
+      solGrad.addColorStop(1, '#14F195');
+      ctx.fillStyle = solGrad;
+
+      function drawSolBar(y) {
+        ctx.beginPath();
+        ctx.moveTo(-75, y);
+        ctx.lineTo(60, y);
+        ctx.lineTo(75, y + 26);
+        ctx.lineTo(-60, y + 26);
+        ctx.closePath();
+        ctx.fill();
+      }
+      drawSolBar(-65);
+      drawSolBar(-13);
+      drawSolBar(39);
+    } else if (coin.id === 'bnb') {
+      // BNB Diamond Cluster
+      ctx.fillStyle = coin.color;
+      function drawDiamond(cx, cy, s) {
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - s);
+        ctx.lineTo(cx + s, cy);
+        ctx.lineTo(cx, cy + s);
+        ctx.lineTo(cx - s, cy);
+        ctx.closePath();
+        ctx.fill();
+      }
+      drawDiamond(0, 0, 38);
+      drawDiamond(0, -68, 24);
+      drawDiamond(0, 68, 24);
+      drawDiamond(-68, 0, 24);
+      drawDiamond(68, 0, 24);
+    } else if (coin.id === 'usdt') {
+      // Tether T
+      ctx.fillStyle = coin.color;
+      ctx.fillRect(-70, -75, 140, 32);
+      ctx.fillRect(-18, -75, 36, 150);
+      ctx.strokeStyle = coin.color;
+      ctx.lineWidth = 14;
+      ctx.beginPath();
+      ctx.ellipse(0, 10, 80, 42, 0, 0, Math.PI * 2);
+      ctx.stroke();
+    } else if (coin.id === 'pol') {
+      // Polygon Hexagon
+      ctx.strokeStyle = coin.color;
+      ctx.lineWidth = 26;
+      ctx.beginPath();
+      for (var i = 0; i < 6; i++) {
+        var a = (i * Math.PI) / 3;
+        var hx = Math.cos(a) * 80;
+        var hy = Math.sin(a) * 80;
+        if (i === 0) ctx.moveTo(hx, hy);
+        else ctx.lineTo(hx, hy);
+      }
+      ctx.closePath();
+      ctx.stroke();
+    } else if (coin.id === 'link') {
+      // Chainlink Hexagon
+      ctx.strokeStyle = coin.color;
+      ctx.lineWidth = 28;
+      ctx.beginPath();
+      for (var j = 0; j < 6; j++) {
+        var ang = (j * Math.PI) / 3 - Math.PI / 6;
+        var lx = Math.cos(ang) * 85;
+        var ly = Math.sin(ang) * 85;
+        if (j === 0) ctx.moveTo(lx, ly);
+        else ctx.lineTo(lx, ly);
+      }
+      ctx.closePath();
+      ctx.stroke();
+    } else if (coin.id === 'dex') {
+      // DEX Swap Arrows
+      ctx.strokeStyle = '#FFFFFF';
+      ctx.lineWidth = 16;
+      ctx.beginPath();
+      ctx.arc(0, 0, 65, 0.2 * Math.PI, 0.9 * Math.PI);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(0, 0, 65, 1.2 * Math.PI, 1.9 * Math.PI);
+      ctx.stroke();
+    } else if (coin.id === 'wallet') {
+      // Wallet glyph
+      ctx.strokeStyle = '#FFFFFF';
+      ctx.lineWidth = 16;
+      ctx.strokeRect(-65, -45, 130, 90);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.arc(28, 0, 12, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      // NFT Diamond Gem
+      ctx.strokeStyle = '#FFFFFF';
+      ctx.lineWidth = 16;
+      ctx.strokeRect(-55, -55, 110, 110);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.arc(0, 0, 16, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    var tex = new THREE.CanvasTexture(c);
+    tex.generateMipmaps = true;
+    return tex;
+  }
+
+  /**
+   * GLSL Shaders for Domain-Warped Liquid Aurora Background
+   */
+  var AURORA_VERTEX_SHADER = [
+    'varying vec2 vUv;',
+    'void main() {',
+    '  vUv = uv;',
+    '  gl_Position = vec4(position, 1.0);',
+    '}'
+  ].join('\n');
+
+  var AURORA_FRAGMENT_SHADER = [
+    'precision highp float;',
+    'varying vec2 vUv;',
+    'uniform float uTime;',
+    'uniform float uScroll;',
+    'uniform float uScrollVelocity;',
+    'uniform vec2 uResolution;',
+    'uniform float uWarpAngle1;',
+    'uniform float uWarpAngle2;',
+
+    '// Smooth low-frequency value noise (no sharp ridge lines)',
+    'float hash(vec2 p) {',
+    '  p = fract(p * vec2(123.34, 456.21));',
+    '  p += dot(p, p + 45.32);',
+    '  return fract(p.x * p.y);',
+    '}',
+
+    'float noise(vec2 p) {',
+    '  vec2 i = floor(p);',
+    '  vec2 f = fract(p);',
+    '  f = f * f * (3.0 - 2.0 * f);',
+    '  float a = hash(i);',
+    '  float b = hash(i + vec2(1.0, 0.0));',
+    '  float c = hash(i + vec2(0.0, 1.0));',
+    '  float d = hash(i + vec2(1.0, 1.0));',
+    '  return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);',
+    '}',
+
+    'float fbm(vec2 p) {',
+    '  float v = 0.0;',
+    '  float a = 0.55;',
+    '  mat2 rot = mat2(0.8, 0.6, -0.6, 0.8);',
+    '  for (int i = 0; i < 3; ++i) {',
+    '    v += a * noise(p);',
+    '    p = rot * p * 1.85;',
+    '    a *= 0.45;',
+    '  }',
+    '  return v;',
+    '}',
+
+    'void main() {',
+    '  // Normalized aspect ratio from vUv (100% viewport span, ZERO seams regardless of DPI scaling)',
+    '  float aspect = uResolution.x / max(uResolution.y, 1.0);',
+    '  vec2 st = (vUv - 0.5) * vec2(aspect, 1.0) * 1.5;',
+    '',
+    '  // Scroll push and velocity reaction',
+    '  float scrollPush = uScrollVelocity * 0.035;',
+    '  st.y += uScroll * 0.45 + scrollPush;',
+    '',
+    '  // Slow, serene natural drift',
+    '  vec2 dir1 = vec2(cos(uWarpAngle1), sin(uWarpAngle1));',
+    '  vec2 dir2 = vec2(cos(uWarpAngle2), sin(uWarpAngle2));',
+    '  float t = uTime * 0.022;',
+    '',
+    '  // Smooth domain-warped liquid smoke flow',
+    '  vec2 q = vec2(',
+    '    fbm(st * 0.72 + dir1 * t),',
+    '    fbm(st * 0.72 + dir2 * t + vec2(3.1, 1.7))',
+    '  );',
+    '',
+    '  vec2 r = vec2(',
+    '    fbm(st * 0.82 + 1.25 * q + dir2 * (t * 0.65) + vec2(1.4, 4.3)),',
+    '    fbm(st * 0.82 + 1.25 * q + dir1 * (t * 0.65) + vec2(7.2, 2.8))',
+    '  );',
+    '',
+    '  // Low contrast, completely smooth flow with no sharp ridge lines',
+    '  float n = fbm(st * 0.9 + 1.35 * r);',
+    '  n = smoothstep(0.18, 0.78, n);',
+    '',
+    '  // Edge vignette computed strictly from vUv (spans full viewport)',
+    '  float vigX = smoothstep(0.0, 0.22, vUv.x) * smoothstep(1.0, 0.78, vUv.x);',
+    '  float vigY = smoothstep(0.0, 0.22, vUv.y) * smoothstep(1.0, 0.78, vUv.y);',
+    '  float vignette = clamp(pow(vigX * vigY, 0.35), 0.3, 1.0);',
+    '',
+    '  // Palette: black (#050506) to graphite (#16181D) to soft silver highlights (#2A2D35)',
+    '  vec3 blackBase = vec3(0.02, 0.02, 0.024);',
+    '  vec3 graphite = vec3(0.075, 0.082, 0.095);',
+    '  vec3 silverHighlight = vec3(0.165, 0.175, 0.195);',
+    '',
+    '  vec3 col = mix(blackBase, graphite, n);',
+    '  col = mix(col, silverHighlight, pow(n, 2.5) * 0.65);',
+    '  col *= vignette;',
+    '',
+    '  gl_FragColor = vec4(col, 1.0);',
+    '}'
+  ].join('\n');
+
+  /**
+   * Build Full-Screen Liquid Aurora Quad
+   */
+  function buildAuroraBackground() {
+    var quadGeo = new THREE.PlaneGeometry(2, 2);
+    auroraMaterial = new THREE.ShaderMaterial({
+      vertexShader: AURORA_VERTEX_SHADER,
+      fragmentShader: AURORA_FRAGMENT_SHADER,
+      uniforms: {
+        uTime: { value: 0 },
+        uScroll: { value: 0 },
+        uScrollVelocity: { value: 0 },
+        uMouse: { value: new THREE.Vector2(0, 0) },
+        uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+        uWarpAngle1: { value: flowDrift.angle1 },
+        uWarpAngle2: { value: flowDrift.angle2 }
+      },
+      depthWrite: false,
+      depthTest: false
+    });
+
+    auroraMesh = new THREE.Mesh(quadGeo, auroraMaterial);
+    auroraMesh.renderOrder = -1; // Draw first behind everything
+    scene.add(auroraMesh);
+  }
+
+  /**
+   * Build 3D Crypto Coins with Lathe/Cylinder Geometry & Canvas Texture
+   * Sized ~2x larger with soft rim lighting and crisp brand marks
+   */
+  function buildCryptoCoins() {
+    var isLearnPage = document.querySelector('.learn-page') !== null;
+    if (isLearnPage) return; // On learn page, the 6-block chain takes the 3D focus
+
+    var coinGeo = new THREE.CylinderGeometry(1.65, 1.65, 0.28, 64);
+    var isSmall = (isMobile || window.innerWidth < 768);
+    var activeCoins = isSmall ? COIN_DATA.slice(0, 3) : COIN_DATA;
+
+    activeCoins.forEach(function (data) {
+      var faceTex = createCoinTexture(data);
+
+      var edgeMat = new THREE.MeshStandardMaterial({
+        color: 0x22252D,
+        roughness: 0.28,
+        metalness: 0.72
+      });
+
+      var faceMat = new THREE.MeshStandardMaterial({
+        map: faceTex,
+        roughness: 0.30,
+        metalness: 0.65,
+        color: 0xFFFFFF
+      });
+
+      // Face materials: [edge, top, bottom]
+      var materials = [edgeMat, faceMat, faceMat];
+      var mesh = new THREE.Mesh(coinGeo, materials);
+      if (isSmall) {
+        mesh.scale.set(0.65, 0.65, 0.65);
+      }
+
+      mesh.userData = {
+        data: data,
+        angle: data.initialAngle,
+        radius: isSmall ? data.radius * 0.8 : data.radius,
+        orbitSpeed: data.orbitSpeed,
+        yOffset: data.yOffset,
+        targetPos: new THREE.Vector3(),
+        isHovered: false
+      };
+
+      coinsList.push(mesh);
+      scene.add(mesh);
+    });
+
+    // Build Connecting Network Lines
+    var lineMat = new THREE.LineBasicMaterial({
+      color: 0xFFFFFF,
+      transparent: true,
+      opacity: 0.12
+    });
+
+    var maxLines = 16;
+    var linePositions = new Float32Array(maxLines * 6);
+    var lineGeo = new THREE.BufferGeometry();
+    lineGeo.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+    networkLinesMesh = new THREE.LineSegments(lineGeo, lineMat);
+    scene.add(networkLinesMesh);
+  }
+
+  /**
+   * Update Network Connecting Lines between Nearby Coins
+   */
+  function updateNetworkLines() {
+    if (!networkLinesMesh) return;
+    var posAttr = networkLinesMesh.geometry.attributes.position;
+    var lineIdx = 0;
+    var maxDist = 4.8;
+
+    for (var i = 0; i < coinsList.length; i++) {
+      for (var j = i + 1; j < coinsList.length; j++) {
+        if (lineIdx >= posAttr.count) break;
+
+        var c1 = coinsList[i].position;
+        var c2 = coinsList[j].position;
+        var dist = c1.distanceTo(c2);
+
+        if (dist < maxDist && coinsList[i].visible && coinsList[j].visible) {
+          posAttr.setXYZ(lineIdx, c1.x, c1.y, c1.z);
+          posAttr.setXYZ(lineIdx + 1, c2.x, c2.y, c2.z);
+          lineIdx += 2;
+        }
+      }
+    }
+
+    // Clear unused lines
+    for (var k = lineIdx; k < posAttr.count; k++) {
+      posAttr.setXYZ(k, 0, 0, 0);
+    }
+    posAttr.needsUpdate = true;
+  }
+
+  function getOptimalPixelRatio() {
+    var maxPr = window.innerWidth < 768 ? 1.5 : 2.0;
+    return Math.min(window.devicePixelRatio || 1, maxPr);
+  }
+
+  /**
+   * Initialize Three.js Scene, Camera, Lights, and Renderer
+   */
+  function initScene() {
+    canvas = document.getElementById('scene3d');
+    if (!canvas) {
+      canvas = document.createElement('canvas');
+      canvas.id = 'scene3d';
+      document.body.prepend(canvas);
+    }
+
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+
+    try {
+      renderer = new THREE.WebGLRenderer({
+        canvas: canvas,
+        alpha: true,
+        antialias: true,
+        powerPreference: 'high-performance'
+      });
+      renderer.setPixelRatio(getOptimalPixelRatio());
+      renderer.setSize(width, height, true);
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.1;
+    } catch (e) {
+      if (canvas) canvas.style.display = 'none';
+      return;
+    }
+
+    scene = new THREE.Scene();
+
+    camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+    camera.position.set(0, 0, 11);
+
+    // Studio Lighting + Soft Rim Lighting
+    var ambient = new THREE.AmbientLight(0xFFFFFF, 0.9);
+    scene.add(ambient);
+
+    var dirLight1 = new THREE.DirectionalLight(0xFFFFFF, 1.5);
+    dirLight1.position.set(6, 8, 7);
+    scene.add(dirLight1);
+
+    var dirLight2 = new THREE.DirectionalLight(0x9EA3AE, 0.9);
+    dirLight2.position.set(-6, -4, 5);
+    scene.add(dirLight2);
+
+    // Soft Rim Light from behind to make coins read cleanly against dark background
+    var rimLight1 = new THREE.DirectionalLight(0xE2E8F0, 1.8);
+    rimLight1.position.set(-8, 7, -8);
+    scene.add(rimLight1);
+
+    var rimLight2 = new THREE.DirectionalLight(0xFFFFFF, 1.2);
+    rimLight2.position.set(8, -6, -6);
+    scene.add(rimLight2);
+
+    buildAuroraBackground();
+    buildCryptoCoins();
+    buildLearnBlocksChain();
+    initTooltipElement();
+  }
+
+  /**
+   * 3D Moment for learn.html: 6 Glowing Chain Blocks in Background
+   */
+  var learnBlocksList = [];
+  var learnChainMesh = null;
+
+  function buildLearnBlocksChain() {
+    var isLearnPage = document.querySelector('.learn-page') !== null;
+    if (!isLearnPage) return;
+
+    var blockGeo = new THREE.BoxGeometry(0.72, 0.72, 0.72);
+    var numBlocks = 6;
+    var startY = 3.6;
+    var stepY = 1.4;
+    var chainX = 6.2; // side gutter
+    var linePoints = [];
+
+    for (var i = 0; i < numBlocks; i++) {
+      var mat = new THREE.MeshStandardMaterial({
+        color: 0x1A1C24,
+        roughness: 0.35,
+        metalness: 0.65,
+        emissive: 0x111318
+      });
+
+      var edges = new THREE.EdgesGeometry(blockGeo);
+      var lineMat = new THREE.LineBasicMaterial({ color: 0x555A66, transparent: true, opacity: 0.4 });
+      var wireframe = new THREE.LineSegments(edges, lineMat);
+
+      var mesh = new THREE.Mesh(blockGeo, mat);
+      mesh.add(wireframe);
+      mesh.position.set(chainX, startY - (i * stepY), 0.5);
+
+      mesh.userData = {
+        index: i,
+        baseY: startY - (i * stepY),
+        mat: mat,
+        lineMat: lineMat
+      };
+
+      learnBlocksList.push(mesh);
+      scene.add(mesh);
+      linePoints.push(new THREE.Vector3(chainX, startY - (i * stepY), 0.5));
+    }
+
+    var chainLineGeo = new THREE.BufferGeometry().setFromPoints(linePoints);
+    var chainLineMat = new THREE.LineBasicMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0.16 });
+    learnChainMesh = new THREE.Line(chainLineGeo, chainLineMat);
+    scene.add(learnChainMesh);
+  }
+
+  function highlightLearnBlock(activeIdx) {
+    if (!learnBlocksList.length) return;
+    learnBlocksList.forEach(function (block, idx) {
+      if (idx === activeIdx) {
+        block.userData.mat.emissive.setHex(0x999999);
+        block.userData.mat.color.setHex(0xFFFFFF);
+        block.userData.lineMat.color.setHex(0xFFFFFF);
+        block.userData.lineMat.opacity = 0.95;
+        block.scale.lerp(new THREE.Vector3(1.25, 1.25, 1.25), 0.18);
+      } else {
+        block.userData.mat.emissive.setHex(0x111318);
+        block.userData.mat.color.setHex(0x1A1C24);
+        block.userData.lineMat.color.setHex(0x555A66);
+        block.userData.lineMat.opacity = 0.35;
+        block.scale.lerp(new THREE.Vector3(0.9, 0.9, 0.9), 0.12);
+      }
+    });
+  }
+
+  /**
+   * Coin Click Tooltip Element
+   */
+  var tooltipEl;
+  function initTooltipElement() {
+    tooltipEl = document.createElement('div');
+    tooltipEl.className = 'coin-tooltip-card';
+    tooltipEl.innerHTML = [
+      '<div class="coin-tooltip-title"><span id="tip-symbol" style="color:#FFF;"></span> <span id="tip-name"></span></div>',
+      '<p class="coin-tooltip-fact" id="tip-fact"></p>'
+    ].join('');
+    document.body.appendChild(tooltipEl);
+
+    // Window click outside closes tooltip
+    window.addEventListener('click', function (e) {
+      if (!e.target.closest('#scene3d') && activeTooltipCoin) {
+        hideTooltip();
+      }
+    });
+  }
+
+  function showTooltip(coinData, clientX, clientY) {
+    if (!tooltipEl) return;
+    document.getElementById('tip-symbol').textContent = coinData.symbol;
+    document.getElementById('tip-symbol').style.color = coinData.color;
+    document.getElementById('tip-name').textContent = coinData.name;
+    document.getElementById('tip-fact').textContent = coinData.fact;
+
+    tooltipEl.style.left = clientX + 'px';
+    tooltipEl.style.top = clientY + 'px';
+    tooltipEl.classList.add('is-visible');
+    activeTooltipCoin = coinData;
+  }
+
+  function hideTooltip() {
+    if (!tooltipEl) return;
+    tooltipEl.classList.remove('is-visible');
+    activeTooltipCoin = null;
+  }
+
+  /**
+   * Raycast on click to detect coin interactions
+   */
+  function onPointerClick(e) {
+    if (e.target && e.target.closest('button, a, input, select, textarea, .ring-card, .marquee-card, .token-bento-card, .block-tx-item, [role="button"]')) {
+      return;
+    }
+
+    mouseNDC.x = (e.clientX / window.innerWidth) * 2 - 1;
+    mouseNDC.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+    raycaster.setFromCamera(mouseNDC, camera);
+    var intersects = raycaster.intersectObjects(coinsList);
+
+    if (intersects.length > 0) {
+      var hitCoin = intersects[0].object;
+      showTooltip(hitCoin.userData.data, e.clientX, e.clientY);
+      // Accelerate spin on click
+      hitCoin.userData.orbitSpeed *= 2.5;
+      setTimeout(function () {
+        hitCoin.userData.orbitSpeed = hitCoin.userData.data.orbitSpeed;
+      }, 1200);
+    } else {
+      hideTooltip();
+    }
+  }
+
+  /**
+   * Smoothly Drift Flow Direction every 8-15 seconds
+   */
+  function updateFlowDrift(time) {
+    if (time - flowDrift.lastDriftTime > 11.0) {
+      flowDrift.targetAngle1 = Math.random() * Math.PI * 2;
+      flowDrift.targetAngle2 = Math.random() * Math.PI * 2;
+      flowDrift.lastDriftTime = time;
+    }
+
+    flowDrift.angle1 += (flowDrift.targetAngle1 - flowDrift.angle1) * 0.02;
+    flowDrift.angle2 += (flowDrift.targetAngle2 - flowDrift.angle2) * 0.02;
+
+    if (auroraMaterial) {
+      auroraMaterial.uniforms.uWarpAngle1.value = flowDrift.angle1;
+      auroraMaterial.uniforms.uWarpAngle2.value = flowDrift.angle2;
+    }
+  }
+
+  /**
+   * Render Loop (55+ FPS Target)
+   */
+  function animate() {
+    if (!isTabActive) return;
+
+    requestAnimationFrame(animate);
+
+    var delta = clock.getDelta();
+    var elapsedTime = clock.getElapsedTime();
+
+    // FPS Measurement
+    var now = performance.now();
+    fpsTracker.frames++;
+    if (now - fpsTracker.lastTime >= 1000) {
+      fpsTracker.currentFPS = Math.round((fpsTracker.frames * 1000) / (now - fpsTracker.lastTime));
+      fpsTracker.frames = 0;
+      fpsTracker.lastTime = now;
+    }
+
+    // Scroll calculations
+    var scrollY = window.pageYOffset || document.documentElement.scrollTop;
+    var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    var scrollProgress = docHeight > 0 ? scrollY / docHeight : 0;
+
+    scroll.velocity = (scrollY - scroll.lastScrollY) * 0.1;
+    scroll.lastScrollY = scrollY;
+    scroll.current += (scrollProgress - scroll.current) * 0.08;
+
+    // Update Aurora Uniforms
+    if (auroraMaterial) {
+      auroraMaterial.uniforms.uTime.value = elapsedTime;
+      auroraMaterial.uniforms.uScroll.value = scroll.current;
+      auroraMaterial.uniforms.uScrollVelocity.value = scroll.velocity;
+      updateFlowDrift(elapsedTime);
+    }
+
+    // Camera Dolly on Scroll & Parallax
+    mouse.x += (mouse.targetX - mouse.x) * 0.06;
+    mouse.y += (mouse.targetY - mouse.y) * 0.06;
+
+    camera.position.x = mouse.x * 0.5;
+    camera.position.y = mouse.y * 0.35;
+    camera.position.z = 11.0 + scroll.current * 2.5; // subtle camera dolly
+    camera.lookAt(0, 0, 0);
+
+    // Update Floating Orbiting Coins
+    var vHeight = 2 * Math.tan((camera.fov * Math.PI / 180) / 2) * camera.position.z;
+    var vWidth = vHeight * camera.aspect;
+
+    // Check data-scene-slot="coin" anchor element
+    var coinSlotEl = document.querySelector('[data-scene-slot="coin"]');
+    var slotWorldPos = null;
+    if (coinSlotEl) {
+      var rect = coinSlotEl.getBoundingClientRect();
+      // Keep strictly within section bounds and below the top floating navbar
+      if (rect.top >= 75 && rect.bottom <= window.innerHeight + 80) {
+        var centerX = rect.left + rect.width / 2;
+        var centerY = rect.top + rect.height / 2;
+        var ndcX = (centerX / window.innerWidth) * 2 - 1;
+        var ndcY = -(centerY / window.innerHeight) * 2 + 1;
+        var targetZ = 3.6;
+        var vec = new THREE.Vector3(ndcX, ndcY, 0.5);
+        vec.unproject(camera);
+        vec.sub(camera.position).normalize();
+        var dist = (targetZ - camera.position.z) / vec.z;
+        slotWorldPos = camera.position.clone().add(vec.multiplyScalar(dist));
+      }
+    }
+
+    coinsList.forEach(function (coin, idx) {
+      var u = coin.userData;
+      u.angle += u.orbitSpeed * delta * 0.8;
+
+      var targetX, targetY, targetZ;
+
+      // Dock the 2nd coin (Ethereum #627EEA) or 1st coin into data-scene-slot="coin" when visible
+      if (slotWorldPos && idx === 1) {
+        targetX = slotWorldPos.x;
+        targetY = slotWorldPos.y;
+        targetZ = slotWorldPos.z;
+        // Scale to fit slot comfortably
+        coin.scale.lerp(new THREE.Vector3(1.2, 1.2, 1.2), 0.12);
+      } else {
+        coin.scale.lerp(new THREE.Vector3(1, 1, 1), 0.1);
+
+        // Keep coins in side gutters and outer gaps so cards and centered text never hide them
+        var horizontalRadius = (vWidth * 0.44) + Math.sin(elapsedTime * 0.5 + idx) * 0.35;
+        var verticalRadius = 3.2 + Math.cos(elapsedTime * 0.45 + idx) * 0.4;
+
+        targetX = Math.cos(u.angle) * horizontalRadius;
+        targetY = Math.sin(u.angle) * verticalRadius + (u.yOffset * 0.4);
+        targetZ = Math.sin(u.angle * 2.0) * 1.5 - (scroll.current * 4.5); // coins drift with scroll
+
+        // Cursor repel/attract effect
+        var dx = targetX - (mouse.x * (vWidth / 2));
+        var dy = targetY - (mouse.y * (vHeight / 2));
+        var distToMouse = Math.sqrt(dx * dx + dy * dy);
+        if (distToMouse < 3.5) {
+          var repel = (3.5 - distToMouse) * 0.28;
+          targetX += (dx / distToMouse) * repel;
+          targetY += (dy / distToMouse) * repel;
+        }
+      }
+
+      // Smooth position lerp
+      coin.position.x += (targetX - coin.position.x) * 0.1;
+      coin.position.y += (targetY - coin.position.y) * 0.1;
+      coin.position.z += (targetZ - coin.position.z) * 0.1;
+
+      // Tumble & spin
+      coin.rotation.y += delta * (0.8 + idx * 0.05);
+      coin.rotation.x = Math.sin(elapsedTime * 0.8 + idx) * 0.3 + (mouse.y * 0.3);
+      coin.rotation.z = Math.cos(elapsedTime * 0.6 + idx) * 0.2;
+    });
+
+    // Animate glowing chain blocks on learn page
+    if (learnBlocksList.length > 0) {
+      learnBlocksList.forEach(function (block, idx) {
+        block.rotation.y += delta * 0.45;
+        block.rotation.x = Math.sin(elapsedTime * 0.6 + idx) * 0.2;
+        block.position.y = block.userData.baseY + Math.sin(elapsedTime * 0.8 + idx) * 0.08 - (scroll.current * 1.5);
+      });
+    }
+
+    updateNetworkLines();
+    renderer.render(scene, camera);
+  }
+
+  function onWindowResize() {
+    if (!renderer || !camera) return;
+    var w = window.innerWidth;
+    var h = window.innerHeight;
+
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+
+    renderer.setPixelRatio(getOptimalPixelRatio());
+    renderer.setSize(w, h, true);
+
+    if (auroraMaterial) {
+      auroraMaterial.uniforms.uResolution.value.set(w, h);
+    }
+  }
+
+  function onPointerMove(e) {
+    mouse.targetX = (e.clientX / window.innerWidth) * 2 - 1;
+    mouse.targetY = -(e.clientY / window.innerHeight) * 2 + 1;
+    mouse.screenX = e.clientX;
+    mouse.screenY = e.clientY;
+  }
+
+  function onVisibilityChange() {
+    if (document.hidden) {
+      isTabActive = false;
+    } else {
+      if (!isTabActive) {
+        isTabActive = true;
+        clock.getDelta();
+        requestAnimationFrame(animate);
+      }
+    }
+  }
+
+  function init() {
+    if (typeof window !== 'undefined') {
+      var isMobile = window.innerWidth < 768 || (window.matchMedia && !window.matchMedia('(hover: hover) and (pointer: fine)').matches);
+      var isHomeOrLearn = (function () {
+        var p = window.location.pathname;
+        var name = p.substring(p.lastIndexOf('/') + 1).toLowerCase();
+        return !name || name === '' || name === 'index.html' || name === 'learn.html' || Boolean(document.querySelector('.learn-page, .hero-v4'));
+      })();
+
+      if (isMobile && !isHomeOrLearn) {
+        document.documentElement.classList.add('no-webgl');
+        return;
+      }
+    }
+    initScene();
+    window.addEventListener('resize', onWindowResize, { passive: true });
+    window.addEventListener('mousemove', onPointerMove, { passive: true });
+    window.addEventListener('click', onPointerClick);
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    animate();
+  }
+
+  function triggerSuccessEffect() {
+    if (!renderer || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (coinsList && coinsList.length > 0) {
+      var coin = coinsList[Math.floor(Math.random() * coinsList.length)];
+      if (coin) {
+        var startRot = coin.rotation.y;
+        var startTime = performance.now();
+        function spin(now) {
+          var progress = (now - startTime) / 600;
+          if (progress < 1) {
+            coin.rotation.y = startRot + Math.PI * 4 * Math.sin(progress * Math.PI * 0.5);
+            requestAnimationFrame(spin);
+          }
+        }
+        requestAnimationFrame(spin);
+      }
+    }
+  }
+
+  window.Aether.scene3d = {
+    init: init,
+    getScene: function () { return scene; },
+    getCamera: function () { return camera; },
+    getRenderer: function () { return renderer; },
+    getFPS: function () { return fpsTracker.currentFPS; },
+    highlightLearnBlock: highlightLearnBlock,
+    triggerSuccessEffect: triggerSuccessEffect
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+})();
