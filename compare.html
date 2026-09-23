@@ -133,7 +133,10 @@
 
         <!-- Morphing Comparison Grid -->
         <div class="compare-grid-header">
-          <h3 class="compare-grid-headline">Direct Pillar Comparison</h3>
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <h3 class="compare-grid-headline" style="margin-bottom:0;">Direct Pillar Comparison</h3>
+            <span class="cache-time-badge" id="compare-rows-source-badge" style="font-size:0.7rem;">built-in</span>
+          </div>
           <p class="compare-grid-sub">Watch how each fundamental architectural layer transforms when switching paradigms:</p>
         </div>
 
@@ -291,6 +294,211 @@
                   <span class="detail-key">Mechanic:</span>
                   <span class="detail-val">Single point of failure (SPOF), regional data center outages</span>
                 </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Interactive Community Poll: What Would You Choose? -->
+      <section class="compare-poll-section" id="compare-poll-section" aria-labelledby="heading-poll" style="margin-bottom:var(--space-3xl);">
+        <div class="decision-card">
+          <div class="decision-card__header" style="margin-bottom:var(--space-md);">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:4px;">
+              <span class="decision-eyebrow" style="margin-bottom:0;">Community Consensus</span>
+              <span class="cache-time-badge" id="poll-status-badge" style="font-size:0.7rem;">Live Poll</span>
+            </div>
+            <h2 id="heading-poll" class="decision-title" style="font-size:1.4rem;">What would you choose for your next project?</h2>
+            <p class="decision-intro" style="font-size:var(--text-xs); margin-bottom:0;">
+              Cast your vote. Your vote is recorded via your authenticated wallet or salted client fingerprint. You can change your choice anytime.
+            </p>
+          </div>
+
+          <!-- Poll Offline Message (fallback) -->
+          <div id="poll-offline-msg" style="display:none; padding:12px; border-radius:var(--radius-sm); background:rgba(255,255,255,0.04); border:1px solid var(--border-line); color:var(--text-secondary); font-size:var(--text-xs); margin-bottom:var(--space-md);">
+            Poll offline &bull; Backend unavailable. Voting will reconnect once the API is online.
+          </div>
+
+          <!-- Poll Buttons & Results Stage -->
+          <div class="poll-voting-stage" id="poll-voting-stage">
+            <div class="poll-buttons-grid" role="radiogroup" aria-label="Poll choices" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px; margin-bottom:var(--space-md);">
+              <button type="button" class="btn btn--secondary btn--md poll-vote-btn" data-choice="web2" id="poll-btn-web2" role="radio" aria-checked="false">
+                <span>Web2 (Centralized)</span>
+              </button>
+              <button type="button" class="btn btn--secondary btn--md poll-vote-btn" data-choice="web3" id="poll-btn-web3" role="radio" aria-checked="false">
+                <span>Web3 (Decentralized)</span>
+              </button>
+              <button type="button" class="btn btn--secondary btn--md poll-vote-btn" data-choice="depends" id="poll-btn-depends" role="radio" aria-checked="false">
+                <span>It depends (Hybrid)</span>
+              </button>
+            </div>
+
+            <!-- Poll Results Bars (aria-live for accessibility) -->
+            <div class="poll-results-box" id="poll-results-box" aria-live="polite" style="display:none; flex-direction:column; gap:12px;">
+              
+              <!-- Web2 Bar -->
+              <div class="poll-bar-item">
+                <div style="display:flex; justify-content:space-between; font-size:var(--text-xs); margin-bottom:4px;">
+                  <span style="font-weight:600;">Web2 (Centralized)</span>
+                  <span id="poll-stat-web2" style="font-family:var(--font-mono); color:var(--text-secondary);">0% (0 votes)</span>
+                </div>
+                <div style="height:10px; border-radius:5px; background:rgba(255,255,255,0.08); overflow:hidden;">
+                  <div id="poll-fill-web2" style="height:100%; width:0%; background:#3B82F6; border-radius:5px; transition:width 0.6s cubic-bezier(0.16, 1, 0.3, 1);"></div>
+                </div>
+              </div>
+
+              <!-- Web3 Bar -->
+              <div class="poll-bar-item">
+                <div style="display:flex; justify-content:space-between; font-size:var(--text-xs); margin-bottom:4px;">
+                  <span style="font-weight:600;">Web3 (Decentralized)</span>
+                  <span id="poll-stat-web3" style="font-family:var(--font-mono); color:var(--text-secondary);">0% (0 votes)</span>
+                </div>
+                <div style="height:10px; border-radius:5px; background:rgba(255,255,255,0.08); overflow:hidden;">
+                  <div id="poll-fill-web3" style="height:100%; width:0%; background:#10B981; border-radius:5px; transition:width 0.6s cubic-bezier(0.16, 1, 0.3, 1);"></div>
+                </div>
+              </div>
+
+              <!-- Depends Bar -->
+              <div class="poll-bar-item">
+                <div style="display:flex; justify-content:space-between; font-size:var(--text-xs); margin-bottom:4px;">
+                  <span style="font-weight:600;">It depends (Hybrid)</span>
+                  <span id="poll-stat-depends" style="font-family:var(--font-mono); color:var(--text-secondary);">0% (0 votes)</span>
+                </div>
+                <div style="height:10px; border-radius:5px; background:rgba(255,255,255,0.08); overflow:hidden;">
+                  <div id="poll-fill-depends" style="height:100%; width:0%; background:#8B5CF6; border-radius:5px; transition:width 0.6s cubic-bezier(0.16, 1, 0.3, 1);"></div>
+                </div>
+              </div>
+
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; font-size:0.75rem; color:var(--text-tertiary); flex-wrap:wrap; gap:8px;">
+                <span id="poll-total-votes">Total Votes: 0</span>
+                <span id="poll-user-voted-msg" style="color:var(--text-secondary);">Click any option above to cast or change your vote.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Interactive Simulation: Who is in Control? -->
+      <section class="compare-control-section" id="compare-control-section" aria-labelledby="heading-control" style="margin-bottom:var(--space-3xl);">
+        <div class="section-title-wrap text-center">
+          <div class="eyebrow-pill">
+            <span>✦</span>
+            <span>Hands-On Simulation</span>
+          </div>
+          <h2 id="heading-control" class="section-title">Who Is In Control?</h2>
+          <p class="section-subtitle">
+            Experience the practical difference in account sovereignty between centralized corporate custody and self-sovereign cryptographic keypairs.
+          </p>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:var(--space-lg);">
+          
+          <!-- Web2 Panel (Centralized Custody Simulation) -->
+          <div class="tradeoff-card" style="border:1px solid rgba(255,255,255,0.1); background:var(--bg-card); display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-md);">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div class="tradeoff-card__icon" style="background:rgba(59,130,246,0.15); color:#3B82F6;">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                  </div>
+                  <div>
+                    <h3 class="tradeoff-card__title" style="margin:0; font-size:1.1rem;">Web2 Platform Account</h3>
+                    <span style="font-size:0.7rem; color:var(--text-tertiary); font-family:var(--font-mono);">Server Database Identity</span>
+                  </div>
+                </div>
+                <span class="widget-demo-tag">Simulation</span>
+              </div>
+
+              <p style="font-size:var(--text-xs); color:var(--text-secondary); line-height:1.6; margin-bottom:var(--space-md);">
+                Simulates user <code>demo_user</code> on a centralized cloud service. The company retains root database privileges and can unilaterally freeze or terminate access.
+              </p>
+
+              <!-- Account Status Box -->
+              <div style="padding:12px; border-radius:var(--radius-sm); background:rgba(255,255,255,0.03); border:1px solid var(--border-line); margin-bottom:var(--space-md);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                  <span style="font-size:var(--text-xs); color:var(--text-tertiary);">Account State</span>
+                  <span id="web2-demo-status-pill" class="compare-state-pill" style="font-size:0.68rem;">Active</span>
+                </div>
+                <div style="font-size:var(--text-sm); font-weight:600; color:#FFF;" id="web2-account-name">demo_user</div>
+              </div>
+
+              <!-- Login Result Alert (aria-live) -->
+              <div id="web2-login-feedback" aria-live="polite" style="display:none; padding:10px 12px; border-radius:var(--radius-sm); font-size:var(--text-xs); margin-bottom:var(--space-md); line-height:1.4;"></div>
+            </div>
+
+            <div>
+              <!-- User Action -->
+              <div style="margin-bottom:var(--space-md);">
+                <button type="button" class="btn btn--primary btn--sm" id="btn-web2-demo-login" style="width:100%; justify-content:center;">
+                  <span>Log in as demo_user</span>
+                </button>
+              </div>
+
+              <!-- Admin Freeze Control Toggle -->
+              <div style="padding:12px; border-radius:var(--radius-sm); background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.2);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                  <span style="font-size:var(--text-xs); font-weight:700; color:#EF4444;">Admin Intervention</span>
+                  <label class="switch" style="position:relative; display:inline-block; width:38px; height:22px;">
+                    <input type="checkbox" id="web2-freeze-toggle" aria-label="Act as platform admin: freeze account">
+                    <span class="slider"></span>
+                  </label>
+                </div>
+                <small style="display:block; font-size:0.7rem; color:var(--text-secondary); line-height:1.4;">
+                  <strong>Act as platform admin:</strong> Toggle to freeze this account in the database. When frozen, subsequent login attempts will receive HTTP 403 Forbidden.
+                </small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Web3 Panel (Cryptographic Keypair Simulation) -->
+          <div class="tradeoff-card" style="border:1px solid rgba(255,255,255,0.1); background:var(--bg-card); display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-md);">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div class="tradeoff-card__icon" style="background:rgba(16,185,129,0.15); color:#10B981;">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                  </div>
+                  <div>
+                    <h3 class="tradeoff-card__title" style="margin:0; font-size:1.1rem;">Web3 Cryptographic Keypair</h3>
+                    <span style="font-size:0.7rem; color:var(--text-tertiary); font-family:var(--font-mono);">Self-Sovereign Identity</span>
+                  </div>
+                </div>
+                <span class="widget-demo-tag">Simulation</span>
+              </div>
+
+              <p style="font-size:var(--text-xs); color:var(--text-secondary); line-height:1.6; margin-bottom:var(--space-md);">
+                Your wallet signs a cryptographic challenge to prove identity. The server mathematically verifies your signature, but holds no private key and has no database switch to freeze or confiscate your wallet.
+              </p>
+
+              <!-- Web3 Status Box -->
+              <div style="padding:12px; border-radius:var(--radius-sm); background:rgba(255,255,255,0.03); border:1px solid var(--border-line); margin-bottom:var(--space-md);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                  <span style="font-size:var(--text-xs); color:var(--text-tertiary);">Sovereignty State</span>
+                  <span id="web3-demo-status-pill" class="compare-state-pill compare-state-pill--web3" style="font-size:0.68rem;">Self-Custodied</span>
+                </div>
+                <div style="font-size:var(--text-sm); font-weight:600; color:#FFF; word-break:break-all;" id="web3-wallet-account-display">Not Signed In</div>
+              </div>
+
+              <!-- Web3 Result / Explainer (aria-live) -->
+              <div id="web3-auth-feedback" aria-live="polite" style="padding:10px 12px; border-radius:var(--radius-sm); font-size:var(--text-xs); background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.2); color:#D1FAE5; margin-bottom:var(--space-md); line-height:1.4;">
+                The platform can verify your signature but has no button to freeze your wallet.
+              </div>
+            </div>
+
+            <div>
+              <!-- Web3 Actions -->
+              <div style="margin-bottom:var(--space-md);">
+                <button type="button" class="btn btn--primary btn--sm" id="btn-web3-demo-signin" style="width:100%; justify-content:center;">
+                  <span>Sign in with Wallet</span>
+                </button>
+              </div>
+
+              <!-- Honest Note -->
+              <div style="padding:12px; border-radius:var(--radius-sm); background:rgba(255,255,255,0.02); border:1px solid var(--border-line);">
+                <small style="display:block; font-size:0.7rem; color:var(--text-tertiary); line-height:1.4;">
+                  <strong>Honest Architecture Note:</strong> While a server cannot freeze your cryptographic wallet or block you from the blockchain, applications built on top of a wallet can still ban your address from interacting with their specific frontend interface or smart contracts.
+                </small>
               </div>
             </div>
           </div>

@@ -491,6 +491,341 @@
     }
 
     initDiagramCanvas();
+    loadCompareRows();
+    initPoll();
+    initControlSimulation();
+  }
+
+  /**
+   * Load compare rows from API with fallback to built-in content
+   */
+  async function loadCompareRows() {
+    var sourceBadge = document.getElementById('compare-rows-source-badge');
+    if (!window.Aether || !window.Aether.api || typeof window.Aether.api.get !== 'function') {
+      if (sourceBadge) sourceBadge.textContent = 'built-in';
+      return;
+    }
+
+    try {
+      var res = await window.Aether.api.get('/api/compare/rows');
+      if (res && res.ok && Array.isArray(res.data) && res.data.length > 0) {
+        res.data.forEach(function (row, idx) {
+          if (idx < COMPARISON_DATA.length) {
+            if (row.topic) COMPARISON_DATA[idx].title = row.topic;
+            if (row.web2) {
+              if (row.web2.title) COMPARISON_DATA[idx].web2.badge = row.web2.title;
+              if (row.web2.text) COMPARISON_DATA[idx].web2.desc = row.web2.text;
+            }
+            if (row.web3) {
+              if (row.web3.title) COMPARISON_DATA[idx].web3.badge = row.web3.title;
+              if (row.web3.text) COMPARISON_DATA[idx].web3.desc = row.web3.text;
+            }
+          }
+        });
+        if (sourceBadge) {
+          sourceBadge.textContent = 'from API';
+          sourceBadge.style.color = '#10B981';
+        }
+        updateComparisonGrid(currentMode);
+      } else {
+        if (sourceBadge) sourceBadge.textContent = 'built-in';
+      }
+    } catch (e) {
+      if (sourceBadge) sourceBadge.textContent = 'built-in';
+    }
+  }
+
+  /**
+   * Interactive Community Poll Logic
+   */
+  async function initPoll() {
+    var offlineMsg = document.getElementById('poll-offline-msg');
+    var resultsBox = document.getElementById('poll-results-box');
+    var statusBadge = document.getElementById('poll-status-badge');
+    var pollBtnW2 = document.getElementById('poll-btn-web2');
+    var pollBtnW3 = document.getElementById('poll-btn-web3');
+    var pollBtnDep = document.getElementById('poll-btn-depends');
+
+    if (!pollBtnW2 || !pollBtnW3 || !pollBtnDep) return;
+
+    function renderPollCounts(counts, userChoice) {
+      if (!counts) return;
+      var total = counts.total || 0;
+      var w2 = counts.web2 || 0;
+      var w3 = counts.web3 || 0;
+      var dep = counts.depends || 0;
+
+      var p2 = total > 0 ? Math.round((w2 / total) * 100) : 0;
+      var p3 = total > 0 ? Math.round((w3 / total) * 100) : 0;
+      var pDep = total > 0 ? (100 - p2 - p3) : 0;
+      if (pDep < 0) pDep = 0;
+
+      var statW2 = document.getElementById('poll-stat-web2');
+      var statW3 = document.getElementById('poll-stat-web3');
+      var statDep = document.getElementById('poll-stat-depends');
+
+      var fillW2 = document.getElementById('poll-fill-web2');
+      var fillW3 = document.getElementById('poll-fill-web3');
+      var fillDep = document.getElementById('poll-fill-depends');
+
+      var totalEl = document.getElementById('poll-total-votes');
+      var votedMsg = document.getElementById('poll-user-voted-msg');
+
+      if (statW2) statW2.textContent = p2 + '% (' + w2 + ' votes)';
+      if (statW3) statW3.textContent = p3 + '% (' + w3 + ' votes)';
+      if (statDep) statDep.textContent = pDep + '% (' + dep + ' votes)';
+
+      if (fillW2) fillW2.style.width = p2 + '%';
+      if (fillW3) fillW3.style.width = p3 + '%';
+      if (fillDep) fillDep.style.width = pDep + '%';
+
+      if (totalEl) totalEl.textContent = 'Total Votes: ' + total;
+
+      [pollBtnW2, pollBtnW3, pollBtnDep].forEach(function (btn) {
+        var choice = btn.getAttribute('data-choice');
+        var isSelected = (choice === userChoice);
+        btn.classList.toggle('is-voted', isSelected);
+        btn.setAttribute('aria-checked', isSelected ? 'true' : 'false');
+      });
+
+      if (votedMsg && userChoice) {
+        var label = userChoice === 'web2' ? 'Web2' : (userChoice === 'web3' ? 'Web3' : 'It depends');
+        votedMsg.textContent = 'Your vote: ' + label + '. Click any option to change your choice.';
+      }
+
+      if (resultsBox) resultsBox.style.display = 'flex';
+      if (offlineMsg) offlineMsg.style.display = 'none';
+      if (statusBadge) {
+        statusBadge.textContent = 'Live Poll';
+        statusBadge.style.color = '#10B981';
+      }
+    }
+
+    async function castVote(choice) {
+      if (!window.Aether || !window.Aether.api || typeof window.Aether.api.post !== 'function') {
+        if (offlineMsg) offlineMsg.style.display = 'block';
+        return;
+      }
+      try {
+        var res = await window.Aether.api.post('/api/compare/poll', {
+          poll: 'web2-vs-web3',
+          choice: choice
+        });
+        if (res && res.ok && res.data) {
+          renderPollCounts(res.data, choice);
+          if (window.Aether.showToast) {
+            Aether.showToast('Vote recorded: ' + (choice === 'web2' ? 'Web2' : (choice === 'web3' ? 'Web3' : 'It depends')));
+          }
+        } else {
+          if (offlineMsg) offlineMsg.style.display = 'block';
+        }
+      } catch (err) {
+        if (offlineMsg) offlineMsg.style.display = 'block';
+      }
+    }
+
+    [pollBtnW2, pollBtnW3, pollBtnDep].forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var choice = this.getAttribute('data-choice');
+        castVote(choice);
+      });
+    });
+
+    if (window.Aether && window.Aether.api && typeof window.Aether.api.get === 'function') {
+      try {
+        var res = await window.Aether.api.get('/api/compare/poll?poll=web2-vs-web3');
+        if (res && res.ok && res.data) {
+          renderPollCounts(res.data, null);
+        } else {
+          if (offlineMsg) offlineMsg.style.display = 'block';
+          if (statusBadge) {
+            statusBadge.textContent = 'Poll Offline';
+            statusBadge.style.color = '';
+          }
+        }
+      } catch (e) {
+        if (offlineMsg) offlineMsg.style.display = 'block';
+        if (statusBadge) {
+          statusBadge.textContent = 'Poll Offline';
+          statusBadge.style.color = '';
+        }
+      }
+    } else {
+      if (offlineMsg) offlineMsg.style.display = 'block';
+    }
+  }
+
+  /**
+   * "Who is in control" Hands-On Simulation
+   */
+  async function initControlSimulation() {
+    // --- Web2 Panel ---
+    var freezeToggle = document.getElementById('web2-freeze-toggle');
+    var statusPill = document.getElementById('web2-demo-status-pill');
+    var loginBtn = document.getElementById('btn-web2-demo-login');
+    var feedback = document.getElementById('web2-login-feedback');
+
+    function updateWeb2Status(frozen) {
+      if (!statusPill) return;
+      if (frozen) {
+        statusPill.textContent = 'Frozen (403)';
+        statusPill.style.color = '#EF4444';
+        statusPill.style.background = 'rgba(239,68,68,0.15)';
+      } else {
+        statusPill.textContent = 'Active';
+        statusPill.style.color = '#10B981';
+        statusPill.style.background = 'rgba(16,185,129,0.15)';
+      }
+    }
+
+    if (window.Aether && window.Aether.api && typeof window.Aether.api.get === 'function') {
+      try {
+        var stateRes = await window.Aether.api.get('/api/compare/demo-state');
+        if (stateRes && stateRes.ok && stateRes.data) {
+          var isFrozen = Boolean(stateRes.data.frozen);
+          if (freezeToggle) freezeToggle.checked = isFrozen;
+          updateWeb2Status(isFrozen);
+        }
+      } catch (e) {}
+    }
+
+    if (freezeToggle) {
+      freezeToggle.addEventListener('change', async function () {
+        var shouldFreeze = freezeToggle.checked;
+        updateWeb2Status(shouldFreeze);
+
+        if (window.Aether && window.Aether.api && typeof window.Aether.api.post === 'function') {
+          try {
+            var res = await window.Aether.api.post('/api/compare/demo-freeze', { frozen: shouldFreeze });
+            if (res && res.ok) {
+              if (window.Aether.showToast) {
+                Aether.showToast(shouldFreeze ? 'Platform admin: demo account frozen.' : 'Platform admin: demo account unfrozen.');
+              }
+            } else if (res && res.error) {
+              if (window.Aether.showToast) Aether.showToast(res.error);
+            }
+          } catch (e) {
+            if (window.Aether.showToast) Aether.showToast('Could not update admin freeze state.');
+          }
+        }
+      });
+    }
+
+    if (loginBtn) {
+      loginBtn.addEventListener('click', async function () {
+        if (!window.Aether || !window.Aether.api || typeof window.Aether.api.post !== 'function') {
+          if (feedback) {
+            feedback.style.display = 'block';
+            feedback.style.background = 'rgba(255,255,255,0.05)';
+            feedback.style.color = 'var(--text-secondary)';
+            feedback.style.border = '1px solid var(--border-line)';
+            feedback.textContent = 'API client unavailable (Local simulation mode).';
+          }
+          return;
+        }
+
+        try {
+          var res = await window.Aether.api.post('/api/compare/demo-login', {});
+          if (feedback) feedback.style.display = 'block';
+
+          if (res && res.ok) {
+            feedback.style.background = 'rgba(16,185,129,0.1)';
+            feedback.style.border = '1px solid rgba(16,185,129,0.3)';
+            feedback.style.color = '#10B981';
+            feedback.textContent = '✓ Logged in as demo_user. Centralized platform session active.';
+          } else {
+            feedback.style.background = 'rgba(239,68,68,0.1)';
+            feedback.style.border = '1px solid rgba(239,68,68,0.3)';
+            feedback.style.color = '#EF4444';
+            var msg = (res && res.error) ? res.error : 'Account frozen by the platform (HTTP 403 Forbidden)';
+            feedback.textContent = '✕ ' + msg + '. Platform administrator has revoked access.';
+          }
+        } catch (e) {
+          if (feedback) {
+            feedback.style.display = 'block';
+            feedback.style.background = 'rgba(239,68,68,0.1)';
+            feedback.style.border = '1px solid rgba(239,68,68,0.3)';
+            feedback.style.color = '#EF4444';
+            feedback.textContent = '✕ Login request failed.';
+          }
+        }
+      });
+    }
+
+    // --- Web3 Panel ---
+    var web3Display = document.getElementById('web3-wallet-account-display');
+    var web3Btn = document.getElementById('btn-web3-demo-signin');
+    var web3Feedback = document.getElementById('web3-auth-feedback');
+    var web3Pill = document.getElementById('web3-demo-status-pill');
+
+    function updateWeb3ControlState() {
+      var auth = (window.Aether && window.Aether.Wallet && typeof window.Aether.Wallet.getAuthState === 'function')
+        ? window.Aether.Wallet.getAuthState()
+        : { isSignedIn: false, address: null };
+
+      var walletState = (window.Aether && window.Aether.Wallet && typeof window.Aether.Wallet.getState === 'function')
+        ? window.Aether.Wallet.getState()
+        : { isConnected: false, address: null };
+
+      if (auth.isSignedIn && auth.address) {
+        if (web3Display) web3Display.textContent = auth.address;
+        if (web3Pill) {
+          web3Pill.textContent = 'Self-Custodied (Active)';
+          web3Pill.style.color = '#10B981';
+        }
+        if (web3Feedback) {
+          web3Feedback.innerHTML = '<strong>Cryptographically Verified:</strong> You signed in via ECDSA signature. The platform can verify your identity via <code>/api/auth/me</code>, but has no button to freeze your wallet.';
+        }
+        if (web3Btn) {
+          web3Btn.innerHTML = '<span>Signed in as ' + auth.address.substring(0, 6) + '...' + auth.address.substring(auth.address.length - 4) + '</span>';
+          web3Btn.disabled = true;
+        }
+      } else if (walletState.isConnected && walletState.address) {
+        if (web3Display) web3Display.textContent = walletState.address;
+        if (web3Pill) {
+          web3Pill.textContent = 'Connected (Unsigned)';
+          web3Pill.style.color = '';
+        }
+        if (web3Feedback) {
+          web3Feedback.textContent = 'Wallet connected. Click below to sign in cryptographically.';
+        }
+        if (web3Btn) {
+          web3Btn.innerHTML = '<span>Sign in with Wallet</span>';
+          web3Btn.disabled = false;
+        }
+      } else {
+        if (web3Display) web3Display.textContent = 'Not Signed In';
+        if (web3Pill) {
+          web3Pill.textContent = 'Self-Custodied';
+          web3Pill.style.color = '';
+        }
+        if (web3Feedback) {
+          web3Feedback.textContent = 'The platform can verify your signature but has no button to freeze your wallet.';
+        }
+        if (web3Btn) {
+          web3Btn.innerHTML = '<span>Sign in with Wallet</span>';
+          web3Btn.disabled = false;
+        }
+      }
+    }
+
+    updateWeb3ControlState();
+
+    if (web3Btn) {
+      web3Btn.addEventListener('click', async function () {
+        if (!window.Aether || !window.Aether.Wallet) return;
+        var walletState = window.Aether.Wallet.getState();
+        if (!walletState.isConnected) {
+          window.Aether.Wallet.connect();
+          return;
+        }
+        await window.Aether.Wallet.signIn();
+        updateWeb3ControlState();
+      });
+    }
+
+    window.addEventListener('aether:walletState', updateWeb3ControlState);
+    window.addEventListener('aether:authState', updateWeb3ControlState);
   }
 
   window.Aether.Compare = {
