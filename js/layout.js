@@ -78,10 +78,10 @@
       '</div>',
       '<!-- Mobile Slide-in Drawer -->',
       '<div class="mobile-nav-backdrop" id="mobile-nav-backdrop"></div>',
-      '<aside class="mobile-nav-drawer" id="mobile-nav-drawer" aria-label="Mobile Navigation" aria-hidden="true">',
+      '<aside class="mobile-nav-drawer" id="mobile-nav-drawer" aria-label="Mobile Navigation" aria-hidden="true" inert>',
       '  <div style="display:flex; justify-content:space-between; align-items:center;">',
       '    <span style="font-family:var(--font-display); font-weight:700; font-size:1.1rem; color:#FFFFFF;">Navigation</span>',
-      '    <button id="mobile-drawer-close" aria-label="Close menu" style="background:none; border:none; color:var(--text-secondary); cursor:pointer;">' + ICONS.close + '</button>',
+      '    <button id="mobile-drawer-close" aria-label="Close menu" tabindex="-1" style="background:none; border:none; color:var(--text-secondary); cursor:pointer;">' + ICONS.close + '</button>',
       '  </div>',
       '  <ul class="mobile-nav-links">',
       mobileNavLinksHtml,
@@ -260,6 +260,9 @@
       backdrop.classList.add('is-open');
       toggleBtn.setAttribute('aria-expanded', 'true');
       drawer.setAttribute('aria-hidden', 'false');
+      drawer.removeAttribute('inert');
+      var focusables = drawer.querySelectorAll('a, button');
+      focusables.forEach(function (el) { el.setAttribute('tabindex', '0'); });
       document.body.style.overflow = 'hidden';
     }
 
@@ -268,6 +271,9 @@
       backdrop.classList.remove('is-open');
       toggleBtn.setAttribute('aria-expanded', 'false');
       drawer.setAttribute('aria-hidden', 'true');
+      drawer.setAttribute('inert', '');
+      var focusables = drawer.querySelectorAll('a, button');
+      focusables.forEach(function (el) { el.setAttribute('tabindex', '-1'); });
       document.body.style.overflow = '';
     }
 

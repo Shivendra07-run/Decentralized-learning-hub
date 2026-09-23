@@ -294,6 +294,9 @@
     modal.classList.add('is-open');
     backdrop.classList.add('is-open');
     modal.setAttribute('aria-hidden', 'false');
+    modal.removeAttribute('inert');
+    var focusables = modal.querySelectorAll('button, a');
+    focusables.forEach(function (el) { el.removeAttribute('tabindex'); });
 
     if (spinner) spinner.style.display = 'block';
     if (svg) svg.innerHTML = '';
@@ -327,6 +330,9 @@
       modal.classList.remove('is-open');
       backdrop.classList.remove('is-open');
       modal.setAttribute('aria-hidden', 'true');
+      modal.setAttribute('inert', '');
+      var focusables = modal.querySelectorAll('button, a');
+      focusables.forEach(function (el) { el.setAttribute('tabindex', '-1'); });
     }
   }
 

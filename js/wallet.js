@@ -111,7 +111,7 @@
     container.id = 'wallet-modal-container';
     container.innerHTML = [
       '<div class="wallet-modal-backdrop" id="wallet-modal-backdrop"></div>',
-      '<div class="wallet-modal" id="wallet-modal" role="dialog" aria-modal="true" aria-labelledby="wallet-modal-title" aria-hidden="true">',
+      '<div class="wallet-modal" id="wallet-modal" role="dialog" aria-modal="true" aria-labelledby="wallet-modal-title" aria-hidden="true" inert>',
       '  <div class="wallet-modal__header">',
       '    <h3 id="wallet-modal-title" style="font-size:1.15rem; margin:0; font-family:var(--font-display); color:#FFFFFF;">Web3 Wallet</h3>',
       '    <button class="wallet-modal__close" id="wallet-modal-close-btn" aria-label="Close modal">',
@@ -304,6 +304,9 @@
       modal.classList.add('is-open');
       backdrop.classList.add('is-open');
       modal.setAttribute('aria-hidden', 'false');
+      modal.removeAttribute('inert');
+      var focusables = modal.querySelectorAll('a, button, input');
+      focusables.forEach(function (el) { el.removeAttribute('tabindex'); });
     }
   }
 
@@ -313,6 +316,9 @@
     if (modal) {
       modal.classList.remove('is-open');
       modal.setAttribute('aria-hidden', 'true');
+      modal.setAttribute('inert', '');
+      var focusables = modal.querySelectorAll('a, button, input');
+      focusables.forEach(function (el) { el.setAttribute('tabindex', '-1'); });
     }
     if (backdrop) {
       backdrop.classList.remove('is-open');
