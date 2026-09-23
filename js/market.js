@@ -6,6 +6,7 @@
  * 3. Graceful offline/error fallback with last-known data & Retry button
  * 4. Interactive 7-day historical price modal with responsive SVG sparkline
  * 5. Accessible modal with ESC / click-outside dismissal
+ * 6. Dual-source price proxy via Aether API with automatic direct fallback
  */
 
 (function () {
@@ -26,9 +27,11 @@
   var API_PRICE_URL = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,binancecoin,tether,polygon-ecosystem-token,chainlink&vs_currencies=usd&include_24hr_change=true';
   var CACHE_KEY_PRICES = 'aether_market_prices_cache';
   var CACHE_KEY_TIME = 'aether_market_prices_timestamp';
+  var CACHE_KEY_SOURCE = 'aether_market_prices_source';
   var CACHE_TTL_MS = 60 * 1000; // 60 seconds
   var lastFetchTime = 0;
   var memoryPriceCache = null;
+  var currentSource = 'via Aether API';
 
   // 7-day Chart Cache (in-memory)
   var chartCache = {};
@@ -48,39 +51,77 @@
     try {
       var saved = localStorage.getItem(CACHE_KEY_PRICES);
       var time = parseInt(localStorage.getItem(CACHE_KEY_TIME) || '0', 10);
+      var src = localStorage.getItem(CACHE_KEY_SOURCE) || 'cached';
       if (saved && time) {
-        return { data: JSON.parse(saved), time: time };
+        return { data: JSON.parse(saved), time: time, source: src };
       }
     } catch (e) {}
     return null;
   }
 
-  function saveCache(data) {
+  function saveCache(data, sourceLabel) {
     try {
       var now = Date.now();
       localStorage.setItem(CACHE_KEY_PRICES, JSON.stringify(data));
       localStorage.setItem(CACHE_KEY_TIME, now.toString());
+      if (sourceLabel) localStorage.setItem(CACHE_KEY_SOURCE, sourceLabel);
       memoryPriceCache = data;
       lastFetchTime = now;
+      if (sourceLabel) currentSource = sourceLabel;
     } catch (e) {}
   }
 
   /**
-   * Fetch Live Prices with 60s Throttling & Fallback
+   * Fetch Live Prices:
+   * 1. Try Aether backend proxy (/api/prices) first.
+   * 2. If it fails, fall back to direct CoinGecko public API.
+   * 3. If that fails, fall back to localStorage cached data, then simulation.
    */
   async function fetchMarketPrices(force) {
     var now = Date.now();
-    var cached = memoryPriceCache ? { data: memoryPriceCache, time: lastFetchTime } : getStoredCache();
+    var cached = memoryPriceCache ? { data: memoryPriceCache, time: lastFetchTime, source: currentSource } : getStoredCache();
 
     // Respect 60-second rate limit unless forced and cache expired
     if (!force && cached && (now - cached.time < CACHE_TTL_MS)) {
       renderCards(cached.data, false);
-      updateStatusBar('Live data synchronized', false, cached.time);
+      updateStatusBar('Live data synchronized', false, cached.time, false, cached.source || 'cached');
       return;
     }
 
-    updateStatusBar('Fetching live rates from CoinGecko...', true);
+    updateStatusBar('Fetching live rates...', true);
 
+    // STEP 1: Try Aether Backend API Proxy
+    if (window.Aether && window.Aether.api && typeof window.Aether.api.get === 'function') {
+      try {
+        var apiRes = await window.Aether.api.get('/api/prices');
+        if (apiRes && apiRes.ok && apiRes.data) {
+          var list = apiRes.data.prices || apiRes.data.data || (Array.isArray(apiRes.data) ? apiRes.data : null);
+          if (list && Array.isArray(list) && list.length > 0) {
+            var validatedFromApi = {};
+            list.forEach(function (coin) {
+              if (coin && coin.id && typeof coin.usd === 'number') {
+                validatedFromApi[coin.id] = {
+                  usd: coin.usd,
+                  usd_24h_change: typeof coin.change24h === 'number' ? coin.change24h : (coin.usd_24h_change || 0)
+                };
+              }
+            });
+
+            if (Object.keys(validatedFromApi).length > 0) {
+              saveCache(validatedFromApi, 'via Aether API');
+              renderCards(validatedFromApi, false);
+              var isStale = Boolean(apiRes.data.stale);
+              updateStatusBar(isStale ? 'Prices updated (cached)' : 'Prices updated live', false, Date.now(), false, 'via Aether API');
+              return;
+            }
+          }
+        }
+      } catch (errApi) {
+        console.warn('[Aether Market] Backend API fallback:', errApi.message);
+      }
+    }
+
+    // STEP 2: Fall back to direct CoinGecko Public API call
     try {
       var res = await fetch(API_PRICE_URL);
       if (!res.ok) {
@@ -88,7 +129,6 @@
       }
       var json = await res.json();
 
-      // Validate returned keys
       var validatedData = {};
       COINS_CONFIG.forEach(function (coin) {
         if (json[coin.id] && typeof json[coin.id].usd === 'number') {
@@ -103,22 +143,25 @@
         throw new Error('No valid coin data received');
       }
 
-      saveCache(validatedData);
+      saveCache(validatedData, 'direct');
       renderCards(validatedData, false);
-      updateStatusBar('Prices updated live', false, Date.now());
+      updateStatusBar('Prices updated live', false, Date.now(), false, 'direct');
+      return;
     } catch (err) {
-      console.warn('[Aether Market] API warning:', err.message);
+      console.warn('[Aether Market] Direct API warning:', err.message);
+
+      // STEP 3: Fall back to localStorage cache or simulation
       if (cached && cached.data) {
         renderCards(cached.data, true);
-        updateStatusBar('Offline / Cached (CoinGecko rate-limited). Click Retry.', false, cached.time, true);
+        updateStatusBar('Offline / Cached (CoinGecko rate-limited). Click Retry.', false, cached.time, true, 'cached');
       } else {
         renderFallbackMockData();
-        updateStatusBar('Simulation / Offline mode active. Click Retry.', false, Date.now(), true);
+        updateStatusBar('Simulation / Offline mode active. Click Retry.', false, Date.now(), true, 'simulation');
       }
     }
   }
 
-  function updateStatusBar(text, isLoading, time, isOffline) {
+  function updateStatusBar(text, isLoading, time, isOffline, sourceLabel) {
     var dot = document.getElementById('market-status-indicator');
     var label = document.getElementById('market-status-text');
     var badge = document.getElementById('cache-time-badge');
@@ -127,6 +170,26 @@
     if (dot) {
       dot.className = 'market-status-indicator ' + (isLoading ? 'is-loading' : (isOffline ? 'is-offline' : 'is-live'));
     }
+
+    // Ensure source badge element exists
+    var sourceBadge = document.getElementById('market-source-badge');
+    if (!sourceBadge && badge && badge.parentNode) {
+      sourceBadge = document.createElement('span');
+      sourceBadge.id = 'market-source-badge';
+      sourceBadge.className = 'cache-time-badge';
+      sourceBadge.style.marginLeft = '6px';
+      badge.parentNode.appendChild(sourceBadge);
+    }
+
+    if (sourceBadge) {
+      if (sourceLabel && !isLoading) {
+        sourceBadge.textContent = sourceLabel;
+        sourceBadge.style.display = 'inline-block';
+      } else {
+        sourceBadge.style.display = 'none';
+      }
+    }
+
     if (badge) {
       if (time && !isLoading) {
         var d = new Date(time);
@@ -235,9 +298,18 @@
     if (spinner) spinner.style.display = 'block';
     if (svg) svg.innerHTML = '';
 
-    // Fetch 7-day data from CoinGecko or cache
-    var prices = await fetch7dData(coinId);
+    // Fetch 7-day data from Aether proxy or CoinGecko fallback
+    var chartResult = await fetch7dData(coinId);
     if (spinner) spinner.style.display = 'none';
+
+    var prices = chartResult && chartResult.prices ? chartResult.prices : chartResult;
+    var chartSource = chartResult && chartResult.source ? chartResult.source : '';
+
+    var attribution = document.querySelector('.chart-attribution-note');
+    if (attribution) {
+      var sourceText = chartSource ? ' (' + chartSource + ')' : '';
+      attribution.textContent = 'Data provided by CoinGecko' + sourceText + '. Token names and logos belong to their respective project owners.';
+    }
 
     if (prices && prices.length > 0) {
       render7dChartSVG(prices, currentPriceInfo ? currentPriceInfo.usd : null);
@@ -261,30 +333,52 @@
   async function fetch7dData(coinId) {
     var now = Date.now();
     if (chartCache[coinId] && (now - chartCache[coinId].time < 120000)) {
-      return chartCache[coinId].prices;
+      return chartCache[coinId];
     }
 
+    // 1. Try Aether API proxy first
+    if (window.Aether && window.Aether.api && typeof window.Aether.api.get === 'function') {
+      try {
+        var apiRes = await window.Aether.api.get('/api/chart?id=' + encodeURIComponent(coinId));
+        if (apiRes && apiRes.ok && apiRes.data) {
+          var raw = apiRes.data;
+          var pts = Array.isArray(raw) ? raw : (raw.prices || raw.points || []);
+          if (pts.length > 0) {
+            var normalized = pts.map(function (p) {
+              if (Array.isArray(p)) return [p[0], p[1]];
+              return [p.t || p.time || 0, p.price || 0];
+            });
+            chartCache[coinId] = { prices: normalized, source: 'via Aether API', time: now };
+            return chartCache[coinId];
+          }
+        }
+      } catch (e) {
+        console.warn('[Aether Market] API chart fetch fallback for ' + coinId, e.message);
+      }
+    }
+
+    // 2. Fall back to direct CoinGecko call
     var url = 'https://api.coingecko.com/api/v3/coins/' + coinId + '/market_chart?vs_currency=usd&days=7';
     try {
       var res = await fetch(url);
       if (!res.ok) throw new Error('Status ' + res.status);
       var data = await res.json();
       if (data && data.prices && Array.isArray(data.prices)) {
-        chartCache[coinId] = { prices: data.prices, time: now };
-        return data.prices;
+        chartCache[coinId] = { prices: data.prices, source: 'direct', time: now };
+        return chartCache[coinId];
       }
     } catch (e) {
       console.warn('[Aether Market] Chart fetch fallback for ' + coinId, e.message);
     }
 
-    // Generate deterministic fallback curve if API rate-limited
+    // 3. Fallback deterministic simulation curve if API rate-limited
     var mockPrices = [];
     var base = 100;
     for (var i = 0; i < 50; i++) {
       base += (Math.sin(i * 0.4) * 3) + (Math.cos(i * 0.2) * 2);
       mockPrices.push([now - (50 - i) * 3600000, base]);
     }
-    return mockPrices;
+    return { prices: mockPrices, source: 'simulation', time: now };
   }
 
   function render7dChartSVG(prices, fallbackCurrent) {
@@ -295,13 +389,15 @@
     var height = 280;
     var pad = 40;
 
-    var priceVals = prices.map(function (p) { return p[1]; });
+    var priceVals = prices.map(function (p) {
+      return typeof p.price === 'number' ? p.price : (Array.isArray(p) ? p[1] : 0);
+    });
     var minP = Math.min.apply(null, priceVals);
     var maxP = Math.max.apply(null, priceVals);
     var firstP = priceVals[0];
     var lastP = priceVals[priceVals.length - 1];
 
-    var change7d = ((lastP - firstP) / firstP) * 100;
+    var change7d = firstP !== 0 ? (((lastP - firstP) / firstP) * 100) : 0;
     var isUp = change7d >= 0;
     var strokeColor = isUp ? '#10B981' : '#EF4444';
 
@@ -326,8 +422,9 @@
     var areaD = '';
 
     prices.forEach(function (pt, i) {
+      var val = typeof pt.price === 'number' ? pt.price : (Array.isArray(pt) ? pt[1] : 0);
       var x = sx(i);
-      var y = sy(pt[1]);
+      var y = sy(val);
       if (i === 0) {
         lineD += 'M ' + x + ' ' + y;
         areaD += 'M ' + x + ' ' + (height - pad) + ' L ' + x + ' ' + y;
@@ -371,6 +468,13 @@
     var refreshBtn = document.getElementById('btn-market-refresh');
     if (refreshBtn) {
       refreshBtn.addEventListener('click', function () {
+        fetchMarketPrices(true);
+      });
+    }
+
+    var statusText = document.getElementById('market-status-text');
+    if (statusText) {
+      statusText.addEventListener('click', function () {
         fetchMarketPrices(true);
       });
     }
