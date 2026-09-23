@@ -3,6 +3,7 @@
  * Supports Ethereum Mainnet (0x1), Sepolia (0xaa36a7), Polygon (0x89), Polygon Amoy (0x13882).
  * Default state: Disconnected ("Connect Wallet"). Demo simulation only triggers
  * upon user click if no MetaMask extension is detected.
+ * Includes cryptographic sign-in with Aether backend API (SIWE-inspired).
  */
 
 (function () {
@@ -54,6 +55,13 @@
     chainId: '0x1',
     balance: '0.0000',
     isConnecting: false
+  };
+
+  // Auth State
+  var authState = {
+    isSignedIn: false,
+    address: null,
+    isSigningIn: false
   };
 
   var DEMO_ACCOUNT = {
@@ -160,6 +168,28 @@
       '        </div>',
       '      </div>',
       '',
+      '      <!-- Backend Sign In Section in Modal -->',
+      '      <div id="modal-auth-section" style="margin-bottom:var(--space-md); padding:10px 12px; background:rgba(255,255,255,0.03); border:1px solid var(--border-line); border-radius:var(--radius-sm);">',
+      '        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">',
+      '          <span style="font-size:var(--text-xs); font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-secondary);">Aether Account</span>',
+      '          <span id="modal-auth-badge" class="cache-time-badge" style="font-size:0.65rem;">Not Signed In</span>',
+      '        </div>',
+      '        <div id="modal-auth-unsigned">',
+      '          <p id="modal-auth-desc" style="font-size:var(--text-xs); color:var(--text-tertiary); margin:0 0 8px 0; line-height:1.4;">Verify account ownership via gasless signature.</p>',
+      '          <button type="button" class="btn btn--primary btn--xs" id="btn-modal-signin" style="width:100%; justify-content:center;">',
+      '            <span>Sign in to Aether</span>',
+      '          </button>',
+      '          <div id="modal-auth-demo-note" style="display:none; font-size:var(--text-xs); color:#F59E0B; margin-top:4px;">Demo wallet cannot sign in (MetaMask required).</div>',
+      '        </div>',
+      '        <div id="modal-auth-signed" style="display:none;">',
+      '          <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">',
+      '            <span id="modal-auth-signed-text" style="font-size:var(--text-xs); font-weight:600; color:#10B981;">Signed in as 0x...</span>',
+      '            <button type="button" class="btn btn--secondary btn--xs" id="btn-modal-signout">Sign Out</button>',
+      '          </div>',
+      '          <small style="display:block; margin-top:4px; font-size:0.68rem; color:var(--text-tertiary);">Sign out clears token; wallet stays connected in MetaMask.</small>',
+      '        </div>',
+      '      </div>',
+      '',
       '      <!-- Switch Network Section -->',
       '      <div style="margin-bottom:var(--space-md);">',
       '        <label style="font-size:var(--text-xs); font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-secondary); display:block; margin-bottom:6px;">Select Network</label>',
@@ -203,6 +233,8 @@
     var networkBtns = document.querySelectorAll('.network-select-btn');
     var connectRealBtn = document.getElementById('btn-connect-real-wallet');
     var demoWalletBtn = document.getElementById('btn-activate-demo-wallet');
+    var modalSignInBtn = document.getElementById('btn-modal-signin');
+    var modalSignOutBtn = document.getElementById('btn-modal-signout');
 
     if (backdrop) backdrop.addEventListener('click', closeWalletModal);
     if (closeBtn) closeBtn.addEventListener('click', closeWalletModal);
@@ -235,6 +267,18 @@
             Aether.showToast('Copied: ' + state.address);
           });
         }
+      });
+    }
+
+    if (modalSignInBtn) {
+      modalSignInBtn.addEventListener('click', function () {
+        signInToAether();
+      });
+    }
+
+    if (modalSignOutBtn) {
+      modalSignOutBtn.addEventListener('click', function () {
+        signOutFromAether();
       });
     }
 
@@ -321,6 +365,42 @@
       demoAlert.style.display = state.isDemoMode ? 'flex' : 'none';
     }
 
+    // Update Auth section in modal
+    var authUnsigned = document.getElementById('modal-auth-unsigned');
+    var authSigned = document.getElementById('modal-auth-signed');
+    var authSignedText = document.getElementById('modal-auth-signed-text');
+    var authBadge = document.getElementById('modal-auth-badge');
+    var authDemoNote = document.getElementById('modal-auth-demo-note');
+    var signinBtn = document.getElementById('btn-modal-signin');
+
+    if (authState.isSignedIn) {
+      if (authUnsigned) authUnsigned.style.display = 'none';
+      if (authSigned) authSigned.style.display = 'block';
+      if (authSignedText) authSignedText.textContent = 'Signed in as ' + truncateAddress(authState.address);
+      if (authBadge) {
+        authBadge.textContent = 'Authenticated';
+        authBadge.style.color = '#10B981';
+      }
+    } else {
+      if (authUnsigned) authUnsigned.style.display = 'block';
+      if (authSigned) authSigned.style.display = 'none';
+      if (authBadge) {
+        authBadge.textContent = 'Not Signed In';
+        authBadge.style.color = '';
+      }
+      if (state.isDemoMode) {
+        if (signinBtn) signinBtn.style.display = 'none';
+        if (authDemoNote) authDemoNote.style.display = 'block';
+      } else {
+        if (signinBtn) {
+          signinBtn.style.display = 'inline-flex';
+          signinBtn.disabled = authState.isSigningIn;
+          signinBtn.innerHTML = authState.isSigningIn ? '<span>Signing in...</span>' : '<span>Sign in to Aether</span>';
+        }
+        if (authDemoNote) authDemoNote.style.display = 'none';
+      }
+    }
+
     networkBtns.forEach(function (btn) {
       var chain = btn.getAttribute('data-chain-id');
       if (chain === state.chainId) {
@@ -340,6 +420,13 @@
     } catch (e) {}
   }
 
+  function notifyAuthStateChange() {
+    updateModalContent();
+    try {
+      window.dispatchEvent(new CustomEvent('aether:authState', { detail: Object.assign({}, authState) }));
+    } catch (e) {}
+  }
+
   function syncWalletPill() {
     var pill = document.getElementById('global-wallet-btn');
     if (!pill) return;
@@ -354,7 +441,6 @@
         '<span style="font-size:0.65rem; padding:2px 6px; border-radius:4px; background:rgba(255,255,255,0.12); color:#FFFFFF; font-weight:700; font-family:var(--font-mono);">' + badgeText + '</span>'
       ].join('');
     } else {
-      // Default Disconnected State
       pill.innerHTML = [
         '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"></path><path d="M4 6v12a2 2 0 0 0 2 2h14v-4"></path><path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"></path></svg>',
         '<span>Connect Wallet</span>'
@@ -397,7 +483,6 @@
           }
         });
     } else {
-      // window.ethereum is missing -> open modal showing install link + Try demo wallet button
       openWalletModal();
     }
   }
@@ -409,8 +494,14 @@
     state.balance = DEMO_ACCOUNT.balance;
     state.chainId = DEMO_ACCOUNT.chainId;
 
+    // Reset any real auth state on demo activation
+    if (window.Aether.api) window.Aether.api.setToken(null);
+    authState.isSignedIn = false;
+    authState.address = null;
+
     syncWalletPill();
     updateModalContent();
+    notifyAuthStateChange();
     Aether.showToast('Demo simulation mode activated');
   }
 
@@ -421,9 +512,18 @@
     state.balance = '0.0000';
     state.chainId = '0x1';
 
+    // Clear backend session token
+    if (window.Aether.api) {
+      window.Aether.api.setToken(null);
+    }
+    authState.isSignedIn = false;
+    authState.address = null;
+    authState.isSigningIn = false;
+
     localStorage.removeItem('aether_real_wallet_connected');
     syncWalletPill();
     updateModalContent();
+    notifyAuthStateChange();
     Aether.showToast('Wallet disconnected.');
   }
 
@@ -502,6 +602,15 @@
   }
 
   function handleAccountsChanged(accounts) {
+    // Clear backend token on account switch as per security requirements
+    if (authState.isSignedIn || (window.Aether.api && window.Aether.api.getToken())) {
+      if (window.Aether.api) window.Aether.api.setToken(null);
+      authState.isSignedIn = false;
+      authState.address = null;
+      notifyAuthStateChange();
+      Aether.showToast('Account changed. Signed out.');
+    }
+
     if (!accounts || accounts.length === 0) {
       disconnectWallet();
     } else {
@@ -517,6 +626,16 @@
 
   function handleChainChanged(chainId) {
     state.chainId = chainId.toLowerCase();
+
+    // Clear backend token on network switch
+    if (authState.isSignedIn || (window.Aether.api && window.Aether.api.getToken())) {
+      if (window.Aether.api) window.Aether.api.setToken(null);
+      authState.isSignedIn = false;
+      authState.address = null;
+      notifyAuthStateChange();
+      Aether.showToast('Network changed. Signed out.');
+    }
+
     fetchNetworkAndBalance();
     var net = NETWORKS[state.chainId];
     if (net) {
@@ -524,8 +643,25 @@
     }
   }
 
+  async function checkExistingAuth(addr) {
+    if (!window.Aether.api || !window.Aether.api.getToken()) return;
+    try {
+      var res = await window.Aether.api.get('/api/auth/me');
+      if (res && res.ok && res.data && res.data.address) {
+        if (addr && res.data.address.toLowerCase() === addr.toLowerCase()) {
+          authState.isSignedIn = true;
+          authState.address = res.data.address;
+          notifyAuthStateChange();
+        } else {
+          window.Aether.api.setToken(null);
+        }
+      } else {
+        window.Aether.api.setToken(null);
+      }
+    } catch (e) {}
+  }
+
   function restoreSession() {
-    // Only silently restore if the user had a REAL wallet connected
     var wasRealConnected = localStorage.getItem('aether_real_wallet_connected');
 
     if (wasRealConnected && hasEthereum()) {
@@ -533,6 +669,7 @@
         .then(function (accounts) {
           if (accounts && accounts.length > 0) {
             handleAccountsChanged(accounts);
+            checkExistingAuth(accounts[0]);
           } else {
             localStorage.removeItem('aether_real_wallet_connected');
           }
@@ -541,10 +678,11 @@
           localStorage.removeItem('aether_real_wallet_connected');
         });
     }
-    // Note: Demo mode is NOT restored on reload, adhering to requirement:
-    // "Show a Connect Wallet pill by default; demo mode only after user clicks and no MetaMask is found."
   }
 
+  /**
+   * Gasless personal message signer for demonstration
+   */
   function signPersonalMessage(msg, callback) {
     if (!state.isConnected) {
       Aether.showToast('Please connect wallet first.');
@@ -577,6 +715,126 @@
       });
   }
 
+  /**
+   * SIWE-inspired backend authentication flow:
+   * 1. GET /api/auth/nonce
+   * 2. Build structured message with exact template
+   * 3. personal_sign message with MetaMask
+   * 4. POST /api/auth/verify
+   * 5. Store JWT token via Aether.api.setToken
+   */
+  async function signInToAether() {
+    if (!state.isConnected || !state.address) {
+      Aether.showToast('Please connect wallet first.');
+      return { ok: false, error: 'Wallet not connected' };
+    }
+
+    if (state.isDemoMode || !hasEthereum()) {
+      Aether.showToast('Demo simulation wallet cannot sign in to Aether.');
+      return { ok: false, error: 'Demo mode not supported' };
+    }
+
+    if (!window.Aether.api || typeof window.Aether.api.get !== 'function') {
+      Aether.showToast('Backend unavailable, wallet still works');
+      return { ok: false, error: 'API unavailable' };
+    }
+
+    authState.isSigningIn = true;
+    notifyAuthStateChange();
+
+    try {
+      // 1. GET nonce
+      var nonceRes = await window.Aether.api.get('/api/auth/nonce');
+      if (!nonceRes || !nonceRes.ok || !nonceRes.data || !nonceRes.data.nonce) {
+        authState.isSigningIn = false;
+        notifyAuthStateChange();
+        Aether.showToast('Backend unavailable, wallet still works');
+        return { ok: false, error: 'Backend unavailable' };
+      }
+
+      var nonce = nonceRes.data.nonce;
+      var issuedAt = new Date().toISOString();
+      var address = state.address;
+      var uri = window.location.origin;
+
+      // 2. Build message from exact template
+      var message = [
+        'Aether wants you to sign in with your Ethereum account:',
+        address,
+        '',
+        'Sign in to Aether. This does not cost gas and does not move funds.',
+        '',
+        'URI: ' + uri,
+        'Nonce: ' + nonce,
+        'Issued At: ' + issuedAt
+      ].join('\n');
+
+      // 3. Request personal_sign via MetaMask
+      var hexMsg = '0x' + Array.from(new TextEncoder().encode(message)).map(function (b) {
+        return b.toString(16).padStart(2, '0');
+      }).join('');
+
+      var signature;
+      try {
+        signature = await window.ethereum.request({
+          method: 'personal_sign',
+          params: [hexMsg, address]
+        });
+      } catch (signErr) {
+        authState.isSigningIn = false;
+        notifyAuthStateChange();
+        if (signErr && (signErr.code === 4001 || (signErr.message && signErr.message.indexOf('reject') !== -1))) {
+          Aether.showToast('Sign-in rejected by user (4001).');
+        } else {
+          Aether.showToast('Signing failed: ' + (signErr ? signErr.message : 'Unknown'));
+        }
+        return { ok: false, error: signErr };
+      }
+
+      // 4. POST verify
+      var verifyRes = await window.Aether.api.post('/api/auth/verify', {
+        address: address,
+        message: message,
+        signature: signature
+      });
+
+      if (!verifyRes || !verifyRes.ok || !verifyRes.data || !verifyRes.data.token) {
+        authState.isSigningIn = false;
+        notifyAuthStateChange();
+        var errMsg = (verifyRes && verifyRes.error) ? verifyRes.error : 'Authentication failed';
+        Aether.showToast('Authentication failed: ' + errMsg);
+        return { ok: false, error: errMsg };
+      }
+
+      // 5. Store Bearer token
+      window.Aether.api.setToken(verifyRes.data.token);
+      authState.isSignedIn = true;
+      authState.address = verifyRes.data.address || address;
+      authState.isSigningIn = false;
+
+      notifyAuthStateChange();
+      Aether.showToast('Signed in to Aether successfully!');
+      return { ok: true, address: authState.address };
+    } catch (err) {
+      authState.isSigningIn = false;
+      notifyAuthStateChange();
+      Aether.showToast('Backend unavailable, wallet still works');
+      return { ok: false, error: err };
+    }
+  }
+
+  function signOutFromAether() {
+    if (window.Aether.api && typeof window.Aether.api.setToken === 'function') {
+      window.Aether.api.setToken(null);
+    }
+    authState.isSignedIn = false;
+    authState.address = null;
+    authState.isSigningIn = false;
+
+    notifyAuthStateChange();
+    Aether.showToast('Signed out. Your wallet remains connected in MetaMask.');
+  }
+
   function init() {
     injectWalletModal();
 
@@ -604,6 +862,9 @@
     disconnect: disconnectWallet,
     switchNetwork: switchNetwork,
     signMessage: signPersonalMessage,
+    signIn: signInToAether,
+    signOut: signOutFromAether,
+    getAuthState: function () { return Object.assign({}, authState); },
     getState: function () { return Object.assign({}, state); },
     openModal: openWalletModal,
     closeModal: closeWalletModal,

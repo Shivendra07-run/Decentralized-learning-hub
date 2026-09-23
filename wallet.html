@@ -140,6 +140,46 @@
               </div>
             </div>
 
+            <!-- Backend Authentication Card -->
+            <div class="portal-auth-card" id="portal-auth-card" style="margin-bottom:var(--space-md); padding:16px; background:rgba(255,255,255,0.03); border:1px solid var(--border-line); border-radius:var(--radius-sm);">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+                <span class="portal-field-label" style="margin-bottom:0;">Aether Backend Session</span>
+                <span id="portal-auth-status-badge" class="cache-time-badge" style="font-size:0.7rem;">Not Signed In</span>
+              </div>
+              <p id="portal-auth-desc" style="font-size:var(--text-xs); color:var(--text-secondary); margin:0 0 12px 0; line-height:1.5;">
+                Cryptographic authentication. Verifies wallet ownership with a gasless signature and issues a 12-hour JWT session token.
+              </p>
+
+              <!-- Unsigned State -->
+              <div id="portal-auth-unsigned-view" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <button type="button" class="btn btn--primary btn--sm" id="btn-portal-signin">
+                  <span>Sign in to Aether</span>
+                </button>
+                <span style="font-size:var(--text-xs); color:var(--text-tertiary);">Gasless &bull; Moves no funds</span>
+              </div>
+
+              <!-- Signed In State -->
+              <div id="portal-auth-signed-view" style="display:none;">
+                <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+                  <div>
+                    <strong style="color:#10B981; font-size:var(--text-sm); display:block;" id="portal-signed-in-user">Signed in as 0x0000...0000</strong>
+                    <span style="font-size:0.7rem; color:var(--text-tertiary); display:block; margin-top:2px;">Authenticated via Bearer JWT (12h expiry)</span>
+                  </div>
+                  <button type="button" class="btn btn--secondary btn--xs" id="btn-portal-signout">
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+                <small style="display:block; margin-top:8px; font-size:0.7rem; color:var(--text-tertiary);">
+                  Signing out clears your Aether session token. Your wallet itself stays connected in MetaMask.
+                </small>
+              </div>
+
+              <!-- Demo State -->
+              <div id="portal-auth-demo-notice" style="display:none; font-size:var(--text-xs); color:#F59E0B; margin-top:6px;">
+                Demo simulation wallet cannot sign in to Aether backend. Connect MetaMask for real cryptographic sign-in.
+              </div>
+            </div>
+
             <!-- Network & Balance Row -->
             <div class="portal-stats-cards-grid">
               <div class="portal-metric-card">

@@ -6,6 +6,7 @@
  * 2. Address copy, balance display & network switching (Mainnet, Sepolia, Amoy 0x13882)
  * 3. Gasless personal_sign message signer with shortened signature display
  * 4. Safe session clearance and demo mode toggling
+ * 5. Backend SIWE-inspired authentication (Sign in to Aether / Sign out)
  */
 
 (function () {
@@ -50,7 +51,6 @@
     var pill = document.getElementById('portal-status-pill');
     var banner = document.getElementById('portal-status-banner');
     var statusText = document.getElementById('portal-status-text');
-    var statusIcon = document.getElementById('portal-status-icon');
 
     var unconnectedStage = document.getElementById('portal-unconnected-stage');
     var connectedStage = document.getElementById('portal-connected-stage');
@@ -155,6 +155,48 @@
         btn.classList.remove('is-active');
       }
     });
+
+    // Render Backend Auth State on the Wallet Portal Page
+    var authState = (window.Aether.Wallet && typeof window.Aether.Wallet.getAuthState === 'function')
+      ? window.Aether.Wallet.getAuthState()
+      : { isSignedIn: false, address: null, isSigningIn: false };
+
+    var authUnsigned = document.getElementById('portal-auth-unsigned-view');
+    var authSigned = document.getElementById('portal-auth-signed-view');
+    var authDemoNotice = document.getElementById('portal-auth-demo-notice');
+    var authBadge = document.getElementById('portal-auth-status-badge');
+    var signedInUser = document.getElementById('portal-signed-in-user');
+    var signinBtn = document.getElementById('btn-portal-signin');
+
+    if (authState.isSignedIn) {
+      if (authUnsigned) authUnsigned.style.display = 'none';
+      if (authSigned) authSigned.style.display = 'block';
+      if (authDemoNotice) authDemoNotice.style.display = 'none';
+      if (authBadge) {
+        authBadge.textContent = 'Signed In (Live API)';
+        authBadge.style.color = '#10B981';
+      }
+      if (signedInUser) {
+        signedInUser.textContent = 'Signed in as ' + truncate(authState.address);
+      }
+    } else {
+      if (authSigned) authSigned.style.display = 'none';
+      if (authBadge) {
+        authBadge.textContent = 'Not Signed In';
+        authBadge.style.color = '';
+      }
+      if (state.isDemoMode) {
+        if (authUnsigned) authUnsigned.style.display = 'none';
+        if (authDemoNotice) authDemoNotice.style.display = 'block';
+      } else {
+        if (authUnsigned) authUnsigned.style.display = 'flex';
+        if (authDemoNotice) authDemoNotice.style.display = 'none';
+        if (signinBtn) {
+          signinBtn.disabled = authState.isSigningIn;
+          signinBtn.innerHTML = authState.isSigningIn ? '<span>Signing in to Aether...</span>' : '<span>Sign in to Aether</span>';
+        }
+      }
+    }
   }
 
   function initActions() {
@@ -163,6 +205,8 @@
     var disconnectBtn = document.getElementById('btn-portal-disconnect');
     var copyBtn = document.getElementById('btn-copy-address');
     var copyText = document.getElementById('copy-btn-text');
+    var signinBtn = document.getElementById('btn-portal-signin');
+    var signoutBtn = document.getElementById('btn-portal-signout');
 
     if (connectBtn) {
       connectBtn.addEventListener('click', function () {
@@ -185,6 +229,22 @@
         if (window.Aether.Wallet) {
           window.Aether.Wallet.disconnect();
           renderWalletState();
+        }
+      });
+    }
+
+    if (signinBtn) {
+      signinBtn.addEventListener('click', function () {
+        if (window.Aether.Wallet && typeof window.Aether.Wallet.signIn === 'function') {
+          window.Aether.Wallet.signIn();
+        }
+      });
+    }
+
+    if (signoutBtn) {
+      signoutBtn.addEventListener('click', function () {
+        if (window.Aether.Wallet && typeof window.Aether.Wallet.signOut === 'function') {
+          window.Aether.Wallet.signOut();
         }
       });
     }
@@ -214,7 +274,7 @@
       });
     });
 
-    // Sign Message Feature
+    // Existing Gasless Message Signer Feature (Untouched)
     var signBtn = document.getElementById('btn-sign-message');
     var signInput = document.getElementById('sign-message-input');
     var sigBox = document.getElementById('signature-output-box');
@@ -268,6 +328,11 @@
     // Listen for custom wallet state changes dispatched by wallet.js
     window.addEventListener('aether:walletState', function (e) {
       renderWalletState(e.detail);
+    });
+
+    // Listen for auth state changes dispatched by wallet.js
+    window.addEventListener('aether:authState', function () {
+      renderWalletState();
     });
 
     // Native MetaMask event listeners
