@@ -85,6 +85,11 @@
             <span class="best-score-label">Best Score:</span>
             <strong id="quiz-best-score-val">-- / 10</strong>
           </div>
+
+          <div class="quiz-api-status-badge" id="quiz-api-status-badge" title="Backend API status">
+            <span class="status-dot"></span>
+            <span id="quiz-api-status-text">Checking API...</span>
+          </div>
         </div>
       </header>
 
@@ -161,6 +166,39 @@
             <a href="learn.html" class="btn btn--secondary btn--md">
               <span>Review Lessons &rarr;</span>
             </a>
+          </div>
+
+          <!-- Server / Offline Save Status -->
+          <div class="quiz-saved-badge-wrap" id="quiz-saved-badge-wrap">
+            <span class="quiz-save-status-pill offline" id="quiz-save-status-pill" style="display:none;"></span>
+          </div>
+
+          <!-- Unauthenticated Wallet Sign In Prompt -->
+          <div class="quiz-auth-prompt-card" id="quiz-auth-prompt-card" style="display:none;">
+            <div class="auth-prompt-text-group">
+              <span class="auth-prompt-icon">🔐</span>
+              <span class="auth-prompt-msg">Sign in with your wallet to save your score</span>
+            </div>
+            <button type="button" class="btn btn--sm btn--primary" id="btn-quiz-signin">
+              <span>Sign In</span>
+            </button>
+          </div>
+
+          <!-- Verified Server Leaderboard Card -->
+          <div class="quiz-leaderboard-card" id="quiz-leaderboard-card">
+            <div class="quiz-leaderboard-header">
+              <div class="leaderboard-title-group">
+                <h3 class="leaderboard-title">🏆 Top Scores</h3>
+                <span class="leaderboard-subtitle">Verified Server Leaderboard</span>
+              </div>
+              <span class="leaderboard-status-badge" id="leaderboard-status-badge">
+                <span class="status-dot"></span> <span id="leaderboard-status-text">Live</span>
+              </span>
+            </div>
+            <div id="leaderboard-user-best" class="leaderboard-user-best" style="display:none;"></div>
+            <div class="leaderboard-list" id="leaderboard-list">
+              <div class="leaderboard-empty-msg">Loading leaderboard...</div>
+            </div>
           </div>
         </div>
 
