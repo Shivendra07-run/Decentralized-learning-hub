@@ -54,7 +54,7 @@
 
 - **`index.html` (Home Portal)**: Hero section with a single Three.js background canvas featuring procedural brand coins and domain-warped liquid aurora shader, live CoinGecko rate marquee, bento curriculum grid, "How Web3 Works" chain timeline, interactive roadmap synced with quiz accomplishments, and detail modals with verified outbound links to official Ethereum developer documentation (Blockchain, Smart Contracts, and Tokens & NFTs).
 
-### 🔗 Verified Outbound Exploration Links
+###  Verified Outbound Exploration Links
 The interactive Building Blocks detail modal on the Home Portal links out to official ecosystem documentation:
 - **Blockchain:** [Intro to Ethereum (Ethereum.org)](https://ethereum.org/en/developers/docs/intro-to-ethereum/)
 - **Smart Contracts:** [Smart Contracts Documentation (Ethereum.org)](https://ethereum.org/en/developers/docs/smart-contracts/)
@@ -75,7 +75,7 @@ The interactive Building Blocks detail modal on the Home Portal links out to off
 
 ---
 
-## 📱 Mobile Responsiveness & Touch Architecture
+##  Mobile Responsiveness & Touch Architecture
 
 Every page is strictly audited and optimized down to 375px and 414px mobile viewports:
 - **No Page-Level Horizontal Overflow:** Viewport-constrained layouts with dedicated horizontal scroll wrappers for wide data tables and SVG charts (AMM curve, staking trajectory).
@@ -88,7 +88,7 @@ Every page is strictly audited and optimized down to 375px and 414px mobile view
 
 ---
 
-## 🛠 Tech Stack
+##  Tech Stack
 
 - **Markup:** Semantic HTML5 (Single `<h1>` per page, ARIA live regions, skip navigation links, labeled form controls).
 - **Styling:** Vanilla CSS with modular design tokens (`variables.css`, `base.css`, `layout.css`, `components.css`, `pages.css`). Strict dark monochrome aesthetic (#050506 graphite, silver accents, white typography, subtle glassmorphism). Zero Tailwind or external CSS frameworks.
@@ -98,7 +98,7 @@ Every page is strictly audited and optimized down to 375px and 414px mobile view
 
 ---
 
-## 🏛 Architecture
+##  Architecture
 
 ### System Topology Diagram
 ```
@@ -178,7 +178,7 @@ All network calls go through `js/api.js` which enforces a strict 4-second timeou
 
 ---
 
-## 📂 Folder Structure
+##  Folder Structure
 
 ```
 decentralized-learning-hub/
