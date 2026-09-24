@@ -1,10 +1,10 @@
 # Aether — Learn the Decentralized Web
 
-[![GitHub Pages](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-silver?style=for-the-badge&logo=github)](https://shivendra07-run.github.io/WEB3-/)
+[![GitHub Pages](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-silver?style=for-the-badge&logo=github)](https://shivendra07-run.github.io/decentralized-learning-hub/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 [![Zero Build Tools](https://img.shields.io/badge/Dependencies-Vanilla%20HTML%20%2F%20CSS%20%2F%20JS-success?style=for-the-badge)](index.html)
 
-> **Live Deployment:** [https://shivendra07-run.github.io/WEB3-/](https://shivendra07-run.github.io/WEB3-/)
+> **Live Deployment:** [https://shivendra07-run.github.io/decentralized-learning-hub/](https://shivendra07-run.github.io/decentralized-learning-hub/)
 
 **Aether** is a modern, dark-themed educational platform engineered to teach the foundational principles of Web3 to developers, students, and curious internet users. Demystifying complex distributed ledger technology through interactive visual sandboxes, relatable analogies, real-time cryptographic hashing, and zero-hype educational guides.
 
@@ -181,7 +181,7 @@ All network calls go through `js/api.js` which enforces a strict 4-second timeou
 ## 📂 Folder Structure
 
 ```
-Web3 Project/
+decentralized-learning-hub/
 ├── 404.html               # Custom 404 error page with broken chain graphic
 ├── compare.html           # Web2 vs Web3 architectural comparison
 ├── index.html             # Homepage, hero, bento curriculum, and roadmap
@@ -268,7 +268,7 @@ npx serve .
 
 ##  Web3 Wallet Notes (MetaMask Integration)
 
-- **Local Server or HTTPS Required:** Browser wallet extensions like MetaMask disable window injection on `file:///` protocols due to browser security sandboxing. To connect your real MetaMask wallet, access the site via a local web server (e.g. `http://localhost:8000`) or on the live [GitHub Pages deployment](https://shivendra07-run.github.io/WEB3-/).
+- **Local Server or HTTPS Required:** Browser wallet extensions like MetaMask disable window injection on `file:///` protocols due to browser security sandboxing. To connect your real MetaMask wallet, access the site via a local web server (e.g. `http://localhost:8000`) or on the live [GitHub Pages deployment](https://shivendra07-run.github.io/decentralized-learning-hub/).
 - **Simulated Demo Mode:** If no Web3 extension is detected (or when running directly from `file:///`), Aether automatically offers an educational **Simulated Wallet Mode**. This allows learners to explore wallet states, test signatures, and review balance flows without needing an extension installed.
 - **Safety First:** Aether **never** prompts for private keys, seed phrases, or real cryptocurrency funds. All signature demos utilize `personal_sign` for educational verification only.
 

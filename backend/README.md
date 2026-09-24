@@ -16,7 +16,7 @@ Lightweight, secure Node.js serverless functions running on Vercel to support th
 ## 🚀 How to Deploy on Vercel
 
 1. **Import the Project in Vercel:**
-   - Link your GitHub repository (`WEB3-`).
+   - Link your GitHub repository (`decentralized-learning-hub`).
    - Under **General Settings** -> **Root Directory**, click **Edit** and set it to:
      ```
      backend
