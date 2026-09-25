@@ -292,7 +292,7 @@
       terms: ['SHA-256 Hashing', 'Consensus Mechanisms', 'Distributed Nodes'],
       fact: 'The Bitcoin blockchain has recorded transactions without a single second of global network downtime since January 2009.',
       widgetType: 'hasher',
-      url: 'https://ethereum.org/en/developers/docs/intro-to-ethereum/'
+      url: 'learn.html#blockchain'
     },
     contracts: {
       title: 'Smart Contracts: Self-Executing Agreements',
@@ -300,7 +300,7 @@
       terms: ['Turing-Complete', 'Gas Limit', 'Immutable Logic'],
       fact: 'Nick Szabo coined the term "Smart Contract" in 1994, over a decade before Bitcoin was invented.',
       widgetType: 'vending',
-      url: 'https://ethereum.org/en/developers/docs/smart-contracts/'
+      url: 'learn.html#smart-contracts'
     },
     tokens: {
       title: 'Tokens & NFTs: Programmable Ownership',
@@ -308,7 +308,7 @@
       terms: ['ERC-20 (Fungible)', 'ERC-721 (Unique)', 'Digital Provenance'],
       fact: 'The earliest NFTs on Ethereum were CryptoPunks and MoonCats, minted in 2017 before the official ERC-721 token standard was finalized.',
       widgetType: 'minter',
-      url: 'https://ethereum.org/en/nft/'
+      url: 'learn.html#nfts'
     }
   };
 
@@ -328,6 +328,8 @@
     if (learnMoreBtn) {
       if (data.url) {
         learnMoreBtn.href = data.url;
+        learnMoreBtn.removeAttribute('target');
+        learnMoreBtn.removeAttribute('rel');
         learnMoreBtn.style.display = 'inline-flex';
       } else {
         learnMoreBtn.style.display = 'none';
