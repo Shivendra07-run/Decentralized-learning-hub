@@ -436,7 +436,11 @@
 
     var backdrop = document.getElementById('block-modal-backdrop');
     var closeBtn = document.getElementById('block-modal-close');
-    if (backdrop) backdrop.addEventListener('click', closeBlockModal);
+    if (backdrop) {
+      backdrop.addEventListener('click', function (e) {
+        if (e.target === backdrop) closeBlockModal();
+      });
+    }
     if (closeBtn) closeBtn.addEventListener('click', closeBlockModal);
 
     document.addEventListener('keydown', function (e) {

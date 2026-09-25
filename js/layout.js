@@ -276,6 +276,12 @@
       var href = link.getAttribute('href');
       if (!href) return;
 
+      // Explicitly skip any href with a filename/path before '#' (e.g. "learn.html#blockchain")
+      // so it falls through to normal browser navigation instead of being intercepted.
+      if (href.indexOf('#') !== -1 && !href.startsWith('#')) {
+        return;
+      }
+
       var currentPage = getCurrentPageName();
 
       // Case A: Link is an in-page anchor (#something)
